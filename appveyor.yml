@@ -41,7 +41,7 @@ deploy:
   description: $(APPVEYOR_REPO_COMMIT_MESSAGE)
   provider: GitHub
   auth_token:
-    secure: AgLJJ7atvqq1zjQuSLvVlFxMFj5bc6MujZhmPWqgMrkuXnmCkRJWhDoTxniXoHIK # your encrypted token from GitHub
+    secure: 8tOMOmXZegbWNKbYUtypH+LVj6bj5dYWXbnSPWwWNqZldVnuY+lQQv1r2oFeBMMU # your encrypted token from GitHub
   artifact: packages
   draft: true
   prerelease: true

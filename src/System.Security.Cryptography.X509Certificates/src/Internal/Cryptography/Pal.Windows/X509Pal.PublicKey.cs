@@ -38,53 +38,63 @@ namespace Internal.Cryptography.Pal
             {
                 case AlgId.CALG_RSA_KEYX:
                 case AlgId.CALG_RSA_SIGN:
+                {
+                    try
                     {
                         byte[] keyBlob = DecodeKeyBlob(CryptDecodeObjectStructType.CNG_RSA_PUBLIC_KEY_BLOB, encodedKeyValue);
                         CngKey cngKey = CngKey.Import(keyBlob, CngKeyBlobFormat.GenericPublicBlob);
                         return new RSACng(cngKey);
                     }
+                    catch (CryptographicException)
+                    {
+                        byte[] keyBlob = DecodeKeyBlob(CryptDecodeObjectStructType.RSA_CSP_PUBLICKEYBLOB, encodedKeyValue);
+                        RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+                        rsa.ImportCspBlob(keyBlob);
+                        return rsa;
+                    }
+                }
                 //begin: gost
                 case AlgId.CALG_GOST3410:
-                    {
-                        var cspObject = new GostKeyExchangeParameters();
-                        cspObject.DecodeParameters(encodedParameters);
-                        cspObject.DecodePublicKey(encodedKeyValue, algId);
-                        var cspBlobData = GostKeyExchangeParameters.EncodePublicBlob(cspObject, algId);
+                {
+                    var cspObject = new GostKeyExchangeParameters();
+                    cspObject.DecodeParameters(encodedParameters);
+                    cspObject.DecodePublicKey(encodedKeyValue, algId);
+                    var cspBlobData = GostKeyExchangeParameters.EncodePublicBlob(cspObject, algId);
 
-                        Gost3410CryptoServiceProvider gost_sp = new Gost3410CryptoServiceProvider();
-                        gost_sp.ImportCspBlob(cspBlobData);
-                        return gost_sp;
-                    }
-                    case AlgId.CALG_GOST3410_2012_256:
-                    {
-                        var cspObject = new GostKeyExchangeParameters();
-                        cspObject.DecodeParameters(encodedParameters);
-                        cspObject.DecodePublicKey(encodedKeyValue, algId);
-                        var cspBlobData = GostKeyExchangeParameters.EncodePublicBlob(cspObject, algId);
+                    Gost3410CryptoServiceProvider gost_sp = new Gost3410CryptoServiceProvider();
+                    gost_sp.ImportCspBlob(cspBlobData);
+                    return gost_sp;
+                }
+                case AlgId.CALG_GOST3410_2012_256:
+                {
+                    var cspObject = new GostKeyExchangeParameters();
+                    cspObject.DecodeParameters(encodedParameters);
+                    cspObject.DecodePublicKey(encodedKeyValue, algId);
+                    var cspBlobData = GostKeyExchangeParameters.EncodePublicBlob(cspObject, algId);
 
-                        Gost3410_2012_256CryptoServiceProvider gost_sp = new Gost3410_2012_256CryptoServiceProvider();
-                        gost_sp.ImportCspBlob(cspBlobData);
-                        return gost_sp;
-                    }
-                    case AlgId.CALG_GOST3410_2012_512:
-                    {
-                        var cspObject = new GostKeyExchangeParameters();
-                        cspObject.DecodeParameters(encodedParameters);
-                        cspObject.DecodePublicKey(encodedKeyValue, algId);
-                        var cspBlobData = GostKeyExchangeParameters.EncodePublicBlob(cspObject, algId);
+                    Gost3410_2012_256CryptoServiceProvider gost_sp = new Gost3410_2012_256CryptoServiceProvider();
+                    gost_sp.ImportCspBlob(cspBlobData);
+                    return gost_sp;
+                }
+                case AlgId.CALG_GOST3410_2012_512:
+                {
+                    var cspObject = new GostKeyExchangeParameters();
+                    cspObject.DecodeParameters(encodedParameters);
+                    cspObject.DecodePublicKey(encodedKeyValue, algId);
+                    var cspBlobData = GostKeyExchangeParameters.EncodePublicBlob(cspObject, algId);
 
-                        Gost3410_2012_512CryptoServiceProvider gost_sp = new Gost3410_2012_512CryptoServiceProvider();
-                        gost_sp.ImportCspBlob(cspBlobData);
-                        return gost_sp;
-                    }
+                    Gost3410_2012_512CryptoServiceProvider gost_sp = new Gost3410_2012_512CryptoServiceProvider();
+                    gost_sp.ImportCspBlob(cspBlobData);
+                    return gost_sp;
+                }
                 //end: gost
                 case AlgId.CALG_DSS_SIGN:
-                    {
-                        byte[] keyBlob = ConstructDSSPublicKeyCspBlob(encodedKeyValue, encodedParameters);
-                        DSACryptoServiceProvider dsa = new DSACryptoServiceProvider();
-                        dsa.ImportCspBlob(keyBlob);
-                        return dsa;
-                    }
+                {
+                    byte[] keyBlob = ConstructDSSPublicKeyCspBlob(encodedKeyValue, encodedParameters);
+                    DSACryptoServiceProvider dsa = new DSACryptoServiceProvider();
+                    dsa.ImportCspBlob(keyBlob);
+                    return dsa;
+                }
                 default:
                     throw new NotSupportedException(SR.NotSupported_KeyAlgorithm);
             }

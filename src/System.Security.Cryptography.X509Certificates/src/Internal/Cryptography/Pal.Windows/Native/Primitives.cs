@@ -493,9 +493,12 @@ namespace Internal.Cryptography.Pal.Native
         X509_CERTIFICATE_TEMPLATE = 64,
         //begin: gost
         X509_OCTET_STRING = 25,
-        X509_PUBLIC_KEY_INFO = 8
+        X509_PUBLIC_KEY_INFO = 8,
         //end: gost
-    }
+        //begin: rsa
+        RSA_CSP_PUBLICKEYBLOB = 19
+        //end: rsa
+        }
 
     [StructLayout(LayoutKind.Sequential)]
     internal struct CTL_USAGE

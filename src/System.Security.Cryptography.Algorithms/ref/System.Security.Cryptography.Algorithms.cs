@@ -773,6 +773,7 @@ namespace System.Security.Cryptography
         public bool VerifyData(IO.Stream data, byte[] signature, HashAlgorithmName hashAlgorithm) { throw null; }
         public virtual bool VerifyData(ReadOnlySpan<byte> data, ReadOnlySpan<byte> signature, HashAlgorithmName hashAlgorithm) { throw null; }
         private static Exception HashAlgorithmNameNullOrEmpty() { throw null; }
+        public abstract GostSharedSecretAlgorithm CreateAgree(Gost3410Parameters alg);
     }
 
     public abstract partial class Gost3410_2012_256 : System.Security.Cryptography.AsymmetricAlgorithm
@@ -808,6 +809,7 @@ namespace System.Security.Cryptography
         public bool VerifyData(IO.Stream data, byte[] signature, HashAlgorithmName hashAlgorithm) { throw null; }
         public virtual bool VerifyData(ReadOnlySpan<byte> data, ReadOnlySpan<byte> signature, HashAlgorithmName hashAlgorithm) { throw null; }
         private static Exception HashAlgorithmNameNullOrEmpty() { throw null; }
+        public abstract GostSharedSecretAlgorithm CreateAgree(Gost3410Parameters alg);
     }
 
     public partial class GostSignatureFormatter : System.Security.Cryptography.AsymmetricSignatureFormatter
@@ -897,6 +899,7 @@ namespace System.Security.Cryptography
         public bool VerifyData(IO.Stream data, byte[] signature, HashAlgorithmName hashAlgorithm) { throw null; }
         public virtual bool VerifyData(ReadOnlySpan<byte> data, ReadOnlySpan<byte> signature, HashAlgorithmName hashAlgorithm) { throw null; }
         private static Exception HashAlgorithmNameNullOrEmpty() { throw null; }
+        public abstract GostSharedSecretAlgorithm CreateAgree(Gost3410Parameters alg);
     }
 
     public struct Gost3410Parameters
@@ -1002,6 +1005,23 @@ namespace System.Security.Cryptography
         public abstract byte[] ComputeHash(HashAlgorithm hash);
         public abstract byte[] Wrap(System.Security.Cryptography.Gost28147 prov, System.Security.Cryptography.GostKeyWrapMethod method);
         public abstract SymmetricAlgorithm Unwrap(byte[] wrapped, System.Security.Cryptography.GostKeyWrapMethod method);
+    }
+
+    public abstract class GostSharedSecretAlgorithm : IDisposable
+    {
+        public abstract byte[] Wrap(SymmetricAlgorithm alg,
+            GostKeyWrapMethod method);
+
+        public abstract SymmetricAlgorithm Unwrap(byte[] wrapped,
+            GostKeyWrapMethod method);
+
+        protected virtual void Dispose(bool disposing)
+        {
+        }
+
+        public void Dispose()
+        {
+        }
     }
 
     //end: gost

@@ -16,11 +16,11 @@
         //internal const int HP_HASHVAL = 0x0002;
         //internal const int HP_HASHSTARTVECT = 0x0008;
 
-        //// dwFlag definitions for CryptGenKey
+        // dwFlag definitions for CryptGenKey
         //internal const int CRYPT_EXPORTABLE = 0x00000001;
         //internal const int CRYPT_ARCHIVABLE = 0x00004000;
         //internal const int CRYPT_USER_PROTECTED = 0x00000002;
-        //internal const int CRYPT_PREGEN = 0x00000040;
+        internal const int CRYPT_PREGEN = 0x00000040;
 
         /// <summary>
         /// OID алгоритма хэширования ГОСТ Р 34.11-2001

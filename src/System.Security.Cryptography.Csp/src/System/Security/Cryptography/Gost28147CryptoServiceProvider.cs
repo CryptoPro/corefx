@@ -88,10 +88,174 @@ namespace System.Security.Cryptography
             }
         }
 
+        /// <summary>
+        /// Получение текущего (не дубликата) HANDLE ключа.
+        /// </summary>
+        ///
+        /// <unmanagedperm action="LinkDemand" />
+        ///
+        /// <remarks><para>
+        /// Значение <code>KP_PADDING</code>, <code>KP_MODE</code> и аналогичных
+        /// для хендла не совпадает с
+        /// <see cref="System.Security.Cryptography.SymmetricAlgorithm.Padding"/>,
+        /// <see cref="System.Security.Cryptography.SymmetricAlgorithm.Mode"/>.
+        /// </para></remarks>
+        internal SafeKeyHandle InternalKeyHandle
+        {
+            get
+            {
+                if (_safeKeyHandle.IsInvalid)
+                    GenerateKey();
+                return _safeKeyHandle;
+            }
+        }
+
+        /// <summary>
+        /// Получение текущего HANDLE провайдера без AddRef.
+        /// </summary>
+        ///
+        /// <unmanagedperm action="LinkDemand" />
+        internal SafeProvHandle InternalProvHandle
+        {
+            get
+            {
+                // Проверяем именно ключ.
+                if (_safeKeyHandle.IsInvalid)
+                    GenerateKey();
+                return _safeProvHandle;
+            }
+        }
+
         public Gost28147CryptoServiceProvider()
         {
             Mode = CipherMode.CFB;
             Padding = PaddingMode.None;
+        }
+
+        /// <summary>
+        /// Создание объекта симметричного шифрования по HANDLE ключа.
+        /// </summary>
+        ///
+        /// <remarks><para>При создании объекта симметричного шифрования
+        /// параметры ключа устанавливаются в свои значения по умолчанию:</para>
+        ///
+        /// <table>
+        /// <tr><th>Параметр</th><th>Значение</th></tr>
+        /// <tr><td><see cref="System.Security.Cryptography.SymmetricAlgorithm.IV"/></td>
+        /// <td><see langword="null"/></td></tr>
+        ///
+        /// <tr><td><see cref="System.Security.Cryptography.SymmetricAlgorithm.Mode"/></td>
+        /// <td><see cref="System.Security.Cryptography.CipherMode.CFB"/></td></tr>
+        ///
+        /// <tr><td><see cref="System.Security.Cryptography.SymmetricAlgorithm.Padding"/></td>
+        /// <td><see cref="System.Security.Cryptography.PaddingMode.None"/></td></tr>
+        ///
+        /// <tr><td><see cref="System.Security.Cryptography.SymmetricAlgorithm.KeySize"/></td>
+        /// <td><c>256</c></td></tr>
+        ///
+        /// <tr><td><see cref="System.Security.Cryptography.SymmetricAlgorithm.FeedbackSize"/></td>
+        /// <td><c>64</c></td></tr>
+        ///
+        /// <tr><td><see cref="System.Security.Cryptography.SymmetricAlgorithm.BlockSize"/></td>
+        /// <td><c>64</c></td></tr>
+        ///
+        /// </table>
+        ///
+        /// <para>Класс становится владельцем ДУБЛЯ ключа и закрывает
+        /// HANDLE при закрытии класса, HANDLE провайдера не дублируется,
+        /// но увеличивается счетчик его использования (DangerousAddRef).
+        /// </para>
+        /// </remarks>
+        ///
+        /// <param name="keyHandle">HANDLE симметричного ключа.</param>
+        /// <param name="providerHandle">HANDLE провайдера.</param>
+        ///
+        /// <argnull name="keyHandle" />
+        /// <exception cref="ArgumentException">Параметр <c>keyHandle</c>
+        /// содержит ключ не алгоритма ГОСТ 28147.
+        /// </exception>
+        ///
+        /// <unmanagedperm action="Demand" />
+        public Gost28147CryptoServiceProvider(IntPtr keyHandle, IntPtr providerHandle)
+            : this()
+        {
+            _safeProvHandle = new SafeProvHandle(providerHandle, true);
+            _safeKeyHandle = CapiHelper.DuplicateKey(keyHandle);            
+            int algid = CapiHelper.GetKeyParamDw(_safeKeyHandle, GostConstants.KP_ALGID);
+            if (algid != GostConstants.CALG_G28147)
+                throw new ArgumentException("algid");
+        }
+
+        /// <summary>
+        /// Создание объекта симметричного шифрования по HANDLE ключа.
+        /// </summary>
+        ///
+        /// <remarks><para>При создании объекта симметричного шифрования
+        /// параметры ключа устанавливаются в свои значения по умолчанию:</para>
+        ///
+        /// <table>
+        /// <tr><th>Параметр</th><th>Значение</th></tr>
+        /// <tr><td><see cref="System.Security.Cryptography.SymmetricAlgorithm.IV"/></td>
+        /// <td><see langword="null"/></td></tr>
+        ///
+        /// <tr><td><see cref="System.Security.Cryptography.SymmetricAlgorithm.Mode"/></td>
+        /// <td><see cref="System.Security.Cryptography.CipherMode.CFB"/></td></tr>
+        ///
+        /// <tr><td><see cref="System.Security.Cryptography.SymmetricAlgorithm.Padding"/></td>
+        /// <td><see cref="System.Security.Cryptography.PaddingMode.None"/></td></tr>
+        ///
+        /// <tr><td><see cref="System.Security.Cryptography.SymmetricAlgorithm.KeySize"/></td>
+        /// <td><c>256</c></td></tr>
+        ///
+        /// <tr><td><see cref="System.Security.Cryptography.SymmetricAlgorithm.FeedbackSize"/></td>
+        /// <td><c>64</c></td></tr>
+        ///
+        /// <tr><td><see cref="System.Security.Cryptography.SymmetricAlgorithm.BlockSize"/></td>
+        /// <td><c>64</c></td></tr>
+        ///
+        /// </table>
+        ///
+        /// <para>Класс становится владельцем ДУБЛЯ ключа и закрывает
+        /// HANDLE при закрытии класса, HANDLE провайдера не дублируется,
+        /// но увеличивается счетчик его использования (DangerousAddRef).
+        /// </para>
+        /// </remarks>
+        ///
+        /// <param name="keyHandle">HANDLE симметричного ключа.</param>
+        /// <param name="provHandle">HANDLE провайдера.</param>
+        ///
+        /// <argnull name="keyHandle" />
+        /// <exception cref="ArgumentException">Параметр <c>keyHandle</c>
+        /// содержит ключ не алгоритма ГОСТ 28147.
+        /// </exception>
+        ///
+        /// <unmanagedperm action="LinkDemand" />
+        internal Gost28147CryptoServiceProvider(SafeKeyHandle keyHandle,
+            SafeProvHandle provHandle) : this()
+        {
+            // корректность параметров CSP проверяется
+            // при создании ecnryptor
+            if (keyHandle == null)
+                throw new ArgumentNullException("keyHandle");
+            // Проверяем наличие провайдера поддерживающего ГОСТ 28147.
+            // А куда CSP денется?
+            //if (!CPUtils.HasAlgorithm(Constants.CALG_G28147, 0))
+            //{
+            //    throw new CryptographicException(
+            //        Resources.Cryptography_CSP_AlgorithmNotAvailable);
+            //}
+            _safeKeyHandle = CapiHelper.DuplicateKey(keyHandle.DangerousGetHandle());
+
+            bool succeded = false;
+            provHandle.DangerousAddRef(ref succeded);
+            _safeProvHandle = provHandle;
+
+            int algid = CapiHelper.GetKeyParamDw(_safeKeyHandle, GostConstants.KP_ALGID);
+            if (algid != GostConstants.CALG_G28147)
+                throw new ArgumentException("keyHandle");
+            // KeySizeValue устанавливается в базовом классе.
+            // FeedbackSizeValue устанавливается в базовом классе.
+            // BlockSizeValue устанавливается в базовом классе.
         }
 
         public override ICryptoTransform CreateDecryptor(byte[] rgbKey, byte[] rgbIV)

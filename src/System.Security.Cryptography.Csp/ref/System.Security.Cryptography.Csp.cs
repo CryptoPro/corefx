@@ -119,6 +119,8 @@ namespace System.Security.Cryptography
     [System.ComponentModel.EditorBrowsableAttribute((System.ComponentModel.EditorBrowsableState)(1))]
     public sealed partial class Gost28147CryptoServiceProvider : System.Security.Cryptography.Gost28147
     {
+        public Gost28147CryptoServiceProvider() { throw null; }
+        public Gost28147CryptoServiceProvider(IntPtr keyHandle, IntPtr providerHandle) { throw null; }
         public override byte[] ComputeHash(HashAlgorithm hash){ throw null; }
         public override ICryptoTransform CreateDecryptor(byte[] rgbKey, byte[] rgbIV){ throw null; }
         public override ICryptoTransform CreateEncryptor(byte[] rgbKey, byte[] rgbIV){ throw null; }
@@ -324,7 +326,25 @@ namespace System.Security.Cryptography
         public override Gost3410Parameters ExportParameters(bool includePrivateParameters) { throw null; }
         public override void ImportParameters(Gost3410Parameters parameters) { throw null; }
         protected override void Dispose(bool disposing) { throw null; }
+        public override GostSharedSecretAlgorithm CreateAgree(Gost3410Parameters alg) { throw null; }
         public byte[] ContainerCertificate { get { throw null; } set { } }
+    }
+
+    public sealed class Gost3410EphemeralCryptoServiceProvider : Gost3410
+    {
+        public Gost3410EphemeralCryptoServiceProvider() { throw null; }
+        public Gost3410EphemeralCryptoServiceProvider(Gost3410Parameters basedOn) { throw null; }
+        public override Gost3410Parameters ExportParameters(bool includePrivateParameters) { throw null; }
+        public override void ImportParameters(Gost3410Parameters parameters) { throw null; }
+        public override byte[] SignHash(byte[] hash) { throw null; }
+        public override byte[] SignHash(byte[] hash, HashAlgorithmName hashAlgorithm) { throw null; }
+        public override bool VerifyHash(byte[] hash, byte[] signature, HashAlgorithmName hashAlgorithm) { throw null; }
+        protected override byte[] HashData(byte[] data, int offset, int count, HashAlgorithmName hashAlgorithm) { throw null; }
+        protected override byte[] HashData(Stream data, HashAlgorithmName hashAlgorithm) { throw null; }
+        public override GostSharedSecretAlgorithm CreateAgree(Gost3410Parameters alg) { throw null; }
+        public IntPtr KeyHandle { get { throw null; } }
+        public IntPtr ProviderHandle { get { throw null; } }
+
     }
 
     public sealed partial class Gost3410_2012_256CryptoServiceProvider : Gost3410_2012_256, ICspAsymmetricAlgorithm
@@ -350,8 +370,10 @@ namespace System.Security.Cryptography
         public void ImportCspBlob(byte[] keyBlob, byte[] paramBlob) { throw null; }
         public override Gost3410Parameters ExportParameters(bool includePrivateParameters) { throw null; }
         public override void ImportParameters(Gost3410Parameters parameters) { throw null; }
+        public override GostSharedSecretAlgorithm CreateAgree(Gost3410Parameters alg) { throw null; }
         protected override void Dispose(bool disposing) { throw null; }
         public byte[] ContainerCertificate { get { throw null; } set { } }
+
     }
 
     public sealed partial class Gost3410_2012_512CryptoServiceProvider : Gost3410_2012_512, ICspAsymmetricAlgorithm
@@ -377,6 +399,7 @@ namespace System.Security.Cryptography
         public void ImportCspBlob(byte[] keyBlob, byte[] paramBlob) { throw null; }
         public override Gost3410Parameters ExportParameters(bool includePrivateParameters) { throw null; }
         public override void ImportParameters(Gost3410Parameters parameters) { throw null; }
+        public override GostSharedSecretAlgorithm CreateAgree(Gost3410Parameters alg) { throw null; }
         protected override void Dispose(bool disposing) { throw null; }
         public byte[] ContainerCertificate { get { throw null; } set { } }
     }
@@ -411,6 +434,44 @@ namespace System.Security.Cryptography
         protected override bool TryHashFinal(Span<byte> destination, out int bytesWritten) { throw null; }
     }
 
+    public sealed class GostSharedSecretCryptoServiceProvider :
+       GostSharedSecretAlgorithm
+    {
+        internal GostSharedSecretCryptoServiceProvider() { throw null; }
+        public override SymmetricAlgorithm Unwrap(byte[] wrapped, GostKeyWrapMethod method) { throw null; }
+        public override byte[] Wrap(SymmetricAlgorithm alg, GostKeyWrapMethod method) { throw null; }
+        public IntPtr KeyHandle { get { throw null; } }
+        public IntPtr ProviderHandle { get { throw null; } }
+    }
+
+    public class GostKeyExchangeFormatter : AsymmetricKeyExchangeFormatter
+    {
+        public GostKeyExchangeFormatter() { throw null; }
+        public GostKeyExchangeFormatter(AsymmetricAlgorithm key) { throw null; }
+        public override string Parameters { get { throw null; } }
+
+        public override byte[] CreateKeyExchange(byte[] data) { { throw null; } }
+
+        public override byte[] CreateKeyExchange(byte[] data, Type symAlgType) { { throw null; } }
+        public GostKeyTransport CreateKeyExchange(SymmetricAlgorithm alg) { { throw null; } }
+        public byte[] CreateKeyExchangeData(SymmetricAlgorithm alg) { { throw null; } }
+
+        public override void SetKey(AsymmetricAlgorithm key) { { throw null; } }
+    }
+
+    public class GostKeyExchangeDeformatter : AsymmetricKeyExchangeDeformatter
+    {
+        public GostKeyExchangeDeformatter() { throw null; }
+        public GostKeyExchangeDeformatter(AsymmetricAlgorithm key) { throw null; }
+        public override string Parameters { get { throw null; } set { } }
+
+        public override byte[] DecryptKeyExchange(byte[] rgb) { { throw null; } }
+
+        public override void SetKey(AsymmetricAlgorithm key) { { throw null; } }
+        public SymmetricAlgorithm DecryptKeyExchange(GostKeyTransport transport) { { throw null; } }
+        public SymmetricAlgorithm DecryptKeyExchangeData(byte[] data) { { throw null; } }
+    }
+
     public sealed class GostKeyExchangeParameters
     {
         public GostKeyExchangeParameters() { }
@@ -426,5 +487,33 @@ namespace System.Security.Cryptography
         public static byte[] EncodePublicBlob(GostKeyExchangeParameters publicKeyParameters, int algId) { throw null; }
 
     }
+
+    public struct GostWrappedKey
+    {
+        public byte[] Mac;
+        public byte[] Ukm;
+        public string EncryptionParamSet;
+        public byte[] EncryptedKey;
+        public byte[] GetXmlWrappedKey() { throw null; }
+        public byte[] GetCryptoServiceProviderBlob() { throw null; }
+        public void SetByXmlWrappedKey(byte[] data) { throw null; }
+        public void SetByCryptoServiceProviderBlob(byte[] data) { throw null; }
+    }
+
+    public struct GostKeyTransport
+    {
+        public GostWrappedKey SessionEncryptedKey;
+
+        public Gost3410Parameters TransportParameters;
+
+        public byte[] Encode() { throw null;}
+
+        public void Decode(byte[] data) { throw null; }
+    }
+
+    internal class GostKeyTransportObject
+    {
+        public GostKeyTransport Transport{ get { throw null; } set{ } }
+    }
     //end: gost
-}
+    }

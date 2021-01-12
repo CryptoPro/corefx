@@ -57,7 +57,7 @@ namespace System.Security.Cryptography
             }
 
             var asnDecoder = new Asn1BerDecodeBuffer(data);
-            var publicKeyParameters = new Gost3410PublicKeyParameters();
+            var publicKeyParameters = new GostR3410_2001_PublicKeyParameters();
             publicKeyParameters.Decode(asnDecoder);
 
             DigestParamSet = Asn1ObjectIdentifier.ToOidString(publicKeyParameters.DigestParamSet);
@@ -70,7 +70,7 @@ namespace System.Security.Cryptography
         {
             byte[] data;
 
-            var publicKeyParameters = new Gost3410PublicKeyParameters();
+            var publicKeyParameters = new GostR3410_2001_PublicKeyParameters();
 
             publicKeyParameters.DigestParamSet = Asn1ObjectIdentifier.FromOidString(DigestParamSet);
             publicKeyParameters.PublicKeyParamSet = Asn1ObjectIdentifier.FromOidString(PublicKeyParamSet);
@@ -96,17 +96,17 @@ namespace System.Security.Cryptography
             Asn1OctetString publicKey;
             if (algId == GostConstants.CALG_GR3410EL)
             {
-                publicKey = new Gost3410PublicKey();
+                publicKey = new GostR3410_PublicKey();
                 publicKey.Decode(asnDecoder);
             }
             else if (algId == GostConstants.CALG_GR3410_12_256)
             {
-                publicKey = new Gost3410_2012_256PublicKey();
+                publicKey = new GostR3410_2012_256_PublicKey();
                 publicKey.Decode(asnDecoder);
             }
             else if (algId == GostConstants.CALG_GR3410_12_512)
             {
-                publicKey = new Gost3410_2012_512PublicKey();
+                publicKey = new GostR3410_2012_512_PublicKey();
                 publicKey.Decode(asnDecoder);
             }
             else
@@ -117,9 +117,9 @@ namespace System.Security.Cryptography
             PublicKey = publicKey.Value;
         }
 
-        internal static Gost2814789ParamSet CreateEncryptionParamSet(string value)
+        internal static Gost28147_89_ParamSet CreateEncryptionParamSet(string value)
         {
-            return (value != null) ? new Gost2814789ParamSet(Asn1ObjectIdentifier.FromOidString(value).Value) : null;
+            return (value != null) ? new Gost28147_89_ParamSet(Asn1ObjectIdentifier.FromOidString(value).Value) : null;
         }
 
         public static byte[] EncodePublicBlob(GostKeyExchangeParameters publicKeyParameters, int algId)

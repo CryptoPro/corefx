@@ -584,7 +584,7 @@ namespace System.Security.Cryptography
             }
 
             byte[] data = ExportCspBlob(false);
-            DecodePublicBlob(obj1, data, CspAlgorithmType.Gost2012_256);
+            AsnHelper.DecodePublicBlob(obj1, data, CspAlgorithmType.Gost2012_256);
 
             return obj1.Parameters;
 
@@ -637,7 +637,7 @@ namespace System.Security.Cryptography
                 var safeProvHandleTemp = AcquireSafeProviderHandle();
                 if (pubKey == null) throw new ArgumentNullException(nameof(pubKey));
 
-                byte[] keyBlob = EncodePublicBlob(pubKey, CspAlgorithmType.Gost2012_256);
+                byte[] keyBlob = AsnHelper.EncodePublicBlob(pubKey, CspAlgorithmType.Gost2012_256);
                 CapiHelper.ImportKeyBlob(
                     safeProvHandleTemp,
                     CspProviderFlags.NoFlags,
@@ -909,34 +909,32 @@ namespace System.Security.Cryptography
             }
         }
 
-        ///// <summary>
-        ///// Создание ключа согласования (agree ключа).
-        ///// </summary>
-        ///// 
-        ///// <param name="alg">Открытый ключ получателя.</param>
-        ///// 
-        ///// <returns>Ключ согласования <see cref="GostSharedSecretAlgorithm"/> 
-        ///// для шифрования ключевой информации.</returns>
-        ///// 
-        ///// <containerperm flag="Open">Для открытия существующего 
-        ///// контейнера.</containerperm>
-        ///// <containerperm flag="Create">Для создания контейнера с заданным
-        ///// (не случаыным именем).</containerperm>
-        //[SecuritySafeCritical]
-        //public override GostSharedSecretAlgorithm CreateAgree(
-        //    Gost3410_2012_256Parameters alg)
-        //{
-        //TODO: Еще одно дополнительное право доступа!
+        /// <summary>
+        /// Создание ключа согласования (agree ключа).
+        /// </summary>
+        /// 
+        /// <param name="alg">Открытый ключ получателя.</param>
+        /// 
+        /// <returns>Ключ согласования <see cref="GostSharedSecretAlgorithm"/> 
+        /// для шифрования ключевой информации.</returns>
+        /// 
+        /// <containerperm flag="Open">Для открытия существующего 
+        /// контейнера.</containerperm>
+        /// <containerperm flag="Create">Для создания контейнера с заданным
+        /// (не случаыным именем).</containerperm>
+        public override GostSharedSecretAlgorithm CreateAgree(
+            Gost3410Parameters alg)
+        {
 
-        ////Получаем собственный ключ.
-        //    GetKeyPair();
+            //Получаем собственный ключ.
+            GetKeyPair();
 
-        ////Превращаем его в объект для экспорта.
-        //    Gost3410_2012_256CspObject obj1 = new Gost3410_2012_256CspObject(alg);
+            //Превращаем его в объект для экспорта.
+            Gost3410CspObject obj1 = new Gost3410CspObject(alg);
 
-        //    return new GostSharedSecretCryptoServiceProvider(_safeKeyHandle,
-        //        _safeProvHandle, obj1, CspAlgorithmType.Gost2001);
-        //}
+            return new GostSharedSecretCryptoServiceProvider(_safeKeyHandle,
+                _safeProvHandle, obj1, CspAlgorithmType.Gost2001);
+        }
 
         /// <summary>
         /// Получение/установка сертификата в конейнер.

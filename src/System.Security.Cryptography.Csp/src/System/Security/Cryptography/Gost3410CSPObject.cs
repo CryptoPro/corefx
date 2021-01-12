@@ -63,7 +63,7 @@ namespace System.Security.Cryptography
 
 
             var asnDecoder = new Asn1BerDecodeBuffer(data);
-            var publicKeyParameters = new Gost3410PublicKeyParameters();
+            var publicKeyParameters = new GostR3410_2001_PublicKeyParameters();
             publicKeyParameters.Decode(asnDecoder);
 
             _digestParamSet = Asn1ObjectIdentifier.ToOidString(publicKeyParameters.DigestParamSet);
@@ -76,7 +76,7 @@ namespace System.Security.Cryptography
         {
             byte[] data;
 
-            var publicKeyParameters = new Gost3410PublicKeyParameters();
+            var publicKeyParameters = new GostR3410_2001_PublicKeyParameters();
 
             publicKeyParameters.DigestParamSet = Asn1ObjectIdentifier.FromOidString(_digestParamSet);
             publicKeyParameters.PublicKeyParamSet = Asn1ObjectIdentifier.FromOidString(_publicKeyParamSet);
@@ -101,15 +101,15 @@ namespace System.Security.Cryptography
             var asnDecoder = new Asn1BerDecodeBuffer(data);
             if (algId == GostConstants.CALG_GR3410EL)
             {
-                publicKey = new Gost3410PublicKey();
+                publicKey = new GostR3410_PublicKey();
             }
             else if (algId == GostConstants.CALG_GR3410_12_256)
             {
-                publicKey = new Gost3410_2012_256PublicKey();
+                publicKey = new GostR3410_2012_256_PublicKey();
             }
             else if (algId == GostConstants.CALG_GR3410_12_512)
             {
-                publicKey = new Gost3410_2012_512PublicKey();
+                publicKey = new GostR3410_2012_512_PublicKey();
             }
             else
             {

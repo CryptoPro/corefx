@@ -267,6 +267,9 @@ namespace System.Security.Cryptography
                 }
             }
         }
+
+        public abstract GostSharedSecretAlgorithm CreateAgree(Gost3410Parameters alg);
+
         public override string KeyExchangeAlgorithm => GostConstants.XmlKeyExchangeAlgorithmTransport2012_512;
         public override string SignatureAlgorithm => GostConstants.XmlSignatureAlgorithm2012_512;
 

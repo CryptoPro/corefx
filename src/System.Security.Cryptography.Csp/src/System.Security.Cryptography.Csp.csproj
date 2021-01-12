@@ -199,36 +199,63 @@
     <Compile Include="$(CommonPath)\System\Security\Cryptography\Ber\Tokenizer.cs">
       <Link>Common\System\Security\Cryptography\Ber\Tokenizer.cs</Link>
     </Compile>
-    <Compile Include="$(CommonPath)\System\Security\Cryptography\Gost3410PublicKey.cs">
-      <Link>Common\System\Security\Cryptography\Gost3410PublicKey.cs</Link>
-    </Compile>
-    <Compile Include="$(CommonPath)\System\Security\Cryptography\Gost3410PublicKeyParameters.cs">
-      <Link>Common\System\Security\Cryptography\Gost3410PublicKeyParameters.cs</Link>
-    </Compile>
-    <Compile Include="$(CommonPath)\System\Security\Cryptography\Gost3410_2012_256PublicKey.cs">
-      <Link>Common\System\Security\Cryptography\Gost3410_2012_256PublicKey.cs</Link>
-    </Compile>
-    <Compile Include="$(CommonPath)\System\Security\Cryptography\Gost3410_2012_512PublicKey.cs">
-      <Link>Common\System\Security\Cryptography\Gost3410_2012_512PublicKey.cs</Link>
-    </Compile>
     <Compile Include="$(CommonPath)\System\Security\Cryptography\GostConstants.cs">
       <Link>Common\System\Security\Cryptography\GostConstants.cs</Link>
     </Compile>
     <Compile Include="$(CommonPath)\System\Security\Cryptography\Oids.cs">
       <Link>Common\System\Security\Cryptography\Oids.cs</Link>
     </Compile>
-    <Compile Include="$(CommonPath)\System\Security\Cryptography\Gost2814789ParamSet.cs">
-      <Link>Common\System\Security\Cryptography\Gost2814789ParamSet.cs</Link>
+    <!--begin: gost asn-->
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\GostR3410_PublicKey.cs">
+      <Link>Common\System\Security\Cryptography\GostR3410_PublicKey.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\GostR3410_2001_PublicKeyParameters.cs">
+      <Link>Common\System\Security\Cryptography\GostR3410_2001_PublicKeyParameters.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\GostR3410_2012_256_PublicKey.cs">
+      <Link>Common\System\Security\Cryptography\GostR3410_2012_256_PublicKey.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\GostR3410_2012_512_PublicKey.cs">
+      <Link>Common\System\Security\Cryptography\GostR3410_2012_512_PublicKey.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\Gost28147_89_ParamSet.cs">
+      <Link>Common\System\Security\Cryptography\Gost28147_89_ParamSet.cs</Link>
     </Compile>
     <Compile Include="$(CommonPath)\System\Security\Cryptography\GostKeyExchangeParameters.cs">
       <Link>Common\System\Security\Cryptography\GostKeyExchangeParameters.cs</Link>
     </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\WrappedKey.cs">
+      <Link>Common\System\Security\Cryptography\WrappedKey.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\GostR3410_KeyWrap.cs">
+      <Link>Common\System\Security\Cryptography\GostR3410_KeyWrap.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\Gost28147_89_EncryptedKey.cs">
+      <Link>Common\System\Security\Cryptography\Gost28147_89_EncryptedKey.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\Gost28147_89_KeyWrapParameters.cs">
+      <Link>Common\System\Security\Cryptography\Gost28147_89_KeyWrapParameters.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\Gost28147_89_Key.cs">
+      <Link>Common\System\Security\Cryptography\Gost28147_89_Key.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\Gost28147_89_MAC.cs">
+      <Link>Common\System\Security\Cryptography\Gost28147_89_MAC.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\GostKeyTransport.cs">
+      <Link>Common\System\Security\Cryptography\GostKeyTransport.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\Gost28147_89_BlobParameters.cs">
+      <Link>Common\System\Security\Cryptography\Gost28147_89_BlobParameters.cs</Link>
+    </Compile>
+    <!--end: gost asn-->
     <Compile Include="System\Security\Cryptography\GostCryptoAPITransform.cs" />
     <Compile Include="System\Security\Cryptography\Gost28147CryptoServiceProvider.cs" />
     <Compile Include="System\Security\Cryptography\AesCryptoServiceProvider.cs" />
     <Compile Include="System\Security\Cryptography\CapiHelper.DSA.Shared.cs" />
     <Compile Include="System\Security\Cryptography\CapiHelper.Gost.Shared.cs" />
     <Compile Include="System\Security\Cryptography\CapiHelper.Shared.cs" />
+    <Compile Include="System\Security\Cryptography\AsnHelper.Gost.Shared.cs" />
     <Compile Include="System\Security\Cryptography\CspParameters.cs" />
     <Compile Include="System\Security\Cryptography\CspProviderFlags.cs" />
     <Compile Include="System\Security\Cryptography\Gost3410CryptoServiceProvider.cs" />
@@ -239,6 +266,12 @@
     <Compile Include="System\Security\Cryptography\Gost3411_2012_256CryptoServiceProvider.cs" />
     <Compile Include="System\Security\Cryptography\Gost3411CryptoServiceProvider.cs" />
     <Compile Include="System\Security\Cryptography\GostRngCryptoServiceProvider.cs" />
+    <Compile Include="System\Security\Cryptography\Gost3410EphemeralCryptoServiceProvider.cs" />
+    <Compile Include="System\Security\Cryptography\Gost3410_2012_256EphemeralCryptoServiceProvider.cs" />
+    <Compile Include="System\Security\Cryptography\Gost3410_2012_512EphemeralCryptoServiceProvider.cs" />
+    <Compile Include="System\Security\Cryptography\GostSharedSecretCryptoServiceProvider.cs" />
+    <Compile Include="System\Security\Cryptography\GostKeyExchangeFormatter.cs" />
+    <Compile Include="System\Security\Cryptography\GostKeyExchangeDeformatter.cs" />
     <Compile Include="System\Security\Cryptography\ICspAsymmetricAlgorithm.cs" />
     <Compile Include="System\Security\Cryptography\KeyNumber.cs" />
     <Compile Include="System\Security\Cryptography\MD5CryptoServiceProvider.cs" />

@@ -138,7 +138,7 @@ namespace Internal.Cryptography.Pal.Windows
 
                 if (!Interop.Crypt32.CertGetCertificateContextProperty(hCertContext, CertContextPropId.CERT_KEY_PROV_INFO_PROP_ID, null, ref cbSize))
                 {
-                    ErrorCode errorCode = (ErrorCode)(Marshal.GetLastWin32Error());
+                    ErrorCode errorCode = (ErrorCode)(Interop.CPError.GetLastWin32Error());
                     keySpec = default(CryptKeySpec);
                     return errorCode.ToCryptographicException();
                 }
@@ -150,7 +150,7 @@ namespace Internal.Cryptography.Pal.Windows
                     {
                         if (!Interop.Crypt32.CertGetCertificateContextProperty(hCertContext, CertContextPropId.CERT_KEY_PROV_INFO_PROP_ID, pData, ref cbSize))
                         {
-                            ErrorCode errorCode = (ErrorCode)(Marshal.GetLastWin32Error());
+                            ErrorCode errorCode = (ErrorCode)(Interop.CPError.GetLastWin32Error());
                             keySpec = default(CryptKeySpec);
                             return errorCode.ToCryptographicException();
                         }
@@ -175,7 +175,7 @@ namespace Internal.Cryptography.Pal.Windows
 
             bool success = Interop.Crypt32.CryptMsgControl(_hCryptMsg, 0, MsgControlType.CMSG_CTRL_DECRYPT, ref decryptPara);
             if (!success)
-                return Marshal.GetHRForLastWin32Error().ToCryptographicException();
+                return Interop.CPError.GetHRForLastWin32Error().ToCryptographicException();
 
             return null;
         }
@@ -237,7 +237,7 @@ namespace Internal.Cryptography.Pal.Windows
         {
             if (!Interop.Crypt32.CryptMsgControl(_hCryptMsg, 0, MsgControlType.CMSG_CTRL_KEY_AGREE_DECRYPT, ref decryptPara))
             {
-                ErrorCode errorCode = (ErrorCode)(Marshal.GetHRForLastWin32Error());
+                ErrorCode errorCode = (ErrorCode)(Interop.CPError.GetHRForLastWin32Error());
                 return errorCode.ToCryptographicException();
             }
             return null;

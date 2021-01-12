@@ -339,11 +339,11 @@ internal static partial class Interop
                   [Out] out long timeStamp
                   );
 
-        [DllImport(Interop.Libraries.SspiCli, ExactSpelling = true, SetLastError = true)]
-        internal static extern unsafe int InitializeSecurityContextW(
+        [DllImport(Interop.Libraries.SspiCli, ExactSpelling = true, CharSet = CharSet.Ansi, SetLastError = true)]
+        internal static extern unsafe int InitializeSecurityContextA(
                   ref CredHandle credentialHandle,
                   [In] void* inContextPtr,
-                  [In] byte* targetName,
+                  [In] string targetName,
                   [In] ContextFlags inFlags,
                   [In] int reservedI,
                   [In] Endianness endianness,

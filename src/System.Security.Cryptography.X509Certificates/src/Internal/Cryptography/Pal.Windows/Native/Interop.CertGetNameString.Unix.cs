@@ -20,7 +20,7 @@ internal static partial class Interop
             int cchCount = CertGetNameString(certContext, certNameType, certNameFlags, strType, null, 0);
             if (cchCount == 0)
             {
-                throw Marshal.GetLastWin32Error().ToCryptographicException();
+                throw Interop.CPError.GetLastWin32Error().ToCryptographicException();
             }
 
             Span<byte> buffer = cchCount <= 256 ? stackalloc byte[cchCount*sizeof_wchar_t] : new byte[cchCount*sizeof_wchar_t];
@@ -28,7 +28,7 @@ internal static partial class Interop
             {
                 if (CertGetNameString(certContext, certNameType, certNameFlags, strType, ptr, cchCount) == 0)
                 {
-                    throw Marshal.GetLastWin32Error().ToCryptographicException();
+                    throw Interop.CPError.GetLastWin32Error().ToCryptographicException();
                 }
 
                 Debug.Assert(buffer[(cchCount - 1)*sizeof_wchar_t] == '\0');

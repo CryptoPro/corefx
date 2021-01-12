@@ -144,7 +144,7 @@ namespace Internal.Cryptography.Pal
                     {
                         bool success = Interop.crypt32.CryptImportPublicKeyInfoEx2(CertEncodingType.X509_ASN_ENCODING, &(certContext.CertContext->pCertInfo->SubjectPublicKeyInfo), 0, null, out bCryptKeyHandle);
                         if (!success)
-                            throw Marshal.GetHRForLastWin32Error().ToCryptographicException();
+                            throw Interop.CPError.GetHRForLastWin32Error().ToCryptographicException();
                         return bCryptKeyHandle;
                     }
                 }
@@ -160,11 +160,11 @@ namespace Internal.Cryptography.Pal
         {
             int cbDecoded = 0;
             if (!Interop.crypt32.CryptDecodeObject(CertEncodingType.All, lpszStructType, encodedKeyValue, encodedKeyValue.Length, CryptDecodeObjectFlags.None, null, ref cbDecoded))
-                throw Marshal.GetLastWin32Error().ToCryptographicException();
+                throw Interop.CPError.GetLastWin32Error().ToCryptographicException();
 
             byte[] keyBlob = new byte[cbDecoded];
             if (!Interop.crypt32.CryptDecodeObject(CertEncodingType.All, lpszStructType, encodedKeyValue, encodedKeyValue.Length, CryptDecodeObjectFlags.None, keyBlob, ref cbDecoded))
-                throw Marshal.GetLastWin32Error().ToCryptographicException();
+                throw Interop.CPError.GetLastWin32Error().ToCryptographicException();
 
             return keyBlob;
         }

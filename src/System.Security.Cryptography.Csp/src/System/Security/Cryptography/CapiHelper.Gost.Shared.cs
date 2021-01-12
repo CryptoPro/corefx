@@ -105,7 +105,7 @@ namespace Internal.NativeCrypto
                 false, 0, tmpBuffer,
                 ref dwDataLen, (int)bufLength);
             if (!ret)
-                throw new CryptographicException(Marshal.GetLastWin32Error());
+                throw new CryptographicException(Interop.CPError.GetLastWin32Error());
             if (outputBuffer == null)
             {
                 outputBuffer = new byte[dwDataLen];
@@ -143,7 +143,7 @@ namespace Internal.NativeCrypto
                 hKey, SafeHashHandle.InvalidHandle,
                 false, 0, tmpBuffer, ref dwDataLen))
             {
-                throw new CryptographicException(Marshal.GetLastWin32Error());
+                throw new CryptographicException(Interop.CPError.GetLastWin32Error());
             }
             int realLength = (int)dwDataLen; // ebp + 0x34
             if (fDone)
@@ -242,7 +242,7 @@ namespace Internal.NativeCrypto
             }
 
             if (!ret)
-                throw new CryptographicException(Marshal.GetLastWin32Error());
+                throw new CryptographicException(Interop.CPError.GetLastWin32Error());
         }
 
         internal static int GenerateRandomBytes(SafeProvHandle provHandle, byte[] buffer)
@@ -286,17 +286,17 @@ namespace Internal.NativeCrypto
 
             switch (alg)
             {
-                case CspAlgorithmType.PROV_GOST_2001_DH:
+                case CspAlgorithmType.Gost2001:
                     keySize = GostConstants.GOST_3410EL_SIZE;
                     algId = GostConstants.CALG_GR3410EL;
                     break;
-                case CspAlgorithmType.PROV_GOST_2012_256:
+                case CspAlgorithmType.Gost2012_256:
                     keySize = GostConstants.GOST3410_2012_256KEY_SIZE;
-                    algId = GostConstants.CALG_GR3410_2012_256;
+                    algId = GostConstants.CALG_GR3410_12_256;
                     break;
-                case CspAlgorithmType.PROV_GOST_2012_512:
+                case CspAlgorithmType.Gost2012_512:
                     keySize = GostConstants.GOST3410_2012_512KEY_SIZE;
-                    algId = GostConstants.CALG_GR3410_2012_512;
+                    algId = GostConstants.CALG_GR3410_12_512;
                     break;
                 default:
                     throw new CryptographicException(SR.Cryptography_CSP_WrongKeySpec);
@@ -356,17 +356,17 @@ namespace Internal.NativeCrypto
 
             switch (alg)
             {
-                case CspAlgorithmType.PROV_GOST_2001_DH:
+                case CspAlgorithmType.Gost2001:
                     keySize = GostConstants.GOST_3410EL_SIZE;
                     algId = GostConstants.CALG_GR3410EL;
                     break;
-                case CspAlgorithmType.PROV_GOST_2012_256:
+                case CspAlgorithmType.Gost2012_256:
                     keySize = GostConstants.GOST3410_2012_256KEY_SIZE;
-                    algId = GostConstants.CALG_GR3410_2012_256;
+                    algId = GostConstants.CALG_GR3410_12_256;
                     break;
-                case CspAlgorithmType.PROV_GOST_2012_512:
+                case CspAlgorithmType.Gost2012_512:
                     keySize = GostConstants.GOST3410_2012_512KEY_SIZE;
-                    algId = GostConstants.CALG_GR3410_2012_512;
+                    algId = GostConstants.CALG_GR3410_12_512;
                     break;
                 default:
                     throw new CryptographicException(SR.Cryptography_CSP_WrongKeySpec);
@@ -417,13 +417,13 @@ namespace Internal.NativeCrypto
 
             switch (alg)
             {
-                case CspAlgorithmType.PROV_GOST_2001_DH:
+                case CspAlgorithmType.Gost2001:
                     keySize = GostConstants.GOST_3410EL_SIZE;
                     break;
-                case CspAlgorithmType.PROV_GOST_2012_256:
+                case CspAlgorithmType.Gost2012_256:
                     keySize = GostConstants.GOST3410_2012_256KEY_SIZE;
                     break;
-                case CspAlgorithmType.PROV_GOST_2012_512:
+                case CspAlgorithmType.Gost2012_512:
                     keySize = GostConstants.GOST3410_2012_512KEY_SIZE;
                     break;
                 default:

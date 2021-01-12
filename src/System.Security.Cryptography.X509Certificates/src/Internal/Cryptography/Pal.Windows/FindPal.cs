@@ -334,7 +334,7 @@ namespace Internal.Cryptography.Pal
                 CertStoreFlags.CERT_STORE_ENUM_ARCHIVED_FLAG | CertStoreFlags.CERT_STORE_CREATE_NEW_FLAG,
                 null);
             if (findResults.IsInvalid)
-                throw Marshal.GetHRForLastWin32Error().ToCryptographicException();
+                throw Interop.CPError.GetHRForLastWin32Error().ToCryptographicException();
 
             SafeCertContextHandle pCertContext = null;
             while (Interop.crypt32.CertFindCertificateInStore(_storePal.SafeCertStoreHandle, dwFindType, pvFindPara, ref pCertContext))
@@ -349,7 +349,7 @@ namespace Internal.Cryptography.Pal
                 }
 
                 if (!Interop.crypt32.CertAddCertificateLinkToStore(findResults, pCertContext, CertStoreAddDisposition.CERT_STORE_ADD_ALWAYS, IntPtr.Zero))
-                    throw Marshal.GetLastWin32Error().ToCryptographicException();
+                    throw Interop.CPError.GetLastWin32Error().ToCryptographicException();
             }
 
             using (StorePal resultsStore = new StorePal(findResults))

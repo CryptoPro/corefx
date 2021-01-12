@@ -405,8 +405,14 @@ namespace System.Security.Cryptography.Xml
         //begin: gost
         public const string XmlDsigGost3411Url =
             "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr3411";
+        [Obsolete]
+        public const string XmlDsigGost3411UrlObsolete =
+            "http://www.w3.org/2001/04/xmldsig-more#gostr3411";
         public const string XmlDsigGost3410Url =
             "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34102001-gostr3411";
+        [Obsolete]
+        public const string XmlDsigGost3410UrlObsolete =
+            "http://www.w3.org/2001/04/xmldsig-more#gostr34102001-gostr3411";
         public const string XmlDsigGost3411HMACUrl =
             "urn:ietf:params:xml:ns:cpxmlsec:algorithms:hmac-gostr3411";
         public const string XmlDsigGost3411_2012_256Url =

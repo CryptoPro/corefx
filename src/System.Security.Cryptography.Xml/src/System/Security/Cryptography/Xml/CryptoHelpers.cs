@@ -84,6 +84,10 @@ namespace System.Security.Cryptography.Xml
 
                 // begin: gost
                 case SignedXml.XmlDsigGost3411Url:
+#pragma warning disable 612
+                //warning CS0612: 'SignedXml.XmlDsigGost3411UrlObsolete' is obsolete
+                case SignedXml.XmlDsigGost3411UrlObsolete:
+#pragma warning restore 612
                     return Gost3411.Create();
                 case SignedXml.XmlDsigGost3411_2012_256Url:
                     return Gost3411_2012_256.Create();
@@ -91,6 +95,10 @@ namespace System.Security.Cryptography.Xml
                     return Gost3411_2012_512.Create();
 
                 case SignedXml.XmlDsigGost3410Url:
+#pragma warning disable 612
+                //warning CS0612: 'SignedXml.XmlDsigGost3410UrlObsolete' is obsolete
+                case SignedXml.XmlDsigGost3410UrlObsolete:
+#pragma warning restore 612
                     return new GostSignatureDescription();
                 case SignedXml.XmlDsigGost3410_2012_256Url:
                     return new Gost2012_256SignatureDescription();

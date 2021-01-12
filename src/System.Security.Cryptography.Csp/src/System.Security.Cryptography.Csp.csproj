@@ -264,6 +264,9 @@
     <Compile Include="$(CommonPath)\Interop\Windows\Advapi32\Interop.CryptAcquireContext.cs">
       <Link>Common\Interop\Windows\Advapi32\Interop.CryptAcquireContext.cs</Link>
     </Compile>
+    <Compile Include="$(CommonPath)\Interop\Windows\Advapi32\Interop.CryptContextAddRef.cs">
+      <Link>Common\Interop\Windows\Advapi32\Interop.CryptContextAddRef.cs</Link>
+    </Compile>
     <Compile Include="$(CommonPath)\Interop\Windows\Advapi32\Interop.CryptCreateHash.cs">
       <Link>Common\Interop\Windows\Advapi32\Interop.CryptCreateHash.cs</Link>
     </Compile>
@@ -333,6 +336,7 @@
     <Compile Include="$(CommonPath)\Interop\Windows\Advapi32\SafeProvHandle.cs">
       <Link>Common\Interop\Windows\Advapi32\SafeProvHandle.cs</Link>
     </Compile>
+    <Compile Remove="C:\_self\git\corefx\src\Common\src\Interop\Windows\Advapi32\SafeSetProvHandle.cs" />
     <Compile Include="$(CommonPath)\Interop\Windows\Crypt32\Interop.FindOidInfo.cs">
       <Link>Common\Interop\Windows\Crypt32\Interop.FindOidInfo.cs</Link>
     </Compile>
@@ -342,6 +346,9 @@
     <Compile Include="System\Security\Cryptography\RSACryptoServiceProvider.Windows.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetsUnix)' == 'true'">
+    <Compile Include="$(CommonPath)\Interop\Interop.CPGetLastWin32Error.Unix.cs">
+      <Link>Common\Interop\Interop.CPGetLastWin32Error.Unix.cs</Link>
+    </Compile>
     <Compile Include="$(CommonPath)\Interop\Windows\Crypt32\Interop.FindOidInfo.Unix.cs">
       <Link>Common\Interop\Windows\Crypt32\Interop.FindOidInfo.Unix.cs</Link>
     </Compile>
@@ -364,6 +371,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup Condition="'$(TargetsWindows)' == 'true'">
+    <Compile Include="$(CommonPath)\Interop\Interop.CPGetLastWin32Error.cs">
+      <Link>Common\Interop\Interop.CPGetLastWin32Error.cs</Link>
+    </Compile>
     <Compile Include="$(CommonPath)\Interop\Windows\Crypt32\Interop.FindOidInfo.Win.cs">
       <Link>Common\Interop\Windows\Crypt32\Interop.FindOidInfo.Win.cs</Link>
     </Compile>

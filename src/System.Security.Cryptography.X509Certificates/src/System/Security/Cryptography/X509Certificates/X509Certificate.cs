@@ -648,6 +648,9 @@ namespace System.Security.Cryptography.X509Certificates
             X509KeyStorageFlags.Exportable |
             X509KeyStorageFlags.UserProtected |
             X509KeyStorageFlags.PersistKeySet |
-            X509KeyStorageFlags.EphemeralKeySet;
+            X509KeyStorageFlags.EphemeralKeySet |
+            // begin: gost
+            X509KeyStorageFlags.CspNoPersistKeySet;
+            // end gost
     }
 }

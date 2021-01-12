@@ -184,11 +184,11 @@ internal static partial class Interop
         {
             int cb = 0;
             if (!Interop.crypt32.CryptEncodeObject(CertEncodingType.All, lpszStructType, decoded, null, ref cb))
-                throw Marshal.GetLastWin32Error().ToCryptographicException();
+                throw Interop.CPError.GetLastWin32Error().ToCryptographicException();
 
             byte[] encoded = new byte[cb];
             if (!Interop.crypt32.CryptEncodeObject(CertEncodingType.All, lpszStructType, decoded, encoded, ref cb))
-                throw Marshal.GetLastWin32Error().ToCryptographicException();
+                throw Interop.CPError.GetLastWin32Error().ToCryptographicException();
 
             return encoded;
         }
@@ -197,11 +197,11 @@ internal static partial class Interop
         {
             int cb = 0;
             if (!Interop.crypt32.CryptEncodeObject(CertEncodingType.All, lpszStructType, decoded, null, ref cb))
-                throw Marshal.GetLastWin32Error().ToCryptographicException();
+                throw Interop.CPError.GetLastWin32Error().ToCryptographicException();
 
             byte[] encoded = new byte[cb];
             if (!Interop.crypt32.CryptEncodeObject(CertEncodingType.All, lpszStructType, decoded, encoded, ref cb))
-                throw Marshal.GetLastWin32Error().ToCryptographicException();
+                throw Interop.CPError.GetLastWin32Error().ToCryptographicException();
 
             return encoded;
         }

@@ -30,11 +30,11 @@ namespace Internal.Cryptography.Pal
 
             int cbEncoded = 0;
             if (!Interop.crypt32.CertStrToName(CertEncodingType.All, distinguishedName, dwStrType, IntPtr.Zero, null, ref cbEncoded, IntPtr.Zero))
-                throw Marshal.GetLastWin32Error().ToCryptographicException();
+                throw Interop.CPError.GetLastWin32Error().ToCryptographicException();
 
             byte[] encodedName = new byte[cbEncoded];
             if (!Interop.crypt32.CertStrToName(CertEncodingType.All, distinguishedName, dwStrType, IntPtr.Zero, encodedName, ref cbEncoded, IntPtr.Zero))
-                throw Marshal.GetLastWin32Error().ToCryptographicException();
+                throw Interop.CPError.GetLastWin32Error().ToCryptographicException();
 
             return encodedName;
         }

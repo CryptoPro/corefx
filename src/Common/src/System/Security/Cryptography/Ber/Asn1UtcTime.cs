@@ -178,8 +178,8 @@ namespace System.Security.Cryptography
 		{
 			if (data == null)
 			{
-				throw new Exception("ArgumentNull - data");
-			}
+                throw new ArgumentNullException(nameof(data));
+            }
 
 			Clear();
 

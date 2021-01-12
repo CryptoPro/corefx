@@ -58,7 +58,7 @@ namespace System.Security.Cryptography
         {
             if (data == null)
             {
-                throw new Exception("ArgumentNull - data");
+                throw new ArgumentNullException(nameof(data));
             }
 
 
@@ -94,7 +94,7 @@ namespace System.Security.Cryptography
         {
             if (data == null)
             {
-                throw new Exception("ArgumentNull - data");
+                throw new ArgumentNullException(nameof(data));
             }
 
             Asn1OctetString publicKey;
@@ -103,11 +103,11 @@ namespace System.Security.Cryptography
             {
                 publicKey = new Gost3410PublicKey();
             }
-            else if (algId == GostConstants.CALG_GR3410_2012_256)
+            else if (algId == GostConstants.CALG_GR3410_12_256)
             {
                 publicKey = new Gost3410_2012_256PublicKey();
             }
-            else if (algId == GostConstants.CALG_GR3410_2012_512)
+            else if (algId == GostConstants.CALG_GR3410_12_512)
             {
                 publicKey = new Gost3410_2012_512PublicKey();
             }

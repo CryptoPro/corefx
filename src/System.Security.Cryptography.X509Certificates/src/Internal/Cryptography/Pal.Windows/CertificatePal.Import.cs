@@ -26,103 +26,25 @@ namespace Internal.Cryptography.Pal
             return FromBlobOrFile(null, fileName, password, keyStorageFlags);
         }
 
-        private static ICertificatePal FromBlobOrFile(byte[] rawData, string fileName, SafePasswordHandle password, X509KeyStorageFlags keyStorageFlags)
-        {
-            Debug.Assert(rawData != null || fileName != null);
-            Debug.Assert(password != null);
-
-            bool loadFromFile = (fileName != null);
-
-            PfxCertStoreFlags pfxCertStoreFlags = MapKeyStorageFlags(keyStorageFlags);
-            bool persistKeySet = (0 != (keyStorageFlags & X509KeyStorageFlags.PersistKeySet));
-
-            CertEncodingType msgAndCertEncodingType;
-            ContentType contentType;
-            FormatType formatType;
-            SafeCertStoreHandle hCertStore = null;
-            SafeCryptMsgHandle hCryptMsg = null;
-            SafeCertContextHandle pCertContext = null;
-
-            try
-            {
-                unsafe
-                {
-                    fixed (byte* pRawData = rawData)
-                    {
-                        fixed (char* pFileName = fileName)
-                        {
-                            CRYPTOAPI_BLOB certBlob = new CRYPTOAPI_BLOB(loadFromFile ? 0 : rawData.Length, pRawData);
-
-                            CertQueryObjectType objectType = loadFromFile ? CertQueryObjectType.CERT_QUERY_OBJECT_FILE : CertQueryObjectType.CERT_QUERY_OBJECT_BLOB;
-                            void* pvObject = loadFromFile ? (void*)pFileName : (void*)&certBlob;
-
-                            bool success = Interop.crypt32.CryptQueryObject(
-                                objectType,
-                                pvObject,
-                                X509ExpectedContentTypeFlags,
-                                X509ExpectedFormatTypeFlags,
-                                0,
-                                out msgAndCertEncodingType,
-                                out contentType,
-                                out formatType,
-                                out hCertStore,
-                                out hCryptMsg,
-                                out pCertContext
-                                    );
-                            if (!success)
-                            {
-                                int hr = Marshal.GetHRForLastWin32Error();
-                                throw hr.ToCryptographicException();
-                            }
-                        }
-                    }
-
-                    if (contentType == ContentType.CERT_QUERY_CONTENT_PKCS7_SIGNED || contentType == ContentType.CERT_QUERY_CONTENT_PKCS7_SIGNED_EMBED)
-                    {
-                        pCertContext = GetSignerInPKCS7Store(hCertStore, hCryptMsg);
-                    }
-                    else if (contentType == ContentType.CERT_QUERY_CONTENT_PFX)
-                    {
-                        if (loadFromFile)
-                            rawData = File.ReadAllBytes(fileName);
-                        pCertContext = FilterPFXStore(rawData, password, pfxCertStoreFlags);
-                    }
-
-                    CertificatePal pal = new CertificatePal(pCertContext, deleteKeyContainer: !persistKeySet);
-                    pCertContext = null;
-                    return pal;
-                }
-            }
-            finally
-            {
-                if (hCertStore != null)
-                    hCertStore.Dispose();
-                if (hCryptMsg != null)
-                    hCryptMsg.Dispose();
-                if (pCertContext != null)
-                    pCertContext.Dispose();
-            }
-        }
-
         private static unsafe SafeCertContextHandle GetSignerInPKCS7Store(SafeCertStoreHandle hCertStore, SafeCryptMsgHandle hCryptMsg)
         {
             // make sure that there is at least one signer of the certificate store
             int dwSigners;
             int cbSigners = sizeof(int);
             if (!Interop.crypt32.CryptMsgGetParam(hCryptMsg, CryptMessageParameterType.CMSG_SIGNER_COUNT_PARAM, 0, out dwSigners, ref cbSigners))
-                throw Marshal.GetHRForLastWin32Error().ToCryptographicException();
+                throw Interop.CPError.GetHRForLastWin32Error().ToCryptographicException();
             if (dwSigners == 0)
                 throw ErrorCode.CRYPT_E_SIGNER_NOT_FOUND.ToCryptographicException();
 
             // get the first signer from the store, and use that as the loaded certificate
             int cbData = 0;
             if (!Interop.crypt32.CryptMsgGetParam(hCryptMsg, CryptMessageParameterType.CMSG_SIGNER_INFO_PARAM, 0, null, ref cbData))
-                throw Marshal.GetHRForLastWin32Error().ToCryptographicException();
+                throw Interop.CPError.GetHRForLastWin32Error().ToCryptographicException();
 
             fixed (byte* pCmsgSignerBytes = new byte[cbData])
             {
                 if (!Interop.crypt32.CryptMsgGetParam(hCryptMsg, CryptMessageParameterType.CMSG_SIGNER_INFO_PARAM, 0, pCmsgSignerBytes, ref cbData))
-                    throw Marshal.GetHRForLastWin32Error().ToCryptographicException();
+                    throw Interop.CPError.GetHRForLastWin32Error().ToCryptographicException();
 
                 CMSG_SIGNER_INFO_Partial* pCmsgSignerInfo = (CMSG_SIGNER_INFO_Partial*)pCmsgSignerBytes;
 
@@ -134,7 +56,7 @@ namespace Internal.Cryptography.Pal
 
                 SafeCertContextHandle pCertContext = null;
                 if (!Interop.crypt32.CertFindCertificateInStore(hCertStore, CertFindType.CERT_FIND_SUBJECT_CERT, &certInfo, ref pCertContext))
-                    throw Marshal.GetHRForLastWin32Error().ToCryptographicException();
+                    throw Interop.CPError.GetHRForLastWin32Error().ToCryptographicException();
                 return pCertContext;
             }
         }
@@ -149,7 +71,7 @@ namespace Internal.Cryptography.Pal
                     CRYPTOAPI_BLOB certBlob = new CRYPTOAPI_BLOB(rawData.Length, pbRawData);
                     hStore = Interop.crypt32.PFXImportCertStore(ref certBlob, password, pfxCertStoreFlags);
                     if (hStore.IsInvalid)
-                        throw Marshal.GetHRForLastWin32Error().ToCryptographicException();
+                        throw Interop.CPError.GetHRForLastWin32Error().ToCryptographicException();
                 }
             }
 
@@ -225,6 +147,12 @@ namespace Internal.Cryptography.Pal
             // complexity of pointer interpretation.
             if ((keyStorageFlags & X509KeyStorageFlags.EphemeralKeySet) == X509KeyStorageFlags.EphemeralKeySet)
                 pfxCertStoreFlags |= PfxCertStoreFlags.PKCS12_NO_PERSIST_KEY | PfxCertStoreFlags.PKCS12_ALWAYS_CNG_KSP;
+
+            // begin: gost
+            // Allows to import pfx without csp windows
+            if ((keyStorageFlags & X509KeyStorageFlags.CspNoPersistKeySet) == X509KeyStorageFlags.CspNoPersistKeySet)
+                pfxCertStoreFlags |= PfxCertStoreFlags.PKCS12_NO_PERSIST_KEY | PfxCertStoreFlags.CRYPT_EXPORTABLE;
+            // end: gost
 
             // In the full .NET Framework loading a PFX then adding the key to the Windows Certificate Store would
             // enable a native application compiled against CAPI to find that private key and interoperate with it.

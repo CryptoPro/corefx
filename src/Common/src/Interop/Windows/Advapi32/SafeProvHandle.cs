@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
 
 namespace System.Security.Cryptography
@@ -17,6 +19,38 @@ namespace System.Security.Cryptography
         private int _type;
         private uint _flags;
         private bool _fPersistKeyInCsp;
+
+        // begin: gost
+        /// <summary>
+        /// Создание безопасного handle по IntPtr с возможностью
+        /// увеличения количества ссылок.
+        /// </summary>
+        /// <param name="handle">хендл в виде <c>IntPtr</c>.</param>
+        /// <param name="addref"><see langword="true"/> для AddRef, 
+        /// <see langword="false"/> для владения.</param>
+        /// 
+        /// <unmanagedperm action="LinkDemand" />
+        internal SafeProvHandle(IntPtr handle, bool addref)
+            : base(true)
+        {
+            if (!addref)
+            {
+                SetHandle(handle);
+                return;
+            }
+
+            bool ret = Interop.Advapi32.CryptContextAddRef(handle, null, 0);
+            int hr = Marshal.GetLastWin32Error();
+            if (ret)
+                SetHandle(handle);
+            if (!ret)
+                throw new CryptographicException(hr);
+
+            // Выставляем в true, так как не хотим, чтоб ключ убили при освобождении хэгдла в Dispose
+            // так как на хэнд могут присуствовать другие внешние ссылки
+            _fPersistKeyInCsp = true;
+        }
+        // end: gost
 
         private SafeProvHandle() : base(true)
         {

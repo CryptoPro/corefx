@@ -93,7 +93,7 @@ namespace Internal.Cryptography.Pal.Native
                     null,
                     ref cb))
                 {
-                    throw Marshal.GetLastWin32Error().ToCryptographicException();
+                    throw Interop.CPError.GetLastWin32Error().ToCryptographicException();
                 }
 
                 byte* decoded = stackalloc byte[cb];
@@ -107,7 +107,7 @@ namespace Internal.Cryptography.Pal.Native
                     decoded,
                     ref cb))
                 {
-                    throw Marshal.GetLastWin32Error().ToCryptographicException();
+                    throw Interop.CPError.GetLastWin32Error().ToCryptographicException();
                 }
 
                 receiver(decoded, cb);
@@ -132,7 +132,7 @@ namespace Internal.Cryptography.Pal.Native
                     null,
                     ref cb))
                 {
-                    throw Marshal.GetLastWin32Error().ToCryptographicException();
+                    throw Interop.CPError.GetLastWin32Error().ToCryptographicException();
                 }
 
                 byte* decoded = stackalloc byte[cb];
@@ -146,7 +146,7 @@ namespace Internal.Cryptography.Pal.Native
                     decoded,
                     ref cb))
                 {
-                    throw Marshal.GetLastWin32Error().ToCryptographicException();
+                    throw Interop.CPError.GetLastWin32Error().ToCryptographicException();
                 }
 
                 receiver(decoded, cb);

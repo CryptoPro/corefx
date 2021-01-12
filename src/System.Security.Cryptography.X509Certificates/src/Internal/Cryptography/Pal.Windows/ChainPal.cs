@@ -46,7 +46,7 @@ namespace Internal.Cryptography.Pal
 
                 if (!Interop.crypt32.CertVerifyCertificateChainPolicy(ChainPolicy.CERT_CHAIN_POLICY_BASE, _chain, ref para, ref status))
                 {
-                    int errorCode = Marshal.GetLastWin32Error();
+                    int errorCode = Interop.CPError.GetLastWin32Error();
                     exception = errorCode.ToCryptographicException();
                     return default(bool?);
                 }

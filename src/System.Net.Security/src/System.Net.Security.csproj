@@ -142,6 +142,9 @@
     <None Include="System\Net\Security\TlsCipherSuiteData.Lookup.tt" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetsWindows)' == 'true'">
+    <Compile Include="$(CommonPath)\Interop\Interop.CPGetLastWin32Error.cs">
+      <Link>Common\Interop\Interop.CPGetLastWin32Error.cs</Link>
+    </Compile>
     <Compile Include="$(CommonPath)\Interop\Windows\SspiCli\SecPkgContext_StreamSizes.cs">
       <Link>Common\Interop\Windows\SspiCli\SecPkgContext_StreamSizes.cs</Link>
     </Compile>
@@ -164,6 +167,9 @@
     </Compile>
     <Compile Include="$(CommonPath)\Interop\Windows\SChannel\SecPkgContext_CipherInfo.cs">
       <Link>Common\Interop\Windows\SChannel\SecPkgContext_CipherInfo.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\Interop\Windows\SChannel\Interop.Sec_Application_Protocols.cs">
+      <Link>Common\Interop\Windows\SChannel\Interop.Sec_Application_Protocols.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -221,9 +227,6 @@
     <Compile Include="$(CommonPath)\Interop\Windows\SChannel\Interop.SecPkgContext_ApplicationProtocol.cs">
       <Link>Common\Interop\Windows\SChannel\Interop.SecPkgContext_ApplicationProtocol.cs</Link>
     </Compile>
-    <Compile Include="$(CommonPath)\Interop\Windows\SChannel\Interop.Sec_Application_Protocols.cs">
-      <Link>Common\Interop\Windows\SChannel\Interop.Sec_Application_Protocols.cs</Link>
-    </Compile>
     <Compile Include="$(CommonPath)\Interop\Windows\SChannel\UnmanagedCertificateContext.cs">
       <Link>Common\Interop\Windows\SChannel\UnmanagedCertificateContext.cs</Link>
     </Compile>
@@ -265,6 +268,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetsUnix)' == 'true' ">
+    <Compile Include="$(CommonPath)\Interop\Interop.CPGetLastWin32Error.Unix.cs">
+      <Link>Common\Interop\Interop.CPGetLastWin32Error.Unix.cs</Link>
+    </Compile>
     <Compile Include="System\Net\CertificateValidationPal.cpcsp.cs" />
     <Compile Include="System\Net\Security\SslStreamPal.SecurityPackageName.cpcsp.cs" />
     <Compile Include="$(CommonPath)\Interop\Windows\SspiCli\SecPkgContext_StreamSizes.Unix.cs">
@@ -287,6 +293,9 @@
     </Compile>
     <Compile Include="$(CommonPath)\Interop\Windows\SChannel\SecPkgContext_CipherInfo.cpcsp.cs">
       <Link>Common\Interop\Windows\SChannel\SecPkgContext_CipherInfo.cpcsp.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\Interop\Windows\SChannel\Interop.Sec_Application_Protocols.cpcsp.cs">
+      <Link>Common\Interop\Windows\SChannel\Interop.Sec_Application_Protocols.cpcsp.cs</Link>
     </Compile>
 <!--     <Compile Include="$(CommonPath)\CoreLib\Interop\Unix\Interop.Errors.cs">
       <Link>Common\CoreLib\Interop\Unix\Interop.Errors.cs</Link>

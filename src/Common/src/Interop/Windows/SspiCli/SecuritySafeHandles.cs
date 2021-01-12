@@ -494,12 +494,12 @@ namespace System.Net.Security
                         }
 
                         string punyCode = s_idnMapping.GetAscii(targetName);
-                        fixed (char* namePtr = punyCode)
-                        {
+                        // fixed (char* namePtr = punyCode)
+                        // {
                             errorCode = MustRunInitializeSecurityContext(
                                             ref inCredentials,
                                             isContextAbsent,
-                                            (byte*)(((object)targetName == (object)dummyStr) ? null : namePtr),
+                                            targetName,
                                             inFlags,
                                             endianness,
                                             &inSecurityBufferDescriptor,
@@ -507,7 +507,7 @@ namespace System.Net.Security
                                             ref outSecurityBufferDescriptor,
                                             ref outFlags,
                                             outFreeContextBuffer);
-                        }
+                        // }
 
                         if (NetEventSource.IsEnabled) NetEventSource.Info(null, "Marshalling OUT buffer");
 
@@ -536,7 +536,7 @@ namespace System.Net.Security
         private static unsafe int MustRunInitializeSecurityContext(
             ref SafeFreeCredentials inCredentials,
             bool  isContextAbsent,
-            byte* targetName,
+            string targetName,
             Interop.SspiCli.ContextFlags inFlags,
             Interop.SspiCli.Endianness endianness,
             Interop.SspiCli.SecBufferDesc* inputBuffer,
@@ -567,7 +567,7 @@ namespace System.Net.Security
                 // synchronization. Rewrite the indicator now that the final "inContext" is known, update if necessary.
                 isContextAbsent = (inContextPtr == null);
 
-                errorCode = Interop.SspiCli.InitializeSecurityContextW(
+                errorCode = Interop.SspiCli.InitializeSecurityContextA(
                                 ref credentialHandle,
                                 inContextPtr,
                                 targetName,

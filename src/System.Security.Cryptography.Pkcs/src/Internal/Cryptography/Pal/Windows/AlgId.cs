@@ -18,8 +18,8 @@ namespace Internal.Cryptography.Pal.Windows
         CALG_3DES = 0x00006603,
         //begin: gost
         CALG_GOST3410 = GostConstants.CALG_GR3410EL,
-        CALG_GOST3410_2012_256 = GostConstants.CALG_GR3410_2012_256,
-        CALG_GOST3410_2012_512 = GostConstants.CALG_GR3410_2012_512,
+        CALG_GOST3410_2012_256 = GostConstants.CALG_GR3410_12_256,
+        CALG_GOST3410_2012_512 = GostConstants.CALG_GR3410_12_512,
         //end: gost
     }
 }

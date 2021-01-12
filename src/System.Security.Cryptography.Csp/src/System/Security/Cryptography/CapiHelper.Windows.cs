@@ -123,9 +123,9 @@ namespace Internal.NativeCrypto
             uint dwFlags = (uint)Interop.Advapi32.CryptAcquireContextFlags.CRYPT_NEWKEYSET;
             switch (parameters.ProviderType)
             {
-                case (int)CspAlgorithmType.PROV_GOST_2001_DH:
-                case (int)CspAlgorithmType.PROV_GOST_2012_256:
-                case (int)CspAlgorithmType.PROV_GOST_2012_512:
+                case (int)CspAlgorithmType.Gost2001:
+                case (int)CspAlgorithmType.Gost2012_256:
+                case (int)CspAlgorithmType.Gost2012_512:
                 {
                     // Gost does not support creating and using new keys in CRYPT_VERIFYCONTEXT
                     break;
@@ -719,9 +719,9 @@ namespace Internal.NativeCrypto
                     case CspAlgorithmType.Dss:
                         userParameters.ProviderType = DefaultDssProviderType;
                         break;
-                    case CspAlgorithmType.PROV_GOST_2001_DH:
-                    case CspAlgorithmType.PROV_GOST_2012_256:
-                    case CspAlgorithmType.PROV_GOST_2012_512:
+                    case CspAlgorithmType.Gost2001:
+                    case CspAlgorithmType.Gost2012_256:
+                    case CspAlgorithmType.Gost2012_512:
                         userParameters.ProviderType = (int)keyType;
                         break;
                     case CspAlgorithmType.Rsa:
@@ -740,9 +740,9 @@ namespace Internal.NativeCrypto
                     case CspAlgorithmType.Dss:
                         parameters = new CspParameters(DefaultDssProviderType, null, null, defaultFlags);
                         break;
-                    case CspAlgorithmType.PROV_GOST_2001_DH:
-                    case CspAlgorithmType.PROV_GOST_2012_256:
-                    case CspAlgorithmType.PROV_GOST_2012_512:
+                    case CspAlgorithmType.Gost2001:
+                    case CspAlgorithmType.Gost2012_256:
+                    case CspAlgorithmType.Gost2012_512:
                         parameters = new CspParameters((int) keyType, null, null, defaultFlags);
                         break;
                     case CspAlgorithmType.Rsa:
@@ -768,8 +768,8 @@ namespace Internal.NativeCrypto
             else if (parameters.KeyNumber == CALG_DSS_SIGN || 
                      parameters.KeyNumber == CALG_RSA_SIGN ||
                      parameters.KeyNumber == GostConstants.CALG_GR3410EL ||
-                     parameters.KeyNumber == GostConstants.CALG_GR3410_2012_256 ||
-                     parameters.KeyNumber == GostConstants.CALG_GR3410_2012_256)
+                     parameters.KeyNumber == GostConstants.CALG_GR3410_12_256 ||
+                     parameters.KeyNumber == GostConstants.CALG_GR3410_12_256)
             {
                 parameters.KeyNumber = (int)KeyNumber.Signature;
             }
@@ -791,9 +791,9 @@ namespace Internal.NativeCrypto
                 // add: gost
                 switch (parameters.ProviderType)
                 {
-                    case (int)CspAlgorithmType.PROV_GOST_2001_DH:
-                    case (int)CspAlgorithmType.PROV_GOST_2012_256:
-                    case (int)CspAlgorithmType.PROV_GOST_2012_512:
+                    case (int)CspAlgorithmType.Gost2001:
+                    case (int)CspAlgorithmType.Gost2012_256:
+                    case (int)CspAlgorithmType.Gost2012_512:
                     {
                         parameters.KeyContainerName = GetRandomKeyContainer();
                         break;
@@ -871,13 +871,81 @@ namespace Internal.NativeCrypto
             return hKey;
         }
 
+        internal static SafeKeyHandle GetKeyPairHelper(
+            CspAlgorithmType keyType,
+            int keyNumber,
+            int dwKeySize,
+            SafeProvHandle safeProvHandle)
+        {
+            SafeProvHandle hProv = null;
+            SafeKeyHandle hKey = SafeKeyHandle.InvalidHandle;
+            try
+            {
+                hProv = safeProvHandle;
+
+                int err1 = CapiHelper.GetUserKey(
+                    hProv,
+                    keyNumber,
+                    out hKey);
+                if (err1 != 0)
+                {
+                    throw new CryptographicException(err1);
+                }
+
+                byte[] buffer1 = CapiHelper.GetKeyParameter(
+                    hKey,
+                    Constants.CLR_ALGID);
+                int algid = ((buffer1[0] | (buffer1[1] << 8)) |
+                    (buffer1[2] << 0x10)) | (buffer1[3] << 0x18);
+
+                // Допускаем только 2001 и 2012 и только подпись или шифрование.
+                switch (keyType)
+                {
+                    case CspAlgorithmType.Gost2001:
+                        if ((algid != GostConstants.CALG_DH_EL_SF
+                            && algid != GostConstants.CALG_GR3410EL))
+                        {
+                            throw new CryptographicException(SR.Format(SR.Cryptography_CSP_WrongKeySpec, Convert.ToString(keyType)));
+                        }
+                        break;
+                    case CspAlgorithmType.Gost2012_256:
+                        if ((algid != GostConstants.CALG_DH_GR3410_12_256_SF
+                            && algid != GostConstants.CALG_GR3410_12_256))
+                        {
+                            throw new CryptographicException(SR.Format(SR.Cryptography_CSP_WrongKeySpec, Convert.ToString(keyType)));
+                        }
+                        break;
+                    case CspAlgorithmType.Gost2012_512:
+                        if ((algid != GostConstants.CALG_DH_GR3410_12_512_SF
+                            && algid != GostConstants.CALG_GR3410_12_512))
+                        {
+                            throw new CryptographicException(SR.Format(SR.Cryptography_CSP_WrongKeySpec, Convert.ToString(keyType)));
+                        }
+                        break;
+                    default:
+                        throw new CryptographicException(SR.Format(SR.Cryptography_CSP_WrongKeySpec, Convert.ToString(keyType)));
+                }
+            }
+            catch (Exception)
+            {
+                if (hProv != null)
+                    hProv.Close();
+                if (hKey != null)
+                    hKey.Close();
+                throw;
+            }
+            safeProvHandle = hProv;
+            return hKey;
+        }
+
         /// <summary>
         /// Wrapper for get last error function
         /// </summary>
         /// <returns>returns the error code</returns>
         internal static int GetErrorCode()
         {
-            return Marshal.GetLastWin32Error();
+            return Interop.CPError.GetLastWin32Error();
+            //return Marshal.GetLastWin32Error();
         }
 
         /// <summary>
@@ -976,7 +1044,7 @@ namespace Internal.NativeCrypto
                 Interop.Advapi32.CryptGetKeyParamFlags.KP_CERTIFICATE, null, ref dwDataLen, 0);
             if (!ret)
             {
-                int err = Marshal.GetLastWin32Error();
+                int err = GetErrorCode();
                 if (err == GostConstants.SCARD_E_NO_SUCH_CERTIFICATE)
                     return null;
                 throw new CryptographicException(err);
@@ -985,7 +1053,7 @@ namespace Internal.NativeCrypto
             ret = Interop.Advapi32.CryptGetKeyParam(safeKeyHandle,
                 Interop.Advapi32.CryptGetKeyParamFlags.KP_CERTIFICATE, data, ref dwDataLen, 0);
             if (!ret)
-                throw new CryptographicException(Marshal.GetLastWin32Error());
+                throw new CryptographicException(GetErrorCode());
             return data;
         }
 
@@ -1157,7 +1225,7 @@ namespace Internal.NativeCrypto
             SafeKeyHandle hKey;
             if (!CryptImportKey(saveProvHandle, keyBlob, keyBlob.Length, SafeKeyHandle.InvalidHandle, dwCapiFlags, out hKey))
             {
-                int hr = Marshal.GetHRForLastWin32Error();
+                int hr = Interop.CPError.GetHRForLastWin32Error();
 
                 hKey.Dispose();
 
@@ -1329,7 +1397,7 @@ namespace Internal.NativeCrypto
             bool ret = Interop.Advapi32.CryptDuplicateKey(hKeySrc,
                 null, 0, ref phKeyDest);
             if (!ret)
-                throw new CryptographicException(Marshal.GetLastWin32Error());
+                throw new CryptographicException(GetErrorCode());
             return phKeyDest;
         }
 
@@ -1402,14 +1470,14 @@ namespace Internal.NativeCrypto
                 int cbSignature = 0;
                 if (!Interop.Advapi32.CryptSignHash(hHash, (Interop.Advapi32.KeySpec)keyNumber, null, Interop.Advapi32.CryptSignAndVerifyHashFlags.None, null, ref cbSignature))
                 {
-                    int hr = Marshal.GetHRForLastWin32Error();
+                    int hr = Interop.CPError.GetHRForLastWin32Error();
                     throw hr.ToCryptographicException();
                 }
 
                 byte[] signature = new byte[cbSignature];
                 if (!Interop.Advapi32.CryptSignHash(hHash, (Interop.Advapi32.KeySpec)keyNumber, null, Interop.Advapi32.CryptSignAndVerifyHashFlags.None, signature, ref cbSignature))
                 {
-                    int hr = Marshal.GetHRForLastWin32Error();
+                    int hr = Interop.CPError.GetHRForLastWin32Error();
                     throw hr.ToCryptographicException();
                 }
 
@@ -1477,21 +1545,21 @@ namespace Internal.NativeCrypto
             {
                 if (!CryptCreateHash(hProv, algidHash, SafeKeyHandle.InvalidHandle, Interop.Advapi32.CryptCreateHashFlags.None, out hHash))
                 {
-                    int hr = Marshal.GetHRForLastWin32Error();
+                    int hr = Interop.CPError.GetHRForLastWin32Error();
                     throw hr.ToCryptographicException();
                 }
 
                 // Hash the password string
                 if (!Interop.Advapi32.CryptHashData(hHash, password, cbPassword, 0))
                 {
-                    int hr = Marshal.GetHRForLastWin32Error();
+                    int hr = Interop.CPError.GetHRForLastWin32Error();
                     throw hr.ToCryptographicException();
                 }
 
                 // Create a block cipher session key based on the hash of the password
                 if (!CryptDeriveKey(hProv, algid, hHash, dwFlags | (int)CryptGenKeyFlags.CRYPT_EXPORTABLE, out hKey))
                 {
-                    int hr = Marshal.GetHRForLastWin32Error();
+                    int hr = Interop.CPError.GetHRForLastWin32Error();
                     throw hr.ToCryptographicException();
                 }
 
@@ -1504,7 +1572,7 @@ namespace Internal.NativeCrypto
                 int cbIV = 0;
                 if (!Interop.Advapi32.CryptGetKeyParam(hKey, Interop.Advapi32.CryptGetKeyParamFlags.KP_IV, null, ref cbIV, 0))
                 {
-                    int hr = Marshal.GetHRForLastWin32Error();
+                    int hr = Interop.CPError.GetHRForLastWin32Error();
                     throw hr.ToCryptographicException();
                 }
 
@@ -1512,7 +1580,7 @@ namespace Internal.NativeCrypto
                 byte[] pbIV = new byte[cbIV];
                 if (!Interop.Advapi32.CryptGetKeyParam(hKey, Interop.Advapi32.CryptGetKeyParamFlags.KP_IV, pbIV, ref cbIV, 0))
                 {
-                    int hr = Marshal.GetHRForLastWin32Error();
+                    int hr = Interop.CPError.GetHRForLastWin32Error();
                     throw hr.ToCryptographicException();
                 }
 
@@ -1544,7 +1612,7 @@ namespace Internal.NativeCrypto
                     dwDataLen, 0);
                 if (!ret)
                     throw new CryptographicException(
-                        Marshal.GetLastWin32Error());
+                        GetErrorCode());
             }
         }
 
@@ -1570,12 +1638,12 @@ namespace Internal.NativeCrypto
         //    bool ret = Interop.CryptGetHashParam(hHash,
         //        CryptHashProperty.HP_HASHVAL, out dwHashSize, ref dwDataLen, 0);
         //    if (!ret)
-        //        throw new CryptographicException(Marshal.GetLastWin32Error());
+        //        throw new CryptographicException(GetErrorCode());
         //    byte[] data = new byte[dwDataLen];
         //    ret = Interop.CryptGetHashParam(hHash,
         //        CryptHashProperty.HP_HASHVAL, out data, ref dwDataLen, 0);
         //    if (!ret)
-        //        throw new CryptographicException(Marshal.GetLastWin32Error());
+        //        throw new CryptographicException(GetErrorCode());
         //    return data;
         //}
 
@@ -1591,7 +1659,7 @@ namespace Internal.NativeCrypto
                 // Import the public key
                 if (!CryptImportKey(hProv, s_RgbPubKey, s_RgbPubKey.Length, SafeKeyHandle.InvalidHandle, 0, out hPubKey))
                 {
-                    int hr = Marshal.GetHRForLastWin32Error();
+                    int hr = Interop.CPError.GetHRForLastWin32Error();
                     throw hr.ToCryptographicException();
                 }
 
@@ -1599,7 +1667,7 @@ namespace Internal.NativeCrypto
                 int cbOut = 0;
                 if (!Interop.Advapi32.CryptExportKey(hKey, hPubKey, SIMPLEBLOB, 0, null, ref cbOut))
                 {
-                    int hr = Marshal.GetHRForLastWin32Error();
+                    int hr = Interop.CPError.GetHRForLastWin32Error();
                     throw hr.ToCryptographicException();
                 }
 
@@ -1607,7 +1675,7 @@ namespace Internal.NativeCrypto
                 byte[] key_full = new byte[cbOut];
                 if (!Interop.Advapi32.CryptExportKey(hKey, hPubKey, SIMPLEBLOB, 0, key_full, ref cbOut))
                 {
-                    int hr = Marshal.GetHRForLastWin32Error();
+                    int hr = Interop.CPError.GetHRForLastWin32Error();
                     throw hr.ToCryptographicException();
                 }
 
@@ -1654,7 +1722,7 @@ namespace Internal.NativeCrypto
             SafeHashHandle hHash;
             if (!CryptCreateHash(hProv, calgHash, SafeKeyHandle.InvalidHandle, Interop.Advapi32.CryptCreateHashFlags.None, out hHash))
             {
-                int hr = Marshal.GetHRForLastWin32Error();
+                int hr = Interop.CPError.GetHRForLastWin32Error();
 
                 hHash.Dispose();
 
@@ -1667,7 +1735,7 @@ namespace Internal.NativeCrypto
                 int cbHashSize = sizeof(int);
                 if (!Interop.Advapi32.CryptGetHashParam(hHash, Interop.Advapi32.CryptHashProperty.HP_HASHSIZE, out dwHashSize, ref cbHashSize, 0))
                 {
-                    int hr = Marshal.GetHRForLastWin32Error();
+                    int hr = Interop.CPError.GetHRForLastWin32Error();
                     throw hr.ToCryptographicException();
                 }
                 if (dwHashSize != hash.Length)
@@ -1675,7 +1743,7 @@ namespace Internal.NativeCrypto
 
                 if (!Interop.Advapi32.CryptSetHashParam(hHash, Interop.Advapi32.CryptHashProperty.HP_HASHVAL, hash, 0))
                 {
-                    int hr = Marshal.GetHRForLastWin32Error();
+                    int hr = Interop.CPError.GetHRForLastWin32Error();
                     throw hr.ToCryptographicException();
                 }
 
@@ -1874,9 +1942,9 @@ namespace Internal.NativeCrypto
         {
             Rsa = 0,
             Dss = 1,
-            PROV_GOST_2001_DH = GostConstants.PROV_GOST_2001_DH,
-            PROV_GOST_2012_256 = GostConstants.PROV_GOST_2012_256,
-            PROV_GOST_2012_512 = GostConstants.PROV_GOST_2012_512
+            Gost2001 = GostConstants.PROV_GOST_2001_DH,
+            Gost2012_256 = GostConstants.PROV_GOST_2012_256,
+            Gost2012_512 = GostConstants.PROV_GOST_2012_512
         }
 
         [Flags]

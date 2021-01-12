@@ -53,7 +53,7 @@ namespace System.Security.Cryptography
         {
             if (data == null)
             {
-                throw new Exception("ArgumentNull - data");
+                throw new ArgumentNullException(nameof(data));
             }
 
             var asnDecoder = new Asn1BerDecodeBuffer(data);
@@ -88,7 +88,7 @@ namespace System.Security.Cryptography
         {
             if (data == null)
             {
-                throw new Exception("ArgumentNull - data");
+                throw new ArgumentNullException(nameof(data));
             }
 
             var asnDecoder = new Asn1BerDecodeBuffer(data);
@@ -99,12 +99,12 @@ namespace System.Security.Cryptography
                 publicKey = new Gost3410PublicKey();
                 publicKey.Decode(asnDecoder);
             }
-            else if (algId == GostConstants.CALG_GR3410_2012_256)
+            else if (algId == GostConstants.CALG_GR3410_12_256)
             {
                 publicKey = new Gost3410_2012_256PublicKey();
                 publicKey.Decode(asnDecoder);
             }
-            else if (algId == GostConstants.CALG_GR3410_2012_512)
+            else if (algId == GostConstants.CALG_GR3410_12_512)
             {
                 publicKey = new Gost3410_2012_512PublicKey();
                 publicKey.Decode(asnDecoder);
@@ -126,7 +126,7 @@ namespace System.Security.Cryptography
         {
             if (publicKeyParameters == null)
             {
-                throw new Exception("ArgumentNull - publicKeyParameters");
+                throw new ArgumentNullException(nameof(publicKeyParameters));
             }
 
             int keySize;
@@ -135,11 +135,11 @@ namespace System.Security.Cryptography
             {
                 keySize = GostConstants.GOST_3410EL_SIZE;
             }
-            else if (algId == GostConstants.CALG_GR3410_2012_256)
+            else if (algId == GostConstants.CALG_GR3410_12_256)
             {
                 keySize = GostConstants.GOST3410_2012_256KEY_SIZE;
             }
-            else if (algId == GostConstants.CALG_GR3410_2012_512)
+            else if (algId == GostConstants.CALG_GR3410_12_512)
             {
                 keySize = GostConstants.GOST3410_2012_512KEY_SIZE;
             }

@@ -412,6 +412,16 @@ namespace Internal.Cryptography.Pal.Native
         public int dwKeySpec;
     }
 
+    // begin: gost
+    [StructLayout(LayoutKind.Sequential)]
+    internal unsafe struct CERT_KEY_CONTEXT
+    {
+        public uint cbSize;
+        public IntPtr hCryptProv;
+        public uint dwKeySpec;
+    }
+    // end: gost
+
     [Flags]
     internal enum CryptAcquireContextFlags : int
     {
@@ -458,8 +468,8 @@ namespace Internal.Cryptography.Pal.Native
         public const int CALG_SHA1     = 0x8004;
         //begin: gost
         public const int CALG_GOST3410 = GostConstants.CALG_GR3410EL;
-        public const int CALG_GOST3410_2012_256 = GostConstants.CALG_GR3410_2012_256;
-        public const int CALG_GOST3410_2012_512 = GostConstants.CALG_GR3410_2012_512;
+        public const int CALG_GOST3410_2012_256 = GostConstants.CALG_GR3410_12_256;
+        public const int CALG_GOST3410_2012_512 = GostConstants.CALG_GR3410_12_512;
         //end: gost
     }
 

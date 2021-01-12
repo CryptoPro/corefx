@@ -160,6 +160,9 @@ namespace System.Security.Cryptography
         public const string Gost3411_2012_512 = GostConstants.OID_CP_GOST_R3411_12_512;
         public const string Gost28147 = GostConstants.OID_Gost28147;
         public const string GostVerbaO = GostConstants.OID_CipherVerbaO;
+        public const string Gost3411_3410EL = GostConstants.OID_CP_GOST_R3411_R3410EL;
+        public const string Gost3411_12_256_3410 = GostConstants.OID_CP_GOST_R3411_12_256_R3410;
+        public const string Gost3411_12_512_3410 = GostConstants.OID_CP_GOST_R3411_12_512_R3410;
         //end: gost
     }
 }

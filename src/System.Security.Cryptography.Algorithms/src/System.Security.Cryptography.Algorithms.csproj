@@ -122,6 +122,9 @@
     <Compile Include="$(CommonPath)\Interop\Windows\Advapi32\Interop.CryptAcquireContext.cs">
       <Link>Common\Interop\Windows\Advapi32\Interop.CryptAcquireContext.cs</Link>
     </Compile>
+    <Compile Include="$(CommonPath)\Interop\Windows\Advapi32\Interop.CryptContextAddRef.cs">
+      <Link>Common\Interop\Windows\Advapi32\Interop.CryptContextAddRef.cs</Link>
+    </Compile>
     <Compile Include="$(CommonPath)\Interop\Windows\Advapi32\Interop.CryptGetHashParam.cs">
       <Link>Common\Interop\Windows\Advapi32\Interop.CryptGetHashParam.cs</Link>
     </Compile>
@@ -552,6 +555,9 @@
     <Compile Include="$(CommonPath)\System\Security\Cryptography\RSACng.SignVerify.cs">
       <Link>Common\System\Security\Cryptography\RSACng.SignVerify.cs</Link>
     </Compile>
+    <Compile Include="$(CommonPath)\Interop\Interop.CPGetLastWin32Error.cs">
+      <Link>Common\Interop\Interop.CPGetLastWin32Error.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetsUnix)' == 'true' AND '$(TargetsOSX)' != 'true' ">
     <Compile Include="$(CommonPath)\Interop\Unix\Interop.Libraries.Capi.cs">
@@ -755,6 +761,9 @@
     <Compile Include="System\Security\Cryptography\ECDiffieHellman.Create.SecurityTransforms.cs" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetsUnix)' == 'true'">
+    <Compile Include="$(CommonPath)\Interop\Interop.CPGetLastWin32Error.Unix.cs">
+      <Link>Common\Interop\Interop.CPGetLastWin32Error.Unix.cs</Link>
+    </Compile>
     <Compile Include="$(CommonPath)\Interop\Windows\Crypt32\Interop.FindOidInfo.cs">
       <Link>Common\Interop\Windows\Crypt32\Interop.FindOidInfo.cs</Link>
     </Compile>

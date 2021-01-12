@@ -47,6 +47,12 @@ namespace System.Security.Cryptography.X509Certificates
         {
         }
 
+        public X509Certificate2(byte[] rawData, AsymmetricAlgorithm key)
+           : base(rawData)
+        {
+            PrivateKey = key;
+        }
+
         public X509Certificate2(byte[] rawData, string password)
             : base(rawData, password)
         {
@@ -236,7 +242,7 @@ namespace System.Security.Cryptography.X509Certificates
             }
             set
             {
-                throw new PlatformNotSupportedException();
+                Pal.SetCspPrivateKey(value);
             }
         }
 

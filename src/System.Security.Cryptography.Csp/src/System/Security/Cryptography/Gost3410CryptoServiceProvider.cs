@@ -86,7 +86,7 @@ namespace System.Security.Cryptography
 
         private SafeProvHandle _safeProvHandle;
 
-        private Gost3411 _gost3411;
+        private Gost3411 _hashImpl;
 
         /// <summary>
         /// Конструктор, создающий объект класса 
@@ -149,15 +149,31 @@ namespace System.Security.Cryptography
         public Gost3410CryptoServiceProvider(CspParameters parameters)
         {
             _parameters = CapiHelper.SaveCspParameters(
-                CapiHelper.CspAlgorithmType.PROV_GOST_2001_DH,
+                CapiHelper.CspAlgorithmType.Gost2001,
                 parameters,
                 s_useMachineKeyStore,
                 out _randomKeyContainer);
             _keySpec = _parameters.KeyNumber;
             LegalKeySizesValue = new KeySizes[] { new KeySizes(GostConstants.GOST_3410EL_SIZE, GostConstants.GOST_3410EL_SIZE, 0) };
 
-            _gost3411 = Gost3411.Create();
+            _hashImpl = Gost3411.Create();
             if (!_randomKeyContainer) GetKeyPair();
+        }
+
+        [SecuritySafeCritical]
+        public Gost3410CryptoServiceProvider(IntPtr hProvHandle, int keySpec)
+        {
+            _safeProvHandle = new SafeProvHandle(hProvHandle, true);
+            _keySpec = keySpec;
+
+            LegalKeySizesValue = new KeySizes[] { new KeySizes(
+                GostConstants.GOST_3410EL_SIZE, GostConstants.GOST_3410EL_SIZE,  0) };
+            _safeKeyHandle = CapiHelper.GetKeyPairHelper(
+                            CspAlgorithmType.Gost2001,
+                            keySpec,
+                            GostConstants.GOST_3410EL_SIZE,
+                            _safeProvHandle);
+            _hashImpl = Gost3411.Create();
         }
 
         protected override byte[] HashData(Stream data, HashAlgorithmName hashAlgorithm)
@@ -188,13 +204,13 @@ namespace System.Security.Cryptography
 
         public override byte[] SignData(byte[] data, int offset, int count, HashAlgorithmName hashAlgorithm)
         {
-            byte[] hashVal = _gost3411.ComputeHash(data, offset, count);
+            byte[] hashVal = _hashImpl.ComputeHash(data, offset, count);
             return SignHash(hashVal, hashAlgorithm);
         }
 
         public override byte[] SignData(Stream data, HashAlgorithmName hashAlgorithm)
         {
-            byte[] hashVal = _gost3411.ComputeHash(data);
+            byte[] hashVal = _hashImpl.ComputeHash(data);
             return SignHash(hashVal, hashAlgorithm);
         }
 
@@ -411,7 +427,7 @@ namespace System.Security.Cryptography
             byte[] rgbSignature,
             HashAlgorithmName hashAlgorithm)
         {
-            byte[] hashVal = _gost3411.ComputeHash(data, offset, count);
+            byte[] hashVal = _hashImpl.ComputeHash(data, offset, count);
             return VerifyHash(hashVal, rgbSignature);
         }
 
@@ -568,7 +584,7 @@ namespace System.Security.Cryptography
             }
 
             byte[] data = ExportCspBlob(false);
-            DecodePublicBlob(obj1, data, CspAlgorithmType.PROV_GOST_2001_DH);
+            DecodePublicBlob(obj1, data, CspAlgorithmType.Gost2001);
 
             return obj1.Parameters;
 
@@ -621,7 +637,7 @@ namespace System.Security.Cryptography
                 var safeProvHandleTemp = AcquireSafeProviderHandle();
                 if (pubKey == null) throw new ArgumentNullException(nameof(pubKey));
 
-                byte[] keyBlob = EncodePublicBlob(pubKey, CspAlgorithmType.PROV_GOST_2001_DH);
+                byte[] keyBlob = EncodePublicBlob(pubKey, CspAlgorithmType.Gost2001);
                 CapiHelper.ImportKeyBlob(
                     safeProvHandleTemp,
                     CspProviderFlags.NoFlags,
@@ -797,7 +813,7 @@ namespace System.Security.Cryptography
                         if (_safeKeyHandle == null)
                         {
                             SafeKeyHandle hKey = CapiHelper.GetKeyPairHelper(
-                                CapiHelper.CspAlgorithmType.PROV_GOST_2001_DH,
+                                CapiHelper.CspAlgorithmType.Gost2001,
                                 _parameters,
                                 GostConstants.GOST_3410EL_SIZE,
                                 SafeProvHandle);
@@ -922,55 +938,35 @@ namespace System.Security.Cryptography
         //        _safeProvHandle, obj1, CspAlgorithmType.Gost2001);
         //}
 
-        ///// <summary>
-        ///// Получение/установка сертификата в конейнер.
-        ///// </summary>
-        ///// 
-        ///// <argnullset />
-        ///// 
-        ///// <unmanagedperm action="Demand" />
-        ///// <value>Возвращается хранимый сертификат или <see langword="null"/>,
-        ///// если сертификат в контейнере отсутствует.</value>
-        //public X509Certificate2 ContainerCertificate
-        //{
-        //    [SecuritySafeCritical]
-        //    get
-        //    {
-        //        byte[] rawData = CapiHelper.GetContainerCertificate(
-        //            SafeKeyHandle);
-        //        if (rawData == null)
-        //            return null;
-        //        X509Certificate2 ret = new X509Certificate2(rawData);
-        //        //Ошибка до сборки 1.0.4015.0 включительно.
-        //        //возвращался сертификат, без обратной привязки на собственный секретный ключ
-        //        //Есть способ просто установить ссылку, через документированный интерфейс:
-        //        //ret.PrivateKey = this;
-        //        //но, во-первых, он излишне долгий, т.к. происходит генерация открытого ключа
-        //        //и проверка соответствия, что делать не требуется так как сертификат
-        //        //уже есть в контейнере.
-        //        //во-вторых, требует обработки исключений при несоответсвии
-        //        object m_safeCertContext = CPX509Certificate2.SafeCertContextFieldInfo.GetValue(ret);
-        //        try
-        //        {
-        //            CPX509Certificate2.SetPrivateKeyProperty(m_safeCertContext, this);
-        //        }
-        //        catch (CryptographicException e)
-        //        {
-        //            DetourTraceHelper.Trace(DetourInfoCode.CallIgnore, e);
-        //        }
-        //        return ret;
-        //    }
-        //    [SecuritySafeCritical]
-        //    set
-        //    {
-        //        if (value == null)
-        //            throw new ArgumentNullException("value");
-        //        byte[] rawData = value.RawData;
+        /// <summary>
+        /// Получение/установка сертификата в конейнер.
+        /// </summary>
+        /// 
+        /// <argnullset />
+        /// 
+        /// <unmanagedperm action="Demand" />
+        /// <value>Возвращается хранимый сертификат или <see langword="null"/>,
+        /// если сертификат в контейнере отсутствует.</value>
+        public byte[] ContainerCertificate
+        {
+            [SecuritySafeCritical]
+            get
+            {
+                byte[] rawData = CapiHelper.GetContainerCertificate(
+                    SafeKeyHandle);
+                return rawData;
+            }
+            [SecuritySafeCritical]
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException("value");
+                byte[] rawData = value;
 
-        //        CapiHelper.SetKeyParameter(SafeKeyHandle,
-        //            GostConstants.KP_CERTIFICATE, rawData);
-        //    }
-        //}
+                CapiHelper.SetKeyParameter(SafeKeyHandle,
+                    GostConstants.KP_CERTIFICATE, rawData);
+            }
+        }
 
         ///// <summary>
         ///// Установка пароля доступа к контейнеру.
@@ -1047,6 +1043,7 @@ namespace System.Security.Cryptography
         //    return COMCryptography.SelectContainer(fullyQualifiedContainerName,
         //        machine, parent, GostConstants.PROV_GOST_2001_DH);
         //}
+
 
         /// <summary>
         /// Генерация ключевой пары.

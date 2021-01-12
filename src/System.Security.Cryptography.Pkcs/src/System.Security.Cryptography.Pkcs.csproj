@@ -148,6 +148,9 @@
     <Compile Include="$(CommonPath)\Interop\Windows\Advapi32\Interop.CryptAcquireContext.cs">
       <Link>Common\Interop\Windows\Advapi32\Interop.CryptAcquireContext.cs</Link>
     </Compile>
+    <Compile Include="$(CommonPath)\Interop\Windows\Advapi32\Interop.CryptContextAddRef.cs">
+      <Link>Common\Interop\Windows\Advapi32\Interop.CryptContextAddRef.cs</Link>
+    </Compile>
     <Compile Include="$(CommonPath)\Interop\Windows\Advapi32\Interop.CryptDestroyHash.cs">
       <Link>Common\Interop\Windows\Advapi32\Interop.CryptDestroyHash.cs</Link>
     </Compile>
@@ -351,6 +354,9 @@
     <Compile Include="$(CommonPath)\Interop\Windows\Interop.Libraries.cs">
       <Link>Common\Interop\Windows\Interop.Libraries.cs</Link>
     </Compile>
+    <Compile Include="$(CommonPath)\Interop\Interop.CPGetLastWin32Error.cs">
+      <Link>Common\Interop\Interop.CPGetLastWin32Error.cs</Link>
+    </Compile>
     <Compile Include="Microsoft\Win32\SafeHandles\SafeProvOrNCryptKeyHandleUwp.cs" />
     <Compile Include="$(CommonPath)\Interop\Windows\NCrypt\Interop.NCryptFreeObject.cs">
       <Link>Common\Interop\Windows\NCrypt\Interop.NCryptFreeObject.cs</Link>
@@ -377,6 +383,9 @@
   </ItemGroup>
   <!-- Internal types (platform: AnyOS) -->
   <ItemGroup Condition="'$(TargetsWindows)' != 'true' AND '$(IsPartialFacadeAssembly)' != 'true'">
+    <Compile Include="$(CommonPath)\Interop\Interop.CPGetLastWin32Error.Unix.cs">
+      <Link>Common\Interop\Interop.CPGetLastWin32Error.Unix.cs</Link>
+    </Compile>
     <Compile Include="Interop\Unix\NCryptGetByteProperty.Unix.cs"/>
     <Compile Include="Microsoft\Win32\SafeHandles\SafeProvOrNCryptKeyHandleUwp.Unix.cs" />
     <Compile Include="Interop\Unix\Interop.Heap.Unix.cs" />

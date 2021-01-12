@@ -79,7 +79,7 @@ namespace Internal.Cryptography.Pal.Windows
                 {
                     int cbSize = sizeof(long);
                     if (!Interop.Crypt32.CryptDecodeObject(CryptDecodeObjectStructType.PKCS_UTC_TIME, (IntPtr)pEncodedUtcTime, encodedUtcTime.Length, &signingTime, ref cbSize))
-                        throw Marshal.GetLastWin32Error().ToCryptographicException();
+                        throw Interop.CPError.GetLastWin32Error().ToCryptographicException();
                 }
             }
             return DateTime.FromFileTimeUtc(signingTime);
@@ -103,15 +103,15 @@ namespace Internal.Cryptography.Pal.Windows
             using (SafeCryptMsgHandle hCryptMsg = Interop.Crypt32.CryptMsgOpenToDecode(MsgEncodingType.All, 0, 0, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero))
             {
                 if (hCryptMsg == null || hCryptMsg.IsInvalid)
-                    throw Marshal.GetLastWin32Error().ToCryptographicException();
+                    throw Interop.CPError.GetLastWin32Error().ToCryptographicException();
 
                 if (!Interop.Crypt32.CryptMsgUpdate(hCryptMsg, encodedMessage, encodedMessage.Length, fFinal: true))
-                    throw Marshal.GetLastWin32Error().ToCryptographicException();
+                    throw Interop.CPError.GetLastWin32Error().ToCryptographicException();
 
                 int msgTypeAsInt;
                 int cbSize = sizeof(int);
                 if (!Interop.Crypt32.CryptMsgGetParam(hCryptMsg, CryptMsgParamType.CMSG_TYPE_PARAM, 0, out msgTypeAsInt, ref cbSize))
-                    throw Marshal.GetLastWin32Error().ToCryptographicException();
+                    throw Interop.CPError.GetLastWin32Error().ToCryptographicException();
 
                 CryptMsgType msgType = (CryptMsgType)msgTypeAsInt;
 
@@ -246,7 +246,26 @@ namespace Internal.Cryptography.Pal.Windows
                 // 2) Re-implement {R|D}SACryptoServiceProvider
                 // 3) PNSE.
                 // 4) Defer to cert.Get{R|D}SAPrivateKey if not silent, throw otherwise.
-                CspParameters cspParams = handle.GetProvParameters();
+                CspParameters cspParams;
+
+                try
+                {
+                    cspParams = handle.GetProvParameters();
+                }
+                catch (CryptographicException)
+                {
+                    // begin: gost
+                    // - если пытаемся загрузить сертификат в non-persist попадём сюда
+                    // зовём функции x509, которые умеют работать с такими ключами
+                    if (typeof(T) == typeof(Gost3410))
+                        return (T)(object)certificate.GetGost3410PrivateKey();
+                    if (typeof(T) == typeof(Gost3410_2012_256))
+                        return (T)(object)certificate.GetGost3410_2012_256PrivateKey();
+                    if (typeof(T) == typeof(Gost3410_2012_512))
+                        return (T)(object)certificate.GetGost3410_2012_512PrivateKey();
+                    throw;
+                    // end: gost
+                }
                 Debug.Assert((cspParams.Flags & CspProviderFlags.UseExistingKey) != 0);
                 cspParams.KeyNumber = (int)keySpec;
 
@@ -266,7 +285,7 @@ namespace Internal.Cryptography.Pal.Windows
                     return (T)(object)new Gost3410_2012_256CryptoServiceProvider(cspParams);
                 if (typeof(T) == typeof(Gost3410_2012_512))
                     return (T)(object)new Gost3410_2012_512CryptoServiceProvider(cspParams);
-                //end: gost
+                //end: gost                
 
                 Debug.Fail($"Unknown CAPI key type request: {typeof(T).FullName}");
                 return null;
@@ -324,7 +343,7 @@ namespace Internal.Cryptography.Pal.Windows
                     out keySpec,
                     out mustFree))
                 {
-                    exception = Marshal.GetHRForLastWin32Error().ToCryptographicException();
+                    exception = Interop.CPError.GetHRForLastWin32Error().ToCryptographicException();
                     return null;
                 }
 

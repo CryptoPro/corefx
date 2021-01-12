@@ -80,6 +80,10 @@ namespace Internal.Cryptography.Pal
                 delegate (CngKey cngKey)
                 {
                     throw new NotSupportedException("CNG Gost3410 keys are not supported.");//(SR.NotSupported_Gost3410_Cng); 
+                },
+                delegate (IntPtr hProvHandle, int keySpec)
+                {
+                    return new Gost3410CryptoServiceProvider(hProvHandle, keySpec);
                 }
             );
         }
@@ -95,6 +99,10 @@ namespace Internal.Cryptography.Pal
                 delegate (CngKey cngKey)
                 {
                     throw new NotSupportedException("CNG Gost3410 keys are not supported.");//(SR.NotSupported_Gost3410_Cng); 
+                },
+                delegate (IntPtr hProvHandle, int keySpec)
+                {
+                    return new Gost3410_2012_256CryptoServiceProvider(hProvHandle, keySpec);
                 }
             );
         }
@@ -110,6 +118,10 @@ namespace Internal.Cryptography.Pal
                 delegate (CngKey cngKey)
                 {
                     throw new NotSupportedException("CNG Gost3410 keys are not supported.");//(SR.NotSupported_Gost3410_Cng); 
+                },
+                delegate (IntPtr hProvHandle, int keySpec)
+                {
+                    return new Gost3410_2012_512CryptoServiceProvider(hProvHandle, keySpec);
                 }
             );
         }
@@ -238,7 +250,7 @@ namespace Internal.Cryptography.Pal
             }
         }
 
-        private T GetPrivateKey<T>(Func<CspParameters, T> createCsp, Func<CngKey, T> createCng) where T : AsymmetricAlgorithm
+        private T GetPrivateKey<T>(Func<CspParameters, T> createCsp, Func<CngKey, T> createCng, Func<IntPtr, int, T> createNoPersistCsp = null) where T : AsymmetricAlgorithm
         {
             CngKeyHandleOpenOptions cngHandleOptions;
             SafeNCryptKeyHandle ncryptKey = TryAcquireCngPrivateKey(CertContext, out cngHandleOptions);
@@ -247,10 +259,19 @@ namespace Internal.Cryptography.Pal
                 CngKey cngKey = CngKey.Open(ncryptKey, cngHandleOptions);
                 return createCng(cngKey);
             }
- 
+
+            if (createNoPersistCsp != null)
+            {
+                var (hProv, keySpec) = GetNonPersistPrivateKeyCsp();
+                if (hProv != IntPtr.Zero)
+                {
+                    return createNoPersistCsp(hProv, keySpec);
+                }
+            }
+
             CspParameters cspParameters = GetPrivateKeyCsp();
             if (cspParameters == null)
-                return null;
+                    return null;
 
             if (cspParameters.ProviderType == 0)
             {
@@ -543,40 +564,6 @@ namespace Internal.Cryptography.Pal
             Debug.Fail("DSA key did not open with KeyNumber 0 or AT_SIGNATURE");
             keySpec = 0;
             return false;
-        }
-
-        private unsafe ICertificatePal CopyWithPersistedCapiKey(CspKeyContainerInfo keyContainerInfo)
-        {
-            if (string.IsNullOrEmpty(keyContainerInfo.KeyContainerName))
-            {
-                return null;
-            }
-
-            // Make a new pal from bytes.
-            CertificatePal pal = (CertificatePal)FromBlob(RawData, SafePasswordHandle.InvalidHandle, X509KeyStorageFlags.PersistKeySet);
-            CRYPT_KEY_PROV_INFO keyProvInfo = new CRYPT_KEY_PROV_INFO();
-
-            fixed (char* keyName = keyContainerInfo.KeyContainerName)
-            fixed (char* provName = keyContainerInfo.ProviderName)
-            {
-                keyProvInfo.pwszContainerName = keyName;
-                keyProvInfo.pwszProvName = provName;
-                keyProvInfo.dwFlags = keyContainerInfo.MachineKeyStore ? CryptAcquireContextFlags.CRYPT_MACHINE_KEYSET : 0;
-                keyProvInfo.dwProvType = keyContainerInfo.ProviderType;
-                keyProvInfo.dwKeySpec = (int)keyContainerInfo.KeyNumber;
-
-                if (!Interop.crypt32.CertSetCertificateContextProperty(
-                    pal._certContext,
-                    CertContextPropId.CERT_KEY_PROV_INFO_PROP_ID,
-                    CertSetPropertyFlags.None,
-                    &keyProvInfo))
-                {
-                    pal.Dispose();
-                    throw Marshal.GetLastWin32Error().ToCryptographicException();
-                }
-            }
-
-            return pal;
         }
 
         private ICertificatePal CopyWithEphemeralKey(CngKey cngKey)

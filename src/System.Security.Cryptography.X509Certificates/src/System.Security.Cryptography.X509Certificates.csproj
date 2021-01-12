@@ -286,6 +286,9 @@
     <Compile Include="$(CommonPath)\Interop\Windows\Advapi32\Interop.CryptAcquireContext.cs">
       <Link>Common\Interop\Windows\Advapi32\Interop.CryptAcquireContext.cs</Link>
     </Compile>
+    <Compile Include="$(CommonPath)\Interop\Windows\Advapi32\Interop.CryptContextAddRef.cs">
+      <Link>Common\Interop\Windows\Advapi32\Interop.CryptContextAddRef.cs</Link>
+    </Compile>
     <Compile Include="$(CommonPath)\CoreLib\Interop\Windows\BCrypt\Interop.NTSTATUS.cs">
       <Link>Common\CoreLib\Interop\Windows\BCrypt\Interop.NTSTATUS.cs</Link>
     </Compile>
@@ -295,6 +298,10 @@
 
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetsWindows)' == 'true'">
+    <Compile Include="Internal\Cryptography\Pal.Windows\CertificatePal.Import.Win.cs" />
+    <Compile Include="$(CommonPath)\Interop\Interop.CPGetLastWin32Error.cs">
+      <Link>Common\Interop\Interop.CPGetLastWin32Error.cs</Link>
+    </Compile>
     <Compile Include="Internal\Cryptography\Pal.Windows\Native\SafeCertContextHandleWithKeyContainerDeletion.Win.cs" />
     <Compile Include="Internal\Cryptography\Pal.Windows\X509Pal.PublicKey.Win.cs" />
     <Compile Include="Internal\Cryptography\Pal.Windows\CertificatePal.PrivateKey.Win.cs" />
@@ -330,6 +337,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetsUnix)' == 'true'">
+    <Compile Include="Internal\Cryptography\Pal.Windows\CertificatePal.Import.Unix.cs" />
+    <Compile Include="$(CommonPath)\Interop\Interop.CPGetLastWin32Error.Unix.cs">
+      <Link>Common\Interop\Interop.CPGetLastWin32Error.Unix.cs</Link>
+    </Compile>
     <Compile Include="Internal\Unix\SafeBCryptKeyHandle.Unix.cs" />
     <Compile Include="Internal\Cryptography\Pal.Windows\Native\SafeCertContextHandleWithKeyContainerDeletion.Unix.cs" />
     <Compile Include="Internal\Cryptography\Pal.Windows\X509Pal.PublicKey.Unix.cs" />

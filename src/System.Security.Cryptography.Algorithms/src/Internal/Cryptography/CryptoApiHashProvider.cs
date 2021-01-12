@@ -23,13 +23,13 @@ namespace Internal.Cryptography
                 SafeProvHandle hProv;
                 if (!Interop.Advapi32.CryptAcquireContext(out hProv, null, null, providerType, (uint)Interop.Advapi32.CryptAcquireContextFlags.CRYPT_VERIFYCONTEXT))
                 {
-                    int hr = Marshal.GetHRForLastWin32Error();
+                    int hr = Interop.CPError.GetHRForLastWin32Error();
                     throw new CryptographicException(hr);
                 }
                 SafeHashHandle hHash;
                 if (!Interop.Advapi32.CryptCreateHash(hProv, calgHash, SafeKeyHandle.InvalidHandle, (int)Interop.Advapi32.CryptCreateHashFlags.None, out hHash))
                 {
-                    int hr = Marshal.GetHRForLastWin32Error();
+                    int hr = Interop.CPError.GetHRForLastWin32Error();
                     throw new CryptographicException(hr);
                 }
 
@@ -37,7 +37,7 @@ namespace Internal.Cryptography
                 int cbHashSize = sizeof(int);
                 if (!Interop.Advapi32.CryptGetHashParam(hHash, Interop.Advapi32.CryptHashProperty.HP_HASHSIZE, out dwHashSize, ref cbHashSize, 0))
                 {
-                    int hr = Marshal.GetHRForLastWin32Error();
+                    int hr = Interop.CPError.GetHRForLastWin32Error();
                     throw new CryptographicException(hr);
                 }
                 if (dwHashSize < 0)
@@ -57,7 +57,7 @@ namespace Internal.Cryptography
             {
                 bool ret = Interop.Advapi32.CryptHashData(_hHash, data.ToArray(), data.Length, 0);
                 if (!ret)
-                    throw new CryptographicException(Marshal.GetLastWin32Error());
+                    throw new CryptographicException(Interop.CPError.GetLastWin32Error());
             }
 
             public override byte[] FinalizeHashAndReset()
@@ -74,7 +74,7 @@ namespace Internal.Cryptography
                 int hashSize = HashSizeInBytes;
                 if (!Interop.Advapi32.CryptGetHashParam(_hHash, Interop.Advapi32.CryptHashProperty.HP_HASHVAL, destination, ref hashSize, 0))
                 {
-                    int hr = Marshal.GetHRForLastWin32Error();
+                    int hr = Interop.CPError.GetHRForLastWin32Error();
                     throw new CryptographicException(hr);
                 }
                 bytesWritten = hashSize;
@@ -83,7 +83,7 @@ namespace Internal.Cryptography
                 _hHash.Dispose();
                 if (!Interop.Advapi32.CryptCreateHash(_hProv, _calgHash, SafeKeyHandle.InvalidHandle, (int)Interop.Advapi32.CryptCreateHashFlags.None, out _hHash))
                 {
-                    int hr = Marshal.GetHRForLastWin32Error();
+                    int hr = Interop.CPError.GetHRForLastWin32Error();
                     throw new CryptographicException(hr);
                 }
                 _hHash.SetParent(_hProv);

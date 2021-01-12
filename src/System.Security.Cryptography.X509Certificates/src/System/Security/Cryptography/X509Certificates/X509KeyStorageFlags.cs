@@ -16,6 +16,9 @@ namespace System.Security.Cryptography.X509Certificates
         UserProtected = 0x08,
         PersistKeySet = 0x10,
         EphemeralKeySet = 0x20,
+        // begin: gost
+        CspNoPersistKeySet = 0x80,
+        // end: gost
     }
 }
 

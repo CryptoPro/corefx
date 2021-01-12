@@ -1049,17 +1049,18 @@ namespace System.Security.Cryptography.Xml
         /// <intdoc><para>Предоставляем public доступ по аналогии с RSA.</para></intdoc>
         public static byte[] EncryptKey(Gost28147 simm, Gost3410 gost)
         {
-            // Это дополнительная функция, не DETOUR
-            if (simm == null)
-            {
-                throw new ArgumentNullException("keyData");
-            }
-            if (gost == null)
-            {
-                throw new ArgumentNullException("gost");
-            }
-            GostKeyExchangeFormatter formatter = new GostKeyExchangeFormatter(gost);
-            return formatter.CreateKeyExchangeData(simm);
+            throw new Exception();
+            //// Это дополнительная функция, не DETOUR
+            //if (simm == null)
+            //{
+            //    throw new ArgumentNullException("keyData");
+            //}
+            //if (gost == null)
+            //{
+            //    throw new ArgumentNullException("gost");
+            //}
+            //GostKeyExchangeFormatter formatter = new GostKeyExchangeFormatter(gost);
+            //return formatter.CreateKeyExchangeData(simm);
         }
 
         /// <summary>
@@ -1087,17 +1088,18 @@ namespace System.Security.Cryptography.Xml
         /// <intdoc><para>Предоставляем public доступ по аналогии с RSA.</para></intdoc>
         public static byte[] EncryptKey(Gost28147 simm, Gost3410_2012_256 gost)
         {
-            // Это дополнительная функция, не DETOUR
-            if (simm == null)
-            {
-                throw new ArgumentNullException("keyData");
-            }
-            if (gost == null)
-            {
-                throw new ArgumentNullException("gost");
-            }
-            Gost2012_256KeyExchangeFormatter formatter = new Gost2012_256KeyExchangeFormatter(gost);
-            return formatter.CreateKeyExchangeData(simm);
+            throw new Exception();
+            //// Это дополнительная функция, не DETOUR
+            //if (simm == null)
+            //{
+            //    throw new ArgumentNullException("keyData");
+            //}
+            //if (gost == null)
+            //{
+            //    throw new ArgumentNullException("gost");
+            //}
+            //Gost2012_256KeyExchangeFormatter formatter = new Gost2012_256KeyExchangeFormatter(gost);
+            //return formatter.CreateKeyExchangeData(simm);
         }
 
         /// <summary>
@@ -1126,22 +1128,23 @@ namespace System.Security.Cryptography.Xml
         /// <intdoc><para>Предоставляем public доступ по аналогии с RSA.</para></intdoc>
         public static byte[] EncryptKey(Gost28147 simm, Gost3410_2012_256 gost, GostKeyWrapMethod wrapMethod)
         {
-            // Это дополнительная функция, не DETOUR
-            if (simm == null)
-            {
-                throw new ArgumentNullException("keyData");
-            }
-            if (gost == null)
-            {
-                throw new ArgumentNullException("gost");
-            }
-            Gost2012_256KeyExchangeFormatter formatter = new Gost2012_256KeyExchangeFormatter(gost);
-            return formatter.CreateKeyExchangeData(simm, wrapMethod);
+            throw new Exception();
+            //// Это дополнительная функция, не DETOUR
+            //if (simm == null)
+            //{
+            //    throw new ArgumentNullException("keyData");
+            //}
+            //if (gost == null)
+            //{
+            //    throw new ArgumentNullException("gost");
+            //}
+            //Gost2012_256KeyExchangeFormatter formatter = new Gost2012_256KeyExchangeFormatter(gost);
+            //return formatter.CreateKeyExchangeData(simm, wrapMethod);
         }
 
         /// <summary>
         /// Экспорт симметричного ключа
-        /// <see cref="CryptoPro.Sharpei.Gost28147"/> 
+        /// Gost28147
         /// на пользовательском ключе.
         /// </summary>
         /// 
@@ -1164,17 +1167,18 @@ namespace System.Security.Cryptography.Xml
         /// <intdoc><para>Предоставляем public доступ по аналогии с RSA.</para></intdoc>
         public static byte[] EncryptKey(Gost28147 simm, Gost3410_2012_512 gost)
         {
-            // Это дополнительная функция, не DETOUR
-            if (simm == null)
-            {
-                throw new ArgumentNullException("keyData");
-            }
-            if (gost == null)
-            {
-                throw new ArgumentNullException("gost");
-            }
-            Gost2012_512KeyExchangeFormatter formatter = new Gost2012_512KeyExchangeFormatter(gost);
-            return formatter.CreateKeyExchangeData(simm);
+            throw new Exception();
+            //// Это дополнительная функция, не DETOUR
+            //if (simm == null)
+            //{
+            //    throw new ArgumentNullException("keyData");
+            //}
+            //if (gost == null)
+            //{
+            //    throw new ArgumentNullException("gost");
+            //}
+            //Gost2012_512KeyExchangeFormatter formatter = new Gost2012_512KeyExchangeFormatter(gost);
+            //return formatter.CreateKeyExchangeData(simm);
         }
 
         /// <summary>
@@ -1203,17 +1207,18 @@ namespace System.Security.Cryptography.Xml
         /// <intdoc><para>Предоставляем public доступ по аналогии с RSA.</para></intdoc>
         public static byte[] EncryptKey(Gost28147 simm, Gost3410_2012_512 gost, GostKeyWrapMethod wrapMethod)
         {
-            // Это дополнительная функция, не DETOUR
-            if (simm == null)
-            {
-                throw new ArgumentNullException("keyData");
-            }
-            if (gost == null)
-            {
-                throw new ArgumentNullException("gost");
-            }
-            Gost2012_512KeyExchangeFormatter formatter = new Gost2012_512KeyExchangeFormatter(gost);
-            return formatter.CreateKeyExchangeData(simm, wrapMethod);
+            throw new Exception();
+            //// Это дополнительная функция, не DETOUR
+            //if (simm == null)
+            //{
+            //    throw new ArgumentNullException("keyData");
+            //}
+            //if (gost == null)
+            //{
+            //    throw new ArgumentNullException("gost");
+            //}
+            //Gost2012_512KeyExchangeFormatter formatter = new Gost2012_512KeyExchangeFormatter(gost);
+            //return formatter.CreateKeyExchangeData(simm, wrapMethod);
         }
 
         /// <summary>

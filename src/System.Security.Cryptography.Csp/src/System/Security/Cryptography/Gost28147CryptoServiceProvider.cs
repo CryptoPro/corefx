@@ -296,7 +296,7 @@ namespace System.Security.Cryptography
         public override void GenerateKey()
         {
             CapiHelper.GenerateKey(SafeProvHandle,
-                GostConstants.CALG_G28147, (int)CspProviderFlags.NoFlags,
+                GostConstants.CALG_G28147, CspProviderFlags.NoFlags,
                 GostConstants.G28147_KEYLEN * BitsPerByte, out _safeKeyHandle);
             KeyValue = null;
             KeySizeValue = GostConstants.G28147_KEYLEN * BitsPerByte;
@@ -407,7 +407,7 @@ namespace System.Security.Cryptography
             {
                 CapiHelper.GenerateKey(hProv,
                     GostConstants.CALG_G28147,
-                    (int)CspProviderFlags.NoFlags, GostConstants.G28147_KEYLEN * BitsPerByte,
+                    CspProviderFlags.NoFlags, GostConstants.G28147_KEYLEN * BitsPerByte,
                     out hKey);
             }
             // Ключ приходит как Handle, поэтому длины не проверяем.

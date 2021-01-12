@@ -108,7 +108,7 @@ namespace System.Security.Cryptography
         {
             _safeKeyHandle = SafeKeyHandle.InvalidHandle;
             CapiHelper.GenerateKey(_safeProvHandle,
-                GostConstants.CALG_DH_EL_EPHEM, 0, 
+                GostConstants.CALG_DH_EL_EPHEM, (CspProviderFlags)0, 
                 GostConstants.GOST_3410EL_SIZE, out _safeKeyHandle);
         }
 

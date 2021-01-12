@@ -100,6 +100,10 @@ namespace System.Security.Cryptography.Xml
         public const string XmlEncAES128KeyWrapUrl = "http://www.w3.org/2001/04/xmlenc#kw-aes128";
         public const string XmlEncAES128Url = "http://www.w3.org/2001/04/xmlenc#aes128-cbc";
         public const string XmlEncAES192KeyWrapUrl = "http://www.w3.org/2001/04/xmlenc#kw-aes192";
+        public const string XmlEncGost28147Url = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gost28147";
+        public const string XmlEncGostCryptoProKeyWrapUrl = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:kw-cp";
+        public const string XmlEncGostCryptoPro12KeyWrapUrl = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:kw-cp12";
+        public const string XmlEncGost28147KeyWrapUrl = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:kw-gost";
         public const string XmlEncAES192Url = "http://www.w3.org/2001/04/xmlenc#aes192-cbc";
         public const string XmlEncAES256KeyWrapUrl = "http://www.w3.org/2001/04/xmlenc#kw-aes256";
         public const string XmlEncAES256Url = "http://www.w3.org/2001/04/xmlenc#aes256-cbc";
@@ -110,6 +114,9 @@ namespace System.Security.Cryptography.Xml
         public const string XmlEncNamespaceUrl = "http://www.w3.org/2001/04/xmlenc#";
         public const string XmlEncRSA15Url = "http://www.w3.org/2001/04/xmlenc#rsa-1_5";
         public const string XmlEncRSAOAEPUrl = "http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p";
+        public const string XmlEncGostKeyTransportUrl = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:transport-gost2001";
+        public const string XmlEncGost2012_256KeyTransportUrl = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:transport-gost2012-256";
+        public const string XmlEncGost2012_512KeyTransportUrl = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:transport-gost2012-512";
         public const string XmlEncSHA256Url = "http://www.w3.org/2001/04/xmlenc#sha256";
         public const string XmlEncSHA512Url = "http://www.w3.org/2001/04/xmlenc#sha512";
         public const string XmlEncTripleDESKeyWrapUrl = "http://www.w3.org/2001/04/xmlenc#kw-tripledes";
@@ -137,6 +144,12 @@ namespace System.Security.Cryptography.Xml
         public byte[] EncryptData(System.Xml.XmlElement inputElement, System.Security.Cryptography.SymmetricAlgorithm symmetricAlgorithm, bool content) { throw null; }
         public static byte[] EncryptKey(byte[] keyData, System.Security.Cryptography.RSA rsa, bool useOAEP) { throw null; }
         public static byte[] EncryptKey(byte[] keyData, System.Security.Cryptography.SymmetricAlgorithm symmetricAlgorithm) { throw null; }
+        public static byte[] EncryptKey(Gost28147 simm, Gost3410 gost) { throw null; }
+        public static byte[] EncryptKey(Gost28147 simm, Gost3410_2012_256 gost) { throw null; }
+        public static byte[] EncryptKey(Gost28147 simm, Gost3410_2012_256 gost, GostKeyWrapMethod wrapMethod) { throw null; }
+        public static byte[] EncryptKey(Gost28147 simm, Gost3410_2012_512 gost) { throw null; }
+        public static byte[] EncryptKey(Gost28147 simm, Gost3410_2012_512 gost, GostKeyWrapMethod wrapMethod) { throw null; }
+        public static byte[] EncryptKey(SymmetricAlgorithm keyToEncrypt, Gost28147 exportingKey, GostKeyWrapMethod method) { throw null; }
         public virtual byte[] GetDecryptionIV(System.Security.Cryptography.Xml.EncryptedData encryptedData, string symmetricAlgorithmUri) { throw null; }
         public virtual System.Security.Cryptography.SymmetricAlgorithm GetDecryptionKey(System.Security.Cryptography.Xml.EncryptedData encryptedData, string symmetricAlgorithmUri) { throw null; }
         public virtual System.Xml.XmlElement GetIdElement(System.Xml.XmlDocument document, string idValue) { throw null; }

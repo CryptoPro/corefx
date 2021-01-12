@@ -940,6 +940,37 @@ namespace Internal.NativeCrypto
 
         // begin: gost
         /// <summary>
+        /// Генерация ключа.
+        /// </summary>
+        /// 
+        /// <param name="hProv">Провайдер, для которого создается
+        /// ключ.</param>
+        /// <param name="algid">ALGID ключа.</param>
+        /// <param name="flags">Флаги провайдера.</param>
+        /// <param name="keySize">Размер открытого ключа в битах.</param>
+        /// <param name="hKey">Полученный ключ.</param>
+        /// 
+        /// <exception cref="CryptographicException">При ошибках на native
+        /// уровне.</exception>
+        /// 
+        /// <intdoc><para>Есть у MS аналогичная функция с тем же прототипом, 
+        /// и похожей (CRYPT_KEY_CTX другой) реализацией.</para></intdoc>
+        /// 
+        /// <unmanagedperm action="LinkDemand" />
+        internal static void GenerateKey(SafeProvHandle hProv,
+            int algid, CspProviderFlags flags, int keySize,
+            out SafeKeyHandle hKey)
+        {
+            int keyFlags = MapCspKeyFlags((int)flags);
+            // Дожно быть так, но очередная ошибка в CSP не дает так сделать.
+            // keyFlags |= ((uint)keySize) << 16;
+            bool ret = CapiHelper.CryptGenKey(hProv,
+                algid, keyFlags, out hKey);
+            if (!ret)
+                throw new CryptographicException(Marshal.GetLastWin32Error());
+        }
+
+        /// <summary>
         /// Генерация ключа с заданными параметрами при генерации.
         /// </summary>
         /// 
@@ -964,9 +995,9 @@ namespace Internal.NativeCrypto
             string digestParamSet, string publicKeyParamSet,
             out SafeKeyHandle hKey)
         {
-            int keyFlags = MapCspKeyFlags((int)flags) | GostConstants.CRYPT_PREGEN;
+            int keyFlags = MapCspKeyFlags((int)flags);
             // Дожно быть так, но очередная ошибка в CSP не дает так сделать.
-            // keyFlags |= ((uint)keySize) << 16;
+            // keyFlags |= ((uint)keySize) << 16 (GostConstants.CRYPT_PREGEN);
 
             bool ret = CapiHelper.CryptGenKey(
                 hProv, calg, keyFlags, out hKey);

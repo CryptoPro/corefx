@@ -299,6 +299,7 @@
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetsWindows)' == 'true'">
     <Compile Include="Internal\Cryptography\Pal.Windows\CertificatePal.Import.Win.cs" />
+    <Compile Include="Internal\Cryptography\Pal.Windows\FindPal.Win.cs" />
     <Compile Include="$(CommonPath)\Interop\Interop.CPGetLastWin32Error.cs">
       <Link>Common\Interop\Interop.CPGetLastWin32Error.cs</Link>
     </Compile>
@@ -338,6 +339,7 @@
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetsUnix)' == 'true'">
     <Compile Include="Internal\Cryptography\Pal.Windows\CertificatePal.Import.Unix.cs" />
+    <Compile Include="Internal\Cryptography\Pal.Windows\FindPal.Unix.cs" />
     <Compile Include="$(CommonPath)\Interop\Interop.CPGetLastWin32Error.Unix.cs">
       <Link>Common\Interop\Interop.CPGetLastWin32Error.Unix.cs</Link>
     </Compile>

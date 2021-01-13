@@ -55,14 +55,6 @@ namespace Internal.Cryptography.Pal
             }
         }
 
-        public unsafe void FindBySubjectName(string subjectName)
-        {
-            fixed (char* pSubjectName = subjectName)
-            {
-                FindCore(CertFindType.CERT_FIND_SUBJECT_STR, pSubjectName);
-            }
-        }
-
         public void FindBySubjectDistinguishedName(string subjectDistinguishedName)
         {
             FindCore(
@@ -71,14 +63,6 @@ namespace Internal.Cryptography.Pal
                     string actual = GetCertNameInfo(pCertContext, CertNameType.CERT_NAME_RDN_TYPE, CertNameFlags.None);
                     return subjectDistinguishedName.Equals(actual, StringComparison.OrdinalIgnoreCase);
                 });
-        }
-
-        public unsafe void FindByIssuerName(string issuerName)
-        {
-            fixed (char* pIssuerName = issuerName)
-            {
-                FindCore(CertFindType.CERT_FIND_ISSUER_STR, pIssuerName);
-            }
         }
 
         public void FindByIssuerDistinguishedName(string issuerDistinguishedName)

@@ -1,4 +1,6 @@
-﻿namespace System.Security.Cryptography
+﻿using static Internal.NativeCrypto.CapiHelper;
+
+namespace System.Security.Cryptography
 {
     /// <summary>
     /// Класс восстановления по данным обмена симметричного ключа
@@ -21,10 +23,14 @@
     public class GostKeyExchangeDeformatter : AsymmetricKeyExchangeDeformatter
     {
         /// <summary>
-        /// Ассиметричный ключ получателя, на котором зашифрована 
-        /// иформация обмена ключами.
+        /// Ассиметричный ключ получателя.
         /// </summary>
-        private Gost3410 _gostKey;
+        private AsymmetricAlgorithm _gostKey;
+
+        /// <summary>
+        /// Тип алгоритма ключа
+        /// </summary>
+        private CspAlgorithmType _gostAlgorithmType;
 
         /// <summary>
         /// Параметры алгоритма.
@@ -61,9 +67,7 @@
         /// <argnull name="key" />
         public GostKeyExchangeDeformatter(AsymmetricAlgorithm key)
         {
-            if (key == null)
-                throw new ArgumentNullException("key");
-            _gostKey = (Gost3410)key;
+            SetKey(key);
         }
 
         /// <summary>
@@ -112,11 +116,36 @@
         /// <argnull name="transport" />
         public SymmetricAlgorithm DecryptKeyExchange(GostKeyTransport transport)
         {
-            GostSharedSecretAlgorithm agree = _gostKey.CreateAgree(
-                transport.TransportParameters);
+            GostSharedSecretAlgorithm agree;
+            GostKeyWrapMethod keyWrapMethod;
+            switch (_gostAlgorithmType)
+            {
+                case CspAlgorithmType.Gost2001:
+                {
+                    agree = ((Gost3410)_gostKey).CreateAgree(transport.TransportParameters);
+                    keyWrapMethod = GostKeyWrapMethod.CryptoProKeyWrap;
+                    break;
+                }
+                case CspAlgorithmType.Gost2012_256:
+                {
+                    agree = ((Gost3410_2012_256)_gostKey).CreateAgree(transport.TransportParameters);
+                    keyWrapMethod = GostKeyWrapMethod.CryptoPro12KeyWrap;
+                    break;
+                }
+                case CspAlgorithmType.Gost2012_512:
+                {
+                    agree = ((Gost3410_2012_512)_gostKey).CreateAgree(transport.TransportParameters);
+                    keyWrapMethod = GostKeyWrapMethod.CryptoPro12KeyWrap;
+                    break;
+                }
+                default:
+                {
+                    throw new NotSupportedException();
+                }
+            }            
 
             return agree.Unwrap(transport.SessionEncryptedKey.GetXmlWrappedKey(),
-                GostKeyWrapMethod.CryptoProKeyWrap);
+                keyWrapMethod);
         }
 
         /// <summary>
@@ -159,14 +188,27 @@
         public override void SetKey(AsymmetricAlgorithm key)
         {
             if (key == null)
-                throw new ArgumentNullException("key");
-            Gost3410 gost = key as Gost3410;
-            if (gost == null)
+                throw new ArgumentNullException(nameof(key));
+
+            if (key is Gost3410 gost3410)
             {
-                throw new CryptographicException(
-                   "Parameter must support GOST R 34.10 algorithm");
+                _gostAlgorithmType = CspAlgorithmType.Gost2001;
+                _gostKey = gost3410;
             }
-            _gostKey = gost;
+            else if (key is Gost3410_2012_256 gost3410_2012_256)
+            {
+                _gostAlgorithmType = CspAlgorithmType.Gost2012_256;
+                _gostKey = gost3410_2012_256;
+            }
+            else if (key is Gost3410_2012_512 gost3410_2012_512)
+            {
+                _gostAlgorithmType = CspAlgorithmType.Gost2012_512;
+                _gostKey = gost3410_2012_512;
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
         }
     }
 }

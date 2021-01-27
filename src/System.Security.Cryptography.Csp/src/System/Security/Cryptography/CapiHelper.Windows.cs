@@ -995,7 +995,7 @@ namespace Internal.NativeCrypto
             string digestParamSet, string publicKeyParamSet,
             out SafeKeyHandle hKey)
         {
-            int keyFlags = MapCspKeyFlags((int)flags);
+            int keyFlags = MapCspKeyFlags((int)flags) | GostConstants.CRYPT_PREGEN;
             // Дожно быть так, но очередная ошибка в CSP не дает так сделать.
             // keyFlags |= ((uint)keySize) << 16 (GostConstants.CRYPT_PREGEN);
 

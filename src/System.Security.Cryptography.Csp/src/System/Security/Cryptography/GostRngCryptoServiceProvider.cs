@@ -6,6 +6,12 @@
     {
         SafeProvHandle m_safeProvHandle;
 
+        public GostRngCryptoServiceProvider()
+        {
+            CspParameters gostParameters = new CspParameters(GostConstants.PROV_GOST_2001_DH);
+            m_safeProvHandle = AcquireSafeProviderHandle(gostParameters);
+        }
+
         public GostRngCryptoServiceProvider(CspParameters cspParams)
         {
             m_safeProvHandle = AcquireSafeProviderHandle(cspParams);

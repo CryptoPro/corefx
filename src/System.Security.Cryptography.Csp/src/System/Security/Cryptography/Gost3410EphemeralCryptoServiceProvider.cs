@@ -1,13 +1,9 @@
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Security.Permissions;
-using System;
 using Internal.NativeCrypto;
 using static Internal.NativeCrypto.CapiHelper;
 using System.IO;
 
 namespace System.Security.Cryptography
-{  
+{
     /// <summary>
     /// Алгоритм формирования общих ключей (SharedSecret) на основе 
     /// алгоритма ГОСТ Р 34.10,
@@ -31,7 +27,7 @@ namespace System.Security.Cryptography
         /// </summary>
         /// 
         /// <unmanagedperm action="LinkDemand" />
-        internal SafeKeyHandle InternalKeyHandle
+        internal SafeKeyHandle SafeKeyHandle
         {
             get
             {
@@ -46,10 +42,9 @@ namespace System.Security.Cryptography
         /// <unmanagedperm action="Demand" />
         public IntPtr KeyHandle
         {
-            [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
             get
             {
-                return InternalKeyHandle.DangerousGetHandle();
+                return SafeKeyHandle.DangerousGetHandle();
             }
         }
 
@@ -60,10 +55,9 @@ namespace System.Security.Cryptography
         /// <unmanagedperm action="Demand" />
         public IntPtr ProviderHandle
         {
-            [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
             get
             {
-                return InternalProvHandle.DangerousGetHandle();
+                return SafeProvHandle.DangerousGetHandle();
             }
         }
 
@@ -72,7 +66,7 @@ namespace System.Security.Cryptography
         /// </summary>
         /// 
         /// <unmanagedperm action="LinkDemand" />
-        internal SafeProvHandle InternalProvHandle
+        internal SafeProvHandle SafeProvHandle
         {
             get
             {

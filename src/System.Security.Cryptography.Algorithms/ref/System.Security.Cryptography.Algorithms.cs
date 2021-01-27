@@ -1009,19 +1009,10 @@ namespace System.Security.Cryptography
 
     public abstract class GostSharedSecretAlgorithm : IDisposable
     {
-        public abstract byte[] Wrap(SymmetricAlgorithm alg,
-            GostKeyWrapMethod method);
-
-        public abstract SymmetricAlgorithm Unwrap(byte[] wrapped,
-            GostKeyWrapMethod method);
-
-        protected virtual void Dispose(bool disposing)
-        {
-        }
-
-        public void Dispose()
-        {
-        }
+        public abstract byte[] Wrap(SymmetricAlgorithm alg, GostKeyWrapMethod method);
+        public abstract SymmetricAlgorithm Unwrap(byte[] wrapped, GostKeyWrapMethod method);
+        protected virtual void Dispose(bool disposing){ }
+        public void Dispose(){ }
     }
 
     //end: gost

@@ -933,7 +933,7 @@ namespace System.Security.Cryptography
             Gost3410CspObject obj1 = new Gost3410CspObject(alg);
 
             return new GostSharedSecretCryptoServiceProvider(_safeKeyHandle,
-                _safeProvHandle, obj1, CspAlgorithmType.Gost2001);
+                _safeProvHandle, obj1, CspAlgorithmType.Gost2012_256);
         }
 
         /// <summary>

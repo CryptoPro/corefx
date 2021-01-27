@@ -164,7 +164,7 @@ namespace System.Security.Cryptography
                 throw new ArgumentOutOfRangeException("calgProExport");
             }
 
-            SafeKeyHandle hSimmKey = prov.InternalKeyHandle;
+            SafeKeyHandle hSimmKey = prov.SafeKeyHandle;
             GostWrappedKeyObject wrappedKey = new GostWrappedKeyObject();
             SafeKeyHandle hExpKey = SafeKeyHandle.InvalidHandle;
 
@@ -202,7 +202,7 @@ namespace System.Security.Cryptography
         /// на managed уровне.</exception>
         private byte[] GostWrap(Gost28147CryptoServiceProvider prov)
         {
-            SafeKeyHandle hSimmKey = prov.InternalKeyHandle;
+            SafeKeyHandle hSimmKey = prov.SafeKeyHandle;
             GostWrappedKeyObject wrappedKey = new GostWrappedKeyObject();
             SafeKeyHandle hExpKey = SafeKeyHandle.InvalidHandle;
 
@@ -395,7 +395,7 @@ namespace System.Security.Cryptography
         /// </summary>
         /// 
         /// <unmanagedperm action="LinkDemand" />
-        internal SafeKeyHandle InternalKeyHandle
+        internal SafeKeyHandle SafeKeyHandle
         {
             get
             {
@@ -413,7 +413,7 @@ namespace System.Security.Cryptography
             [SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.UnmanagedCode)]
             get
             {
-                return InternalKeyHandle.DangerousGetHandle();
+                return SafeKeyHandle.DangerousGetHandle();
             }
         }
 

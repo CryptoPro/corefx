@@ -1,4 +1,6 @@
-﻿namespace System.Security.Cryptography
+﻿using static Internal.NativeCrypto.CapiHelper;
+
+namespace System.Security.Cryptography
 {
     /// <summary>
     /// Класс формирования данных для обмена симметричным ключом
@@ -31,7 +33,12 @@
         /// <summary>
         /// Ассиметричный ключ получателя.
         /// </summary>
-        private Gost3410 gostKey_;
+        private AsymmetricAlgorithm _gostKey;
+
+        /// <summary>
+        /// Тип алгоритма ключа
+        /// </summary>
+        private CspAlgorithmType _gostAlgorithmType;
 
         /// <summary>
         /// Возвращает параметры обмена ключами.
@@ -66,9 +73,7 @@
         /// <argnull name="key" />
         public GostKeyExchangeFormatter(AsymmetricAlgorithm key)
         {
-            if (key == null)
-                throw new ArgumentNullException("key");
-            gostKey_ = (Gost3410)key;
+            SetKey(key);
         }
 
         /// <summary>
@@ -147,33 +152,98 @@
                 throw new ArgumentNullException("alg");
 
             // Получаем параметры получателя.
-            Gost3410Parameters senderParameters = gostKey_.ExportParameters(
-                false);
-
-            GostKeyTransportObject transport = new GostKeyTransportObject();
-
-            // Создаем эфимерный ключ с параметрами получателя.
-            using (Gost3410EphemeralCryptoServiceProvider sender = new Gost3410EphemeralCryptoServiceProvider(
-                senderParameters))
+            GostKeyWrapMethod keyWrapMethod;
+            Gost3410Parameters senderParameters;
+            switch (_gostAlgorithmType)
             {
-                // Создаем распределенный секрет.
-                byte[] wrapped_data;
-                using (GostSharedSecretAlgorithm agree = sender.CreateAgree(
-                    senderParameters))
-                {
+                case CspAlgorithmType.Gost2001:
+                {                    
+                    senderParameters = ((Gost3410)_gostKey).ExportParameters(false);
+                    keyWrapMethod = GostKeyWrapMethod.CryptoProKeyWrap;
+                    using (Gost3410EphemeralCryptoServiceProvider sender = 
+                        new Gost3410EphemeralCryptoServiceProvider(senderParameters))
+                    {
+                        return GetGostTransport(
+                            sender.CreateAgree,
+                            sender.ExportParameters,
+                            senderParameters,
+                            alg,
+                            keyWrapMethod);
 
-                    // Зашифровываем симметричный ключ.
-                    wrapped_data = agree.Wrap(alg,
-                        GostKeyWrapMethod.CryptoProKeyWrap);
+                    }
                 }
+                case CspAlgorithmType.Gost2012_256:
+                {
+                    senderParameters = ((Gost3410_2012_256)_gostKey).ExportParameters(false);
+                    keyWrapMethod = GostKeyWrapMethod.CryptoPro12KeyWrap;
+                    using (Gost3410_2012_256EphemeralCryptoServiceProvider sender =
+                        new Gost3410_2012_256EphemeralCryptoServiceProvider(senderParameters))
+                    {
+                        return GetGostTransport(
+                            sender.CreateAgree,
+                            sender.ExportParameters,
+                            senderParameters,
+                            alg,
+                            keyWrapMethod);
 
-                GostWrappedKeyObject wrapped = new GostWrappedKeyObject();
-                wrapped.SetByXmlWrappedKey(wrapped_data);
+                    }
+                }
+                case CspAlgorithmType.Gost2012_512:
+                {
+                    senderParameters = ((Gost3410_2012_512)_gostKey).ExportParameters(false);
+                    keyWrapMethod = GostKeyWrapMethod.CryptoPro12KeyWrap;
+                    using (Gost3410_2012_512EphemeralCryptoServiceProvider sender =
+                        new Gost3410_2012_512EphemeralCryptoServiceProvider(senderParameters))
+                    {
+                        return GetGostTransport(
+                            sender.CreateAgree,
+                            sender.ExportParameters,
+                            senderParameters,
+                            alg,
+                            keyWrapMethod);
 
-                transport.sessionEncryptedKey_ = wrapped;
-                transport.transportParameters_ = new Gost3410CspObject();
-                transport.transportParameters_.Parameters = sender.ExportParameters(false);
+                    }
+                }
+                default:
+                {
+                    throw new NotSupportedException();
+                }
             }
+        }
+
+        /// <summary>
+        /// Вспомогательный метод, работающий для всех GOST3410
+        /// </summary>
+        /// <param name="createAgree"></param>
+        /// <param name="exportParameters"></param>
+        /// <param name="senderParameters"></param>
+        /// <param name="alg"></param>
+        /// <param name="keyWrapMethod"></param>
+        /// <returns></returns>
+        private GostKeyTransport GetGostTransport(
+            Func<Gost3410Parameters, GostSharedSecretAlgorithm> createAgree,
+            Func<bool, Gost3410Parameters> exportParameters,
+            Gost3410Parameters senderParameters,
+            SymmetricAlgorithm alg,
+            GostKeyWrapMethod keyWrapMethod)
+        {
+            GostKeyTransportObject transport = new GostKeyTransportObject();
+            byte[] wrapped_data;
+
+            using (GostSharedSecretAlgorithm agree = createAgree(
+                    senderParameters))
+            {
+                // Зашифровываем симметричный ключ.
+                wrapped_data = agree.Wrap(alg,
+                    keyWrapMethod);
+            }
+
+            GostWrappedKeyObject wrapped = new GostWrappedKeyObject();
+            wrapped.SetByXmlWrappedKey(wrapped_data);
+
+            transport.sessionEncryptedKey_ = wrapped;
+            transport.transportParameters_ = new Gost3410CspObject();
+            transport.transportParameters_.Parameters = exportParameters(false);
 
             return transport.Transport;
         }
@@ -208,9 +278,27 @@
         public override void SetKey(AsymmetricAlgorithm key)
         {
             if (key == null)
-                throw new ArgumentNullException("key");
-            gostKey_ = (Gost3410)key;
+                throw new ArgumentNullException(nameof(key));
+
+            if (key is Gost3410 gost3410)
+            {
+                _gostAlgorithmType = CspAlgorithmType.Gost2001;
+                _gostKey = gost3410;
+            }
+            else if (key is Gost3410_2012_256 gost3410_2012_256)
+            {
+                _gostAlgorithmType = CspAlgorithmType.Gost2012_256;
+                _gostKey = gost3410_2012_256;
+            }
+            else if (key is Gost3410_2012_512 gost3410_2012_512)
+            {
+                _gostAlgorithmType = CspAlgorithmType.Gost2012_512;
+                _gostKey = gost3410_2012_512;
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
         }
     }
-
 }

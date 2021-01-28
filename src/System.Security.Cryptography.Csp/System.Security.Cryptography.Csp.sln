@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2000
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.Security.Cryptography.Csp.Tests", "tests\System.Security.Cryptography.Csp.Tests.csproj", "{A05C2EF2-A986-448C-9C63-735CC17409AA}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -30,8 +30,8 @@ Global
 		{A05C2EF2-A986-448C-9C63-735CC17409AA}.Debug|Any CPU.Build.0 = netcoreapp-Windows_NT-Debug|Any CPU
 		{A05C2EF2-A986-448C-9C63-735CC17409AA}.Release|Any CPU.ActiveCfg = netcoreapp-Windows_NT-Release|Any CPU
 		{A05C2EF2-A986-448C-9C63-735CC17409AA}.Release|Any CPU.Build.0 = netcoreapp-Windows_NT-Release|Any CPU
-		{3B7F91D7-0677-40CA-B4E7-D4E09D89A74E}.Debug|Any CPU.ActiveCfg = netcoreapp-Unix-Debug|Any CPU
-		{3B7F91D7-0677-40CA-B4E7-D4E09D89A74E}.Debug|Any CPU.Build.0 = netcoreapp-Unix-Debug|Any CPU
+		{3B7F91D7-0677-40CA-B4E7-D4E09D89A74E}.Debug|Any CPU.ActiveCfg = netcoreapp-Windows_NT-Debug|Any CPU
+		{3B7F91D7-0677-40CA-B4E7-D4E09D89A74E}.Debug|Any CPU.Build.0 = netcoreapp-Windows_NT-Debug|Any CPU
 		{3B7F91D7-0677-40CA-B4E7-D4E09D89A74E}.Release|Any CPU.ActiveCfg = netcoreapp-Windows_NT-Release|Any CPU
 		{3B7F91D7-0677-40CA-B4E7-D4E09D89A74E}.Release|Any CPU.Build.0 = netcoreapp-Windows_NT-Release|Any CPU
 		{FD10679A-8C98-42E6-B7E5-9424E5443912}.Debug|Any CPU.ActiveCfg = netcoreapp-Debug|Any CPU

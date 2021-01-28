@@ -1,8 +1,3 @@
-// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
-
-
 namespace System.Security.Cryptography.Encryption.TransportArgee.Tests
 {
     using Xunit;
@@ -10,32 +5,28 @@ namespace System.Security.Cryptography.Encryption.TransportArgee.Tests
     using System.Text;
     using System.Collections;
 
-    /// <summary>
-    /// Since SHAxCryptoServiceProvider types wraps IncrementalHash from Algorithms assembly, we only test minimally here.
-    /// </summary>
     public class KeyExchange
     {
-        // Ассиметричный ключ получателя.
-        private Gost3410 AssymKey;
-        // Синхропосылка.
-        private byte[] IV;
-
         [Fact]
-        public void TestKeyExchange()
+        public void TestKeyExchange2001()
         {
+            // Ассиметричный ключ получателя.
+            Gost3410 AssymKey;
+            // Синхропосылка.
+            byte[] IV;
+
             // Создаем случайный открытый ключ.
-            KeyExchange GostKeyExchange = new KeyExchange();
-            Gost3410 gkey = GetGostProvider();
-            GostKeyExchange.InitializeKey(gkey);
+            Gost3410 gkey = GetGostProvider2001();
+            AssymKey = gkey;
 
             // Создаем случайный секретный ключ, который необходимо передать.
             Gost28147 key = new Gost28147CryptoServiceProvider();
             // Синхропосылка не входит в GostKeyTransport и должна
             // передаваться отдельно.
-            GostKeyExchange.IV = key.IV;
+            IV = key.IV;
 
             // Создаем форматтер, шифрующий на ассиметричном ключе получателя.
-            GostKeyExchangeFormatter Formatter = new GostKeyExchangeFormatter(GostKeyExchange.AssymKey);
+            GostKeyExchangeFormatter Formatter = new GostKeyExchangeFormatter(AssymKey);
             // GostKeyTransport - формат зашифрованной для безопасной передачи 
             // ключевой информации.
             GostKeyTransport encKey = Formatter.CreateKeyExchange(key);
@@ -46,22 +37,100 @@ namespace System.Security.Cryptography.Encryption.TransportArgee.Tests
             Console.WriteLine("** Строка до шифрования: " + message);
 
             // Шифруем строку на сессионном ключе
-            byte[] encBytes = GostKeyExchange.GostEncrypt(key, sourceBytes);
+            byte[] encBytes = GostEncrypt(key, sourceBytes);
             Console.WriteLine("** Строка после шифрования: " +
                    Encoding.ASCII.GetString(encBytes));
 
             // Получатель расшифровывает GostKeyTransport и само сообщение.
-            byte[] decBytes = GostKeyExchange.GostDecrypt(encKey, encBytes);
+            byte[] decBytes = GostDecrypt(encKey, encBytes, IV, AssymKey);
             Console.WriteLine("** Строка после расшифрования: " +
                   Encoding.ASCII.GetString(decBytes));
 
-            Console.ReadLine();
+            Assert.Equal(sourceBytes, decBytes);
         }
 
-        // Создаем ключ получателя.
-        private void InitializeKey(Gost3410 gkey)
+        [Fact]
+        public void TestKeyExchange2012_256()
         {
+            // Ассиметричный ключ получателя.
+            Gost3410_2012_256 AssymKey;
+            // Синхропосылка.
+            byte[] IV;
+
+            // Создаем случайный открытый ключ.
+            Gost3410_2012_256 gkey = GetGostProvider2012_256();
             AssymKey = gkey;
+
+            // Создаем случайный секретный ключ, который необходимо передать.
+            Gost28147 key = new Gost28147CryptoServiceProvider();
+            // Синхропосылка не входит в GostKeyTransport и должна
+            // передаваться отдельно.
+            IV = key.IV;
+
+            // Создаем форматтер, шифрующий на ассиметричном ключе получателя.
+            GostKeyExchangeFormatter Formatter = new GostKeyExchangeFormatter(AssymKey);
+            // GostKeyTransport - формат зашифрованной для безопасной передачи 
+            // ключевой информации.
+            GostKeyTransport encKey = Formatter.CreateKeyExchange(key);
+
+            // Шифруемая строка
+            string message = "012345678901234567890";
+            byte[] sourceBytes = Encoding.ASCII.GetBytes(message);
+            Console.WriteLine("** Строка до шифрования: " + message);
+
+            // Шифруем строку на сессионном ключе
+            byte[] encBytes = GostEncrypt(key, sourceBytes);
+            Console.WriteLine("** Строка после шифрования: " +
+                   Encoding.ASCII.GetString(encBytes));
+
+            // Получатель расшифровывает GostKeyTransport и само сообщение.
+            byte[] decBytes = GostDecrypt(encKey, encBytes, IV, AssymKey);
+            Console.WriteLine("** Строка после расшифрования: " +
+                  Encoding.ASCII.GetString(decBytes));
+
+            Assert.Equal(sourceBytes, decBytes);
+        }
+
+        [Fact]
+        public void TestKeyExchange2012_512()
+        {
+            // Ассиметричный ключ получателя.
+            Gost3410_2012_512 AssymKey;
+            // Синхропосылка.
+            byte[] IV;
+
+            // Создаем случайный открытый ключ.
+            Gost3410_2012_512 gkey = GetGostProvider2012_512();
+            AssymKey = gkey;
+
+            // Создаем случайный секретный ключ, который необходимо передать.
+            Gost28147 key = new Gost28147CryptoServiceProvider();
+            // Синхропосылка не входит в GostKeyTransport и должна
+            // передаваться отдельно.
+            IV = key.IV;
+
+            // Создаем форматтер, шифрующий на ассиметричном ключе получателя.
+            GostKeyExchangeFormatter Formatter = new GostKeyExchangeFormatter(AssymKey);
+            // GostKeyTransport - формат зашифрованной для безопасной передачи 
+            // ключевой информации.
+            GostKeyTransport encKey = Formatter.CreateKeyExchange(key);
+
+            // Шифруемая строка
+            string message = "012345678901234567890";
+            byte[] sourceBytes = Encoding.ASCII.GetBytes(message);
+            Console.WriteLine("** Строка до шифрования: " + message);
+
+            // Шифруем строку на сессионном ключе
+            byte[] encBytes = GostEncrypt(key, sourceBytes);
+            Console.WriteLine("** Строка после шифрования: " +
+                   Encoding.ASCII.GetString(encBytes));
+
+            // Получатель расшифровывает GostKeyTransport и само сообщение.
+            byte[] decBytes = GostDecrypt(encKey, encBytes, IV, AssymKey);
+            Console.WriteLine("** Строка после расшифрования: " +
+                  Encoding.ASCII.GetString(decBytes));
+
+            Assert.Equal(sourceBytes, decBytes);
         }
 
         // Шифруем байтовый массив
@@ -121,7 +190,7 @@ namespace System.Security.Cryptography.Encryption.TransportArgee.Tests
         }
 
         // Действия получателя - расшифровываем полученные сессионный ключ и сообщение.
-        byte[] GostDecrypt(GostKeyTransport encKey, byte[] encBytes)
+        byte[] GostDecrypt(GostKeyTransport encKey, byte[] encBytes, byte[] IV, AsymmetricAlgorithm AssymKey)
         {
             // Деформаттер для ключей, зашифрованных на ассиметричном ключе получателя.
             GostKeyExchangeDeformatter Deformatter = new GostKeyExchangeDeformatter(AssymKey);
@@ -194,13 +263,31 @@ namespace System.Security.Cryptography.Encryption.TransportArgee.Tests
             return returnedArray;
         }
 
-        private static Gost3410CryptoServiceProvider GetGostProvider()
+        private static Gost3410CryptoServiceProvider GetGostProvider2001()
         {
             CspParameters cpsParams = new CspParameters(
                 75,
                 "",
-                "\\\\.\\HDIMAGE\\G2012256");
+                "\\\\.\\HDIMAGE\\G2001256.000");
             return new Gost3410CryptoServiceProvider(cpsParams);
+        }
+
+        private static Gost3410_2012_256CryptoServiceProvider GetGostProvider2012_256()
+        {
+            CspParameters cpsParams = new CspParameters(
+                80,
+                "",
+                "\\\\.\\HDIMAGE\\G2012256");
+            return new Gost3410_2012_256CryptoServiceProvider(cpsParams);
+        }
+
+        private static Gost3410_2012_512CryptoServiceProvider GetGostProvider2012_512()
+        {
+            CspParameters cpsParams = new CspParameters(
+                81,
+                "",
+                "\\\\.\\HDIMAGE\\G2012512");
+            return new Gost3410_2012_512CryptoServiceProvider(cpsParams);
         }
     }
 }

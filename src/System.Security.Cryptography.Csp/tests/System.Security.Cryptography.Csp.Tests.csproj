@@ -10,7 +10,7 @@
     <Compile Include="Gost3410CryptoServiceProviderTests.cs" />
     <Compile Include="Gost3410_2012_256CryptoServiceProviderTests.cs" />
     <Compile Include="Gost3410_2012_512CryptoServiceProviderTests.cs" />
-    <Compile Include="GostTransportArgeeTests.cs" />
+    <Compile Include="GostKeyExchangeTests.cs" />
     <Compile Include="RSAImportExportCspBlobTests.cs" />
     <Compile Include="RSACryptoServiceProviderBackCompat.cs" />
     <Compile Include="RSACryptoServiceProviderProvider.cs" />

@@ -1,11 +1,11 @@
-namespace System.Security.Cryptography.Encryption.TransportArgee.Tests
+namespace System.Security.Cryptography.Encryption.KeyExchange.Tests
 {
     using Xunit;
     using System.Security.Cryptography;
     using System.Text;
     using System.Collections;
 
-    public class KeyExchange
+    public class GostKeyExchange
     {
         [Fact]
         public void TestKeyExchange2001()

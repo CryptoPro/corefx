@@ -75,7 +75,7 @@ for:
   - cmd: '"C:\Program Files\Crypto Pro\CSP\csptest" -keyset -enum_c -verifyc -fqcn'
   - cmd: '"C:\Program Files\Crypto Pro\CSP\csptest" -enum -info -type PP_ENUMALGS'
   # getting patched nuget packages with gost support
-  - cmd: git clone https://github.com/CryptoProLLC/NetStandard.Library
+  - cmd: git clone --branch %APPVEYOR_REPO_BRANCH% https://github.com/CryptoProLLC/NetStandard.Library
   - ps: New-Item -ItemType Directory -Force -Path "$env:userprofile\.nuget\packages\netstandard.library"
   - ps: Copy-Item -Force -Recurse ".\NetStandard.Library\nugetReady\netstandard.library" -Destination "$env:userprofile\.nuget\packages\"
   # enable-rdp
@@ -144,7 +144,7 @@ for:
   - sh: /opt/cprocsp/bin/amd64/csptest  -keyset -enum_c -verifyc -uniq
   - sh: /opt/cprocsp/bin/amd64/csptest  -keyset -enum_c -verifyc -fqcn
   # getting patched nuget packages with gost support
-  - sh: git clone https://github.com/CryptoProLLC/NetStandard.Library
+  - sh: git clone --branch $(APPVEYOR_REPO_BRANCH) https://github.com/CryptoProLLC/NetStandard.Library
   - sh: mkdir -p ~/.nuget/packages/netstandard.library
   - sh: cp -r ./NetStandard.Library/nugetReady/netstandard.library ~/.nuget/packages/
   # disable warnings

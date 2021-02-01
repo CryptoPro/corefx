@@ -18,7 +18,7 @@ namespace System.Security.Cryptography
     /// 
     /// <basedon cref="System.Security.Cryptography.RSAParameters"/> 
     /// <basedon cref="System.Security.Cryptography.DSAParameters"/> 
-    [StructLayout(LayoutKind.Sequential)]
+    [Serializable, StructLayout(LayoutKind.Sequential)]
     public struct Gost3410Parameters
     {
         /// <summary>OID параметров подписи и DH.</summary>

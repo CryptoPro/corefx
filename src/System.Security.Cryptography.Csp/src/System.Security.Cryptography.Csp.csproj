@@ -206,20 +206,20 @@
       <Link>Common\System\Security\Cryptography\Oids.cs</Link>
     </Compile>
     <!--begin: gost asn-->
-    <Compile Include="$(CommonPath)\System\Security\Cryptography\GostR3410_PublicKey.cs">
-      <Link>Common\System\Security\Cryptography\GostR3410_PublicKey.cs</Link>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\GostR3410_2001_PKISyntax\\GostR3410_PublicKey.cs">
+      <Link>Common\System\Security\Cryptography\GostR3410_2001_PKISyntax\GostR3410_PublicKey.cs</Link>
     </Compile>
-    <Compile Include="$(CommonPath)\System\Security\Cryptography\GostR3410_2001_PublicKeyParameters.cs">
-      <Link>Common\System\Security\Cryptography\GostR3410_2001_PublicKeyParameters.cs</Link>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\GostR3410_2001_PKISyntax\GostR3410_2001_PublicKeyParameters.cs">
+      <Link>Common\System\Security\Cryptography\GostR3410_2001_PKISyntax\GostR3410_2001_PublicKeyParameters.cs</Link>
     </Compile>
-    <Compile Include="$(CommonPath)\System\Security\Cryptography\GostR3410_2012_256_PublicKey.cs">
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\GostR3410_2012_PKISyntax\GostR3410_2012_256_PublicKey.cs">
       <Link>Common\System\Security\Cryptography\GostR3410_2012_256_PublicKey.cs</Link>
     </Compile>
-    <Compile Include="$(CommonPath)\System\Security\Cryptography\GostR3410_2012_512_PublicKey.cs">
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\GostR3410_2012_PKISyntax\GostR3410_2012_512_PublicKey.cs">
       <Link>Common\System\Security\Cryptography\GostR3410_2012_512_PublicKey.cs</Link>
     </Compile>
-    <Compile Include="$(CommonPath)\System\Security\Cryptography\Gost28147_89_ParamSet.cs">
-      <Link>Common\System\Security\Cryptography\Gost28147_89_ParamSet.cs</Link>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\Gost28147_89_EncryptionSyntax\Gost28147_89_ParamSet.cs">
+      <Link>Common\System\Security\Cryptography\Gost28147_89_EncryptionSyntax\Gost28147_89_ParamSet.cs</Link>
     </Compile>
     <Compile Include="$(CommonPath)\System\Security\Cryptography\GostKeyExchangeParameters.cs">
       <Link>Common\System\Security\Cryptography\GostKeyExchangeParameters.cs</Link>
@@ -227,26 +227,117 @@
     <Compile Include="$(CommonPath)\System\Security\Cryptography\WrappedKey.cs">
       <Link>Common\System\Security\Cryptography\WrappedKey.cs</Link>
     </Compile>
-    <Compile Include="$(CommonPath)\System\Security\Cryptography\GostR3410_KeyWrap.cs">
-      <Link>Common\System\Security\Cryptography\GostR3410_KeyWrap.cs</Link>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\Gost_xmldsig\GostR3410_KeyWrap.cs">
+      <Link>Common\System\Security\Cryptography\Gost_xmldsig\GostR3410_KeyWrap.cs</Link>
     </Compile>
-    <Compile Include="$(CommonPath)\System\Security\Cryptography\Gost28147_89_EncryptedKey.cs">
-      <Link>Common\System\Security\Cryptography\Gost28147_89_EncryptedKey.cs</Link>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\Gost28147_89_EncryptionSyntax\Gost28147_89_EncryptedKey.cs">
+      <Link>Common\System\Security\Cryptography\Gost28147_89_EncryptionSyntax\Gost28147_89_EncryptedKey.cs</Link>
     </Compile>
-    <Compile Include="$(CommonPath)\System\Security\Cryptography\Gost28147_89_KeyWrapParameters.cs">
-      <Link>Common\System\Security\Cryptography\Gost28147_89_KeyWrapParameters.cs</Link>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\Gost28147_89_EncryptionSyntax\Gost28147_89_KeyWrapParameters.cs">
+      <Link>Common\System\Security\Cryptography\Gost28147_89_EncryptionSyntax\Gost28147_89_KeyWrapParameters.cs</Link>
     </Compile>
-    <Compile Include="$(CommonPath)\System\Security\Cryptography\Gost28147_89_Key.cs">
-      <Link>Common\System\Security\Cryptography\Gost28147_89_Key.cs</Link>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\Gost28147_89_EncryptionSyntax\Gost28147_89_Key.cs">
+      <Link>Common\System\Security\Cryptography\Gost28147_89_EncryptionSyntax\Gost28147_89_Key.cs</Link>
     </Compile>
-    <Compile Include="$(CommonPath)\System\Security\Cryptography\Gost28147_89_MAC.cs">
-      <Link>Common\System\Security\Cryptography\Gost28147_89_MAC.cs</Link>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\Gost28147_89_EncryptionSyntax\Gost28147_89_MAC.cs">
+      <Link>Common\System\Security\Cryptography\Gost28147_89_EncryptionSyntax\Gost28147_89_MAC.cs</Link>
     </Compile>
     <Compile Include="$(CommonPath)\System\Security\Cryptography\GostKeyTransport.cs">
       <Link>Common\System\Security\Cryptography\GostKeyTransport.cs</Link>
     </Compile>
-    <Compile Include="$(CommonPath)\System\Security\Cryptography\Gost28147_89_BlobParameters.cs">
-      <Link>Common\System\Security\Cryptography\Gost28147_89_BlobParameters.cs</Link>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\Gost28147_89_EncryptionSyntax\Gost28147_89_BlobParameters.cs">
+      <Link>Common\System\Security\Cryptography\Gost28147_89_EncryptionSyntax\Gost28147_89_BlobParameters.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\GostR3410_2012_PKISyntax\GostR3410_2012_PublicKeyParameters.cs">
+      <Link>Common\System\Security\Cryptography\GostR3410_2012_PKISyntax\GostR3410_2012_PublicKeyParameters.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\GostR3410_EncryptionSyntax\GostR3410_KeyTransport.cs">
+      <Link>Common\System\Security\Cryptography\GostR3410_EncryptionSyntax\GostR3410_KeyTransport.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\GostR3410_EncryptionSyntax\GostR3410_TransportParameters.cs">
+      <Link>Common\System\Security\Cryptography\GostR3410_EncryptionSyntax\GostR3410_TransportParameters.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\PKIX1Explicit88\SubjectPublicKeyInfo.cs">
+      <Link>Common\System\Security\Cryptography\PKIX1Explicit88\SubjectPublicKeyInfo.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\PKIX1Explicit88\AlgorithmIdentifier.cs">
+      <Link>Common\System\Security\Cryptography\PKIX1Explicit88\AlgorithmIdentifier.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\PKIX1Explicit88\ALGORITHM_ID.cs">
+      <Link>Common\System\Security\Cryptography\PKIX1Explicit88\ALGORITHM_ID.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\PKIX1Explicit88\_PKIX1Explicit88Values.cs">
+      <Link>Common\System\Security\Cryptography\PKIX1Explicit88\_PKIX1Explicit88Values.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\GostR3410_94_PKISyntax\_GostR3410_94_PKISyntaxValues.cs">
+      <Link>Common\System\Security\Cryptography\GostR3410_94_PKISyntax\_GostR3410_94_PKISyntaxValues.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\GostR3410_94_PKISyntax\GostR3410_94_PublicKeyParameters.cs">
+      <Link>Common\System\Security\Cryptography\GostR3410_94_PKISyntax\GostR3410_94_PublicKeyParameters.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\PKIX1Explicit88\_gost94DHPubKey_Type.cs">
+      <Link>Common\System\Security\Cryptography\PKIX1Explicit88\_gost94DHPubKey_Type.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\PKIX1Explicit88\_gost2001DHPubKey_Type.cs">
+      <Link>Common\System\Security\Cryptography\PKIX1Explicit88\_gost2001DHPubKey_Type.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\PKIX1Explicit88\_gost2001PubKey_Type.cs">
+      <Link>Common\System\Security\Cryptography\PKIX1Explicit88\_gost2001PubKey_Type.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\PKIX1Explicit88\_gost2012_256_PubKey_Type.cs">
+      <Link>Common\System\Security\Cryptography\PKIX1Explicit88\_gost2012_256_PubKey_Type.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\PKIX1Explicit88\_gost2012_256DH_PubKey_Type.cs">
+      <Link>Common\System\Security\Cryptography\PKIX1Explicit88\_gost2012_256DH_PubKey_Type.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\PKIX1Explicit88\_gost2012_512_PubKey_Type.cs">
+      <Link>Common\System\Security\Cryptography\PKIX1Explicit88\_gost2012_512_PubKey_Type.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\PKIX1Explicit88\_gost2012_512DH_PubKey_Type.cs">
+      <Link>Common\System\Security\Cryptography\PKIX1Explicit88\_gost2012_512DH_PubKey_Type.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\PKIX1Explicit88\_gost94PubKey_Type.cs">
+      <Link>Common\System\Security\Cryptography\PKIX1Explicit88\_gost94PubKey_Type.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\PKIX1Explicit88\NULLParams.cs">
+      <Link>Common\System\Security\Cryptography\PKIX1Explicit88\NULLParams.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\PKIX1Explicit88\ATTRIBUTE_CLASS.cs">
+      <Link>Common\System\Security\Cryptography\PKIX1Explicit88\ATTRIBUTE_CLASS.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\GostR3410_2001_PKISyntax\_GostR3410_2001_PKISyntaxValues.cs">
+      <Link>Common\System\Security\Cryptography\GostR3410_2001_PKISyntax\_GostR3410_2001_PKISyntaxValues.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\GostR3410_2012_PKISyntax\_GostR3410_2012_PKISyntaxValues.cs">
+      <Link>Common\System\Security\Cryptography\GostR3410_2012_PKISyntax\_GostR3410_2012_PKISyntaxValues.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\Gost28147_89_EncryptionSyntax\_Gost28147_89_EncryptionSyntaxValues.cs">
+      <Link>Common\System\Security\Cryptography\Gost28147_89_EncryptionSyntax\_Gost28147_89_EncryptionSyntaxValues.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\Gost28147_89_EncryptionSyntax\Gost28147_89_Parameters.cs">
+      <Link>Common\System\Security\Cryptography\Gost28147_89_EncryptionSyntax\Gost28147_89_Parameters.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\Gost28147_89_EncryptionSyntax\Gost28147_89_IV.cs">
+      <Link>Common\System\Security\Cryptography\Gost28147_89_EncryptionSyntax\Gost28147_89_IV.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\GostR3411_94_DigestSyntax\_GostR3411_94_DigestSyntaxValues.cs">
+      <Link>Common\System\Security\Cryptography\GostR3411_94_DigestSyntax\_GostR3411_94_DigestSyntaxValues.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\GostR3411_94_DigestSyntax\GostR3411_94_DigestParameters.cs">
+      <Link>Common\System\Security\Cryptography\GostR3411_94_DigestSyntax\GostR3411_94_DigestParameters.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\PKIX1Explicit88\_gostR341194DigestParams_Type.cs">
+      <Link>Common\System\Security\Cryptography\PKIX1Explicit88\_gostR341194DigestParams_Type.cs</Link>
+    </Compile>
+
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\GostR3411_2012_DigestSyntax\_GostR3411_2012_DigestSyntaxValues.cs">
+      <Link>Common\System\Security\Cryptography\GostR3411_2012_DigestSyntax\_GostR3411_2012_DigestSyntaxValues.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\GostR3411_2012_DigestSyntax\GostR3411_2012_256_Digest.cs">
+      <Link>Common\System\Security\Cryptography\GostR3411_2012_DigestSyntax\GostR3411_2012_256_Digest.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\System\Security\Cryptography\GostR3411_2012_DigestSyntax\GostR3411_2012_512_Digest.cs">
+      <Link>Common\System\Security\Cryptography\GostR3411_2012_DigestSyntax\GostR3411_2012_512_Digest.cs</Link>
     </Compile>
     <!--end: gost asn-->
     <Compile Include="System\Security\Cryptography\GostCryptoAPITransform.cs" />

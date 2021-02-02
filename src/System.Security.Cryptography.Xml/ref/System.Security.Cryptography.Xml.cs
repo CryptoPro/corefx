@@ -25,6 +25,13 @@ namespace System.Security.Cryptography.Xml
         public override System.Xml.XmlElement GetXml() { throw null; }
         public override void LoadXml(System.Xml.XmlElement value) { }
     }
+    public partial class CryptoSignedXmlRecursionException : System.Xml.XmlException
+    {
+        public CryptoSignedXmlRecursionException() { }
+        protected CryptoSignedXmlRecursionException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
+        public CryptoSignedXmlRecursionException(string message) { }
+        public CryptoSignedXmlRecursionException(string message, System.Exception inner) { }
+    }
     public partial class DataObject
     {
         public DataObject() { }
@@ -100,10 +107,6 @@ namespace System.Security.Cryptography.Xml
         public const string XmlEncAES128KeyWrapUrl = "http://www.w3.org/2001/04/xmlenc#kw-aes128";
         public const string XmlEncAES128Url = "http://www.w3.org/2001/04/xmlenc#aes128-cbc";
         public const string XmlEncAES192KeyWrapUrl = "http://www.w3.org/2001/04/xmlenc#kw-aes192";
-        public const string XmlEncGost28147Url = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gost28147";
-        public const string XmlEncGostCryptoProKeyWrapUrl = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:kw-cp";
-        public const string XmlEncGostCryptoPro12KeyWrapUrl = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:kw-cp12";
-        public const string XmlEncGost28147KeyWrapUrl = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:kw-gost";
         public const string XmlEncAES192Url = "http://www.w3.org/2001/04/xmlenc#aes192-cbc";
         public const string XmlEncAES256KeyWrapUrl = "http://www.w3.org/2001/04/xmlenc#kw-aes256";
         public const string XmlEncAES256Url = "http://www.w3.org/2001/04/xmlenc#aes256-cbc";
@@ -111,12 +114,16 @@ namespace System.Security.Cryptography.Xml
         public const string XmlEncElementContentUrl = "http://www.w3.org/2001/04/xmlenc#Content";
         public const string XmlEncElementUrl = "http://www.w3.org/2001/04/xmlenc#Element";
         public const string XmlEncEncryptedKeyUrl = "http://www.w3.org/2001/04/xmlenc#EncryptedKey";
+        public const string XmlEncGost2012_256KeyTransportUrl = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:transport-gost2012-256";
+        public const string XmlEncGost2012_512KeyTransportUrl = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:transport-gost2012-512";
+        public const string XmlEncGost28147KeyWrapUrl = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:kw-gost";
+        public const string XmlEncGost28147Url = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gost28147";
+        public const string XmlEncGostCryptoPro12KeyWrapUrl = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:kw-cp12";
+        public const string XmlEncGostCryptoProKeyWrapUrl = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:kw-gost";
+        public const string XmlEncGostKeyTransportUrl = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:transport-gost2001";
         public const string XmlEncNamespaceUrl = "http://www.w3.org/2001/04/xmlenc#";
         public const string XmlEncRSA15Url = "http://www.w3.org/2001/04/xmlenc#rsa-1_5";
         public const string XmlEncRSAOAEPUrl = "http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p";
-        public const string XmlEncGostKeyTransportUrl = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:transport-gost2001";
-        public const string XmlEncGost2012_256KeyTransportUrl = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:transport-gost2012-256";
-        public const string XmlEncGost2012_512KeyTransportUrl = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:transport-gost2012-512";
         public const string XmlEncSHA256Url = "http://www.w3.org/2001/04/xmlenc#sha256";
         public const string XmlEncSHA512Url = "http://www.w3.org/2001/04/xmlenc#sha512";
         public const string XmlEncTripleDESKeyWrapUrl = "http://www.w3.org/2001/04/xmlenc#kw-tripledes";
@@ -136,20 +143,25 @@ namespace System.Security.Cryptography.Xml
         public byte[] DecryptData(System.Security.Cryptography.Xml.EncryptedData encryptedData, System.Security.Cryptography.SymmetricAlgorithm symmetricAlgorithm) { throw null; }
         public void DecryptDocument() { }
         public virtual byte[] DecryptEncryptedKey(System.Security.Cryptography.Xml.EncryptedKey encryptedKey) { throw null; }
+        public static System.Security.Cryptography.SymmetricAlgorithm DecryptKey(byte[] keyData, System.Security.Cryptography.Gost3410 gost, string symmetricAlgorithmUri) { throw null; }
+        public static System.Security.Cryptography.SymmetricAlgorithm DecryptKey(byte[] keyData, System.Security.Cryptography.Gost3410_2012_256 gost, string symmetricAlgorithmUri) { throw null; }
+        public static System.Security.Cryptography.SymmetricAlgorithm DecryptKey(byte[] keyData, System.Security.Cryptography.Gost3410_2012_512 gost, string symmetricAlgorithmUri) { throw null; }
         public static byte[] DecryptKey(byte[] keyData, System.Security.Cryptography.RSA rsa, bool useOAEP) { throw null; }
+        public static System.Security.Cryptography.SymmetricAlgorithm DecryptKey(byte[] keyData, System.Security.Cryptography.RSA rsa, bool useOAEP, string symmetricAlgorithmUri) { throw null; }
         public static byte[] DecryptKey(byte[] keyData, System.Security.Cryptography.SymmetricAlgorithm symmetricAlgorithm) { throw null; }
+        public static System.Security.Cryptography.SymmetricAlgorithm DecryptKey(byte[] keyData, System.Security.Cryptography.SymmetricAlgorithm symmetricAlgorithm, string symmetricAlgorithmUri, string encryptionKeyAlgorithm) { throw null; }
         public System.Security.Cryptography.Xml.EncryptedData Encrypt(System.Xml.XmlElement inputElement, System.Security.Cryptography.X509Certificates.X509Certificate2 certificate) { throw null; }
         public System.Security.Cryptography.Xml.EncryptedData Encrypt(System.Xml.XmlElement inputElement, string keyName) { throw null; }
         public byte[] EncryptData(byte[] plaintext, System.Security.Cryptography.SymmetricAlgorithm symmetricAlgorithm) { throw null; }
         public byte[] EncryptData(System.Xml.XmlElement inputElement, System.Security.Cryptography.SymmetricAlgorithm symmetricAlgorithm, bool content) { throw null; }
         public static byte[] EncryptKey(byte[] keyData, System.Security.Cryptography.RSA rsa, bool useOAEP) { throw null; }
         public static byte[] EncryptKey(byte[] keyData, System.Security.Cryptography.SymmetricAlgorithm symmetricAlgorithm) { throw null; }
-        public static byte[] EncryptKey(Gost28147 simm, Gost3410 gost) { throw null; }
-        public static byte[] EncryptKey(Gost28147 simm, Gost3410_2012_256 gost) { throw null; }
-        public static byte[] EncryptKey(Gost28147 simm, Gost3410_2012_256 gost, GostKeyWrapMethod wrapMethod) { throw null; }
-        public static byte[] EncryptKey(Gost28147 simm, Gost3410_2012_512 gost) { throw null; }
-        public static byte[] EncryptKey(Gost28147 simm, Gost3410_2012_512 gost, GostKeyWrapMethod wrapMethod) { throw null; }
-        public static byte[] EncryptKey(SymmetricAlgorithm keyToEncrypt, Gost28147 exportingKey, GostKeyWrapMethod method) { throw null; }
+        public static byte[] EncryptKey(System.Security.Cryptography.Gost28147 simm, System.Security.Cryptography.Gost3410 gost) { throw null; }
+        public static byte[] EncryptKey(System.Security.Cryptography.Gost28147 simm, System.Security.Cryptography.Gost3410_2012_256 gost) { throw null; }
+        public static byte[] EncryptKey(System.Security.Cryptography.Gost28147 simm, System.Security.Cryptography.Gost3410_2012_256 gost, System.Security.Cryptography.GostKeyWrapMethod wrapMethod) { throw null; }
+        public static byte[] EncryptKey(System.Security.Cryptography.Gost28147 simm, System.Security.Cryptography.Gost3410_2012_512 gost) { throw null; }
+        public static byte[] EncryptKey(System.Security.Cryptography.Gost28147 simm, System.Security.Cryptography.Gost3410_2012_512 gost, System.Security.Cryptography.GostKeyWrapMethod wrapMethod) { throw null; }
+        public static byte[] EncryptKey(System.Security.Cryptography.SymmetricAlgorithm keyToEncrypt, System.Security.Cryptography.Gost28147 exportingKey, System.Security.Cryptography.GostKeyWrapMethod method) { throw null; }
         public virtual byte[] GetDecryptionIV(System.Security.Cryptography.Xml.EncryptedData encryptedData, string symmetricAlgorithmUri) { throw null; }
         public virtual System.Security.Cryptography.SymmetricAlgorithm GetDecryptionKey(System.Security.Cryptography.Xml.EncryptedData encryptedData, string symmetricAlgorithmUri) { throw null; }
         public virtual System.Xml.XmlElement GetIdElement(System.Xml.XmlDocument document, string idValue) { throw null; }
@@ -202,6 +214,30 @@ namespace System.Security.Cryptography.Xml
         int System.Collections.IList.IndexOf(object value) { throw null; }
         void System.Collections.IList.Insert(int index, object value) { }
         void System.Collections.IList.Remove(object value) { }
+    }
+    public partial class Gost2012_256KeyValue : System.Security.Cryptography.Xml.KeyInfoClause
+    {
+        public Gost2012_256KeyValue() { }
+        public Gost2012_256KeyValue(System.Security.Cryptography.Gost3410_2012_256 key) { }
+        public System.Security.Cryptography.Gost3410_2012_256 Key { get { throw null; } set { } }
+        public override System.Xml.XmlElement GetXml() { throw null; }
+        public override void LoadXml(System.Xml.XmlElement value) { }
+    }
+    public partial class Gost2012_512KeyValue : System.Security.Cryptography.Xml.KeyInfoClause
+    {
+        public Gost2012_512KeyValue() { }
+        public Gost2012_512KeyValue(System.Security.Cryptography.Gost3410_2012_512 key) { }
+        public System.Security.Cryptography.Gost3410_2012_512 Key { get { throw null; } set { } }
+        public override System.Xml.XmlElement GetXml() { throw null; }
+        public override void LoadXml(System.Xml.XmlElement value) { }
+    }
+    public partial class GostKeyValue : System.Security.Cryptography.Xml.KeyInfoClause
+    {
+        public GostKeyValue() { }
+        public GostKeyValue(System.Security.Cryptography.Gost3410 key) { }
+        public System.Security.Cryptography.Gost3410 Key { get { throw null; } set { } }
+        public override System.Xml.XmlElement GetXml() { throw null; }
+        public override void LoadXml(System.Xml.XmlElement value) { }
     }
     public partial interface IRelDecryptor
     {
@@ -328,34 +364,6 @@ namespace System.Security.Cryptography.Xml
         public override System.Xml.XmlElement GetXml() { throw null; }
         public override void LoadXml(System.Xml.XmlElement value) { }
     }
-
-    public partial class Gost2012_256KeyValue : System.Security.Cryptography.Xml.KeyInfoClause
-    {
-        public Gost2012_256KeyValue() { }
-        public Gost2012_256KeyValue(System.Security.Cryptography.Gost3410_2012_256 key) { }
-        public Gost3410_2012_256 Key { get { throw null; } set { } }
-        public override System.Xml.XmlElement GetXml() { throw null; }
-        public override void LoadXml(System.Xml.XmlElement value) { }
-    }
-
-    public partial class Gost2012_512KeyValue : System.Security.Cryptography.Xml.KeyInfoClause
-    {
-        public Gost2012_512KeyValue() { }
-        public Gost2012_512KeyValue(System.Security.Cryptography.Gost3410_2012_512 key) { }
-        public Gost3410_2012_512 Key { get { throw null; } set { } }
-        public override System.Xml.XmlElement GetXml() { throw null; }
-        public override void LoadXml(System.Xml.XmlElement value) { }
-    }
-
-    public partial class GostKeyValue : System.Security.Cryptography.Xml.KeyInfoClause
-    {
-        public GostKeyValue() { }
-        public GostKeyValue(System.Security.Cryptography.Gost3410 key) { }
-        public Gost3410 Key { get { throw null; } set { } }
-        public override System.Xml.XmlElement GetXml() { throw null; }
-        public override void LoadXml(System.Xml.XmlElement value) { }
-    }
-
     public partial class Signature
     {
         public Signature() { }
@@ -401,6 +409,17 @@ namespace System.Security.Cryptography.Xml
         public const string XmlDsigEnvelopedSignatureTransformUrl = "http://www.w3.org/2000/09/xmldsig#enveloped-signature";
         public const string XmlDsigExcC14NTransformUrl = "http://www.w3.org/2001/10/xml-exc-c14n#";
         public const string XmlDsigExcC14NWithCommentsTransformUrl = "http://www.w3.org/2001/10/xml-exc-c14n#WithComments";
+        public const string XmlDsigGost3410Url = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34102001-gostr3411";
+        public const string XmlDsigGost3410UrlObsolete = "http://www.w3.org/2001/04/xmldsig-more#gostr34102001-gostr3411";
+        public const string XmlDsigGost3410_2012_256Url = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34102012-gostr34112012-256";
+        public const string XmlDsigGost3410_2012_512Url = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34102012-gostr34112012-512";
+        public const string XmlDsigGost3411HMACUrl = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:hmac-gostr3411";
+        public const string XmlDsigGost3411Url = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr3411";
+        public const string XmlDsigGost3411UrlObsolete = "http://www.w3.org/2001/04/xmldsig-more#gostr3411";
+        public const string XmlDsigGost3411_2012_256HMACUrl = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:hmac-gostr3411-2012-256";
+        public const string XmlDsigGost3411_2012_256Url = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34112012-256";
+        public const string XmlDsigGost3411_2012_512HMACUrl = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:hmac-gostr3411-2012-512";
+        public const string XmlDsigGost3411_2012_512Url = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34112012-512";
         public const string XmlDsigHMACSHA1Url = "http://www.w3.org/2000/09/xmldsig#hmac-sha1";
         public const string XmlDsigMinimalCanonicalizationUrl = "http://www.w3.org/2000/09/xmldsig#minimal";
         public const string XmlDsigNamespaceUrl = "http://www.w3.org/2000/09/xmldsig#";
@@ -415,32 +434,6 @@ namespace System.Security.Cryptography.Xml
         public const string XmlDsigXPathTransformUrl = "http://www.w3.org/TR/1999/REC-xpath-19991116";
         public const string XmlDsigXsltTransformUrl = "http://www.w3.org/TR/1999/REC-xslt-19991116";
         public const string XmlLicenseTransformUrl = "urn:mpeg:mpeg21:2003:01-REL-R-NS:licenseTransform";
-        //begin: gost
-        public const string XmlDsigGost3411Url =
-            "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr3411";
-        [Obsolete]
-        public const string XmlDsigGost3411UrlObsolete =
-            "http://www.w3.org/2001/04/xmldsig-more#gostr3411";
-        public const string XmlDsigGost3410Url =
-            "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34102001-gostr3411";
-        [Obsolete]
-        public const string XmlDsigGost3410UrlObsolete =
-            "http://www.w3.org/2001/04/xmldsig-more#gostr34102001-gostr3411";
-        public const string XmlDsigGost3411HMACUrl =
-            "urn:ietf:params:xml:ns:cpxmlsec:algorithms:hmac-gostr3411";
-        public const string XmlDsigGost3411_2012_256Url =
-            "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34112012-256";
-        public const string XmlDsigGost3410_2012_256Url =
-            "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34102012-gostr34112012-256";
-        public const string XmlDsigGost3411_2012_256HMACUrl =
-            "urn:ietf:params:xml:ns:cpxmlsec:algorithms:hmac-gostr3411-2012-256";
-        public const string XmlDsigGost3411_2012_512Url =
-            "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34112012-512";
-        public const string XmlDsigGost3410_2012_512Url =
-            "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34102012-gostr34112012-512";
-        public const string XmlDsigGost3411_2012_512HMACUrl =
-            "urn:ietf:params:xml:ns:cpxmlsec:algorithms:hmac-gostr3411-2012-512";
-        //end: gost
         public SignedXml() { }
         public SignedXml(System.Xml.XmlDocument document) { }
         public SignedXml(System.Xml.XmlElement elem) { }
@@ -570,6 +563,18 @@ namespace System.Security.Cryptography.Xml
         public XmlDsigExcC14NWithCommentsTransform() { }
         public XmlDsigExcC14NWithCommentsTransform(string inclusiveNamespacesPrefixList) { }
     }
+    public partial class XmlDsigSmevTransform : System.Security.Cryptography.Xml.Transform
+    {
+        public XmlDsigSmevTransform() { }
+        public override System.Type[] InputTypes { get { throw null; } }
+        public override System.Type[] OutputTypes { get { throw null; } }
+        public bool UseOldEscaping { get { throw null; } set { } }
+        protected override System.Xml.XmlNodeList GetInnerXml() { throw null; }
+        public override object GetOutput() { throw null; }
+        public override object GetOutput(System.Type type) { throw null; }
+        public override void LoadInnerXml(System.Xml.XmlNodeList nodeList) { }
+        public override void LoadInput(object obj) { }
+    }
     public partial class XmlDsigXPathTransform : System.Security.Cryptography.Xml.Transform
     {
         public XmlDsigXPathTransform() { }
@@ -604,24 +609,5 @@ namespace System.Security.Cryptography.Xml
         public override object GetOutput(System.Type type) { throw null; }
         public override void LoadInnerXml(System.Xml.XmlNodeList nodeList) { }
         public override void LoadInput(object obj) { }
-    }
-    public partial class XmlDsigSmevTransform : System.Security.Cryptography.Xml.Transform
-    {
-        public XmlDsigSmevTransform() { }
-        public bool UseOldEscaping { get { throw null; } set { throw null; } }
-
-        public override Type[] InputTypes { get { throw null; } }
-
-        public override Type[] OutputTypes { get { throw null; } }
-
-        public override object GetOutput() { throw null; }
-
-        public override object GetOutput(Type type) { throw null; }
-
-        public override void LoadInnerXml(System.Xml.XmlNodeList nodeList) { throw null; }
-
-        public override void LoadInput(object obj) { throw null; }
-
-        protected override System.Xml.XmlNodeList GetInnerXml() { throw null; }
     }
 }

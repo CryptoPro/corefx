@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using Internal.NativeCrypto;
 
 namespace System.Security.Cryptography
 {
@@ -32,7 +33,7 @@ namespace System.Security.Cryptography
         /// <returns>Данные обмена ключами в виде байтового массива.</returns>
         public virtual byte[] Encode()
         {
-            return this.Encode();
+            return AsnHelper.EncodeGostKeyTransport(this);
         }
 
         /// <summary>
@@ -47,7 +48,7 @@ namespace System.Security.Cryptography
         /// <see cref="GostKeyTransport"/>.</returns>
         public void Decode(byte[] data)
         {
-            this.Decode(data);
+            AsnHelper.DecodeGostKeyTransport(data, this);
         }
     }
 

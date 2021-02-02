@@ -296,7 +296,7 @@ namespace System.Security.Cryptography
         public GostKeyExchangeDeformatter(System.Security.Cryptography.AsymmetricAlgorithm key) { }
         public override string Parameters { get { throw null; } set { } }
         public override byte[] DecryptKeyExchange(byte[] rgb) { throw null; }
-        public System.Security.Cryptography.SymmetricAlgorithm DecryptKeyExchange(System.Security.Cryptography.GostKeyTransport transport) { throw null; }
+        public System.Security.Cryptography.SymmetricAlgorithm DecryptKeyExchange(System.Security.Cryptography.GostKeyTransport transport, GostKeyWrapMethod keyWrapMethod = GostKeyWrapMethod.CryptoPro12KeyWrap) { throw null; }
         public System.Security.Cryptography.SymmetricAlgorithm DecryptKeyExchangeData(byte[] data) { throw null; }
         public override void SetKey(System.Security.Cryptography.AsymmetricAlgorithm key) { }
     }
@@ -307,8 +307,8 @@ namespace System.Security.Cryptography
         public override string Parameters { get { throw null; } }
         public override byte[] CreateKeyExchange(byte[] data) { throw null; }
         public override byte[] CreateKeyExchange(byte[] data, System.Type symAlgType) { throw null; }
-        public System.Security.Cryptography.GostKeyTransport CreateKeyExchange(System.Security.Cryptography.SymmetricAlgorithm alg) { throw null; }
-        public byte[] CreateKeyExchangeData(System.Security.Cryptography.SymmetricAlgorithm alg) { throw null; }
+        public System.Security.Cryptography.GostKeyTransport CreateKeyExchange(System.Security.Cryptography.SymmetricAlgorithm alg, GostKeyWrapMethod wrapMethod = GostKeyWrapMethod.CryptoPro12KeyWrap) { throw null; }
+        public byte[] CreateKeyExchangeData(System.Security.Cryptography.SymmetricAlgorithm alg, GostKeyWrapMethod keyWrapMethod = GostKeyWrapMethod.CryptoPro12KeyWrap) { throw null; }
         public override void SetKey(System.Security.Cryptography.AsymmetricAlgorithm key) { }
     }
     public sealed partial class GostKeyExchangeParameters

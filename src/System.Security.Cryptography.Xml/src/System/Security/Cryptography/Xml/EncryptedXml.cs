@@ -295,6 +295,9 @@ namespace System.Security.Cryptography.Xml
             {
                 case EncryptedXml.XmlEncDESUrl:
                 case EncryptedXml.XmlEncTripleDESUrl:
+                // begin: gost
+                case EncryptedXml.XmlEncGost28147Url:
+                // end: gost
                     initBytesSize = 8;
                     break;
                 case EncryptedXml.XmlEncAES128Url:
@@ -383,16 +386,32 @@ namespace System.Security.Cryptography.Xml
                         throw new CryptographicException(SR.Cryptography_Xml_MissingAlgorithm);
                     symmetricAlgorithmUri = encryptedData.EncryptionMethod.KeyAlgorithm;
                 }
-                byte[] key = DecryptEncryptedKey(ek);
-                if (key == null)
-                    throw new CryptographicException(SR.Cryptography_Xml_MissingDecryptionKey);
-
-                SymmetricAlgorithm symAlg = CryptoHelpers.CreateFromName<SymmetricAlgorithm>(symmetricAlgorithmUri);
-                if (symAlg == null)
+                // begin: gost
+                SymmetricAlgorithm symAlg;
+                if (symmetricAlgorithmUri == EncryptedXml.XmlEncGostKeyTransportUrl ||
+                      symmetricAlgorithmUri == EncryptedXml.XmlEncGost2012_256KeyTransportUrl ||
+                      symmetricAlgorithmUri == EncryptedXml.XmlEncGost2012_512KeyTransportUrl ||
+                      symmetricAlgorithmUri == EncryptedXml.XmlEncGost28147Url)
                 {
-                    throw new CryptographicException(SR.Cryptography_Xml_MissingAlgorithm);
+                    symAlg = DecryptEncryptedKey(
+                        ek,
+                        symmetricAlgorithmUri);
                 }
-                symAlg.Key = key;
+                else
+                {
+                    // end: gost
+                    byte[] key = DecryptEncryptedKey(ek);
+                    if (key == null)
+                        throw new CryptographicException(SR.Cryptography_Xml_MissingDecryptionKey);
+
+                    symAlg = CryptoHelpers.CreateFromName<SymmetricAlgorithm>(symmetricAlgorithmUri);
+
+                    if (symAlg == null)
+                    {
+                        throw new CryptographicException(SR.Cryptography_Xml_MissingAlgorithm);
+                    }
+                    symAlg.Key = key;
+                }
                 return symAlg;
             }
             return null;
@@ -430,7 +449,9 @@ namespace System.Security.Cryptography.Xml
                         }
                         // kek is either a SymmetricAlgorithm or an RSA key, otherwise, we wouldn't be able to insert it in the hash table
                         if (kek is SymmetricAlgorithm)
+                        {
                             return EncryptedXml.DecryptKey(encryptedKey.CipherData.CipherValue, (SymmetricAlgorithm)kek);
+                        }
 
                         // kek is an RSA key: get fOAEP from the algorithm, default to false
                         fOAEP = (encryptedKey.EncryptionMethod != null && encryptedKey.EncryptionMethod.KeyAlgorithm == EncryptedXml.XmlEncRSAOAEPUrl);
@@ -512,6 +533,176 @@ namespace System.Security.Cryptography.Xml
             return null;
         }
 
+        // begin: gost
+        /// <summary>
+        /// Импорт зашифрованного ключа.
+        /// </summary>
+        /// 
+        /// <param name="encryptedKey">Зашифрованный ключ.</param>
+        /// <param name="symmetricAlgorithmUri">Алгоритм экспортируемого
+        /// ключа.</param>
+        /// 
+        /// <returns>Ключ в виде симметричного алгоритма</returns>
+        /// 
+        /// <argnull name="encryptedKey" />
+        /// 
+        /// <intdoc>
+        /// <para>Функция не произовдит излишних преобразований из key
+        /// в массив байтов, поэтому изменен прототип и изменено имя.</para>
+        /// </intdoc>
+        internal SymmetricAlgorithm DecryptEncryptedKey(
+            EncryptedKey encryptedKey, string symmetricAlgorithmUri)
+        {
+            if (encryptedKey == null)
+                throw new ArgumentNullException(nameof(encryptedKey));
+            if (encryptedKey.KeyInfo == null)
+                return null;
+
+            IEnumerator keyInfoEnum = encryptedKey.KeyInfo.GetEnumerator();
+            KeyInfoName kiName;
+            KeyInfoX509Data kiX509Data;
+            KeyInfoRetrievalMethod kiRetrievalMethod;
+            KeyInfoEncryptedKey kiEncKey;
+            EncryptedKey ek = null;
+            bool fOAEP = false;
+
+            while (keyInfoEnum.MoveNext())
+            {
+                kiName = keyInfoEnum.Current as KeyInfoName;
+                if (kiName != null)
+                {
+                    // Get the decryption key from the key mapping
+                    string keyName = kiName.Value;
+                    object kek = _keyNameMapping[keyName];
+                    if (kek != null)
+                    {
+                        if (encryptedKey.CipherData == null || encryptedKey.CipherData.CipherValue == null)
+                        {
+                            throw new CryptographicException(SR.Cryptography_Xml_MissingAlgorithm);
+                        }
+                        // kek is either a SymmetricAlgorithm or an RSA key, otherwise, we wouldn't be able to insert it in the hash table
+                        if (kek is SymmetricAlgorithm)
+                        {
+                            return EncryptedXml.DecryptKey(
+                                encryptedKey.CipherData.CipherValue, 
+                                (SymmetricAlgorithm)kek, 
+                                symmetricAlgorithmUri, 
+                                encryptedKey.EncryptionMethod.KeyAlgorithm);
+                        }
+
+                        // kek is an RSA key: get fOAEP from the algorithm, default to false
+                        if (kek is RSA rsa)
+                        {
+                            fOAEP = (encryptedKey.EncryptionMethod != null && encryptedKey.EncryptionMethod.KeyAlgorithm == EncryptedXml.XmlEncRSAOAEPUrl);
+                            return EncryptedXml.DecryptKey(encryptedKey.CipherData.CipherValue, rsa, fOAEP, symmetricAlgorithmUri);
+                        }
+                        // Экспорт симметричного на ГОСТ 2001.
+                        if (kek is Gost3410 gost)
+                        {
+                            return EncryptedXml.DecryptKey(encryptedKey.CipherData.CipherValue, gost, symmetricAlgorithmUri);
+                        }
+                        // Экспорт симметричного на ГОСТ 2012 256.
+                        if (kek is Gost3410_2012_256 gost_2012_256)
+                        {
+                            return EncryptedXml.DecryptKey(encryptedKey.CipherData.CipherValue, gost_2012_256, symmetricAlgorithmUri);
+                        }
+                        // Экспорт симметричного на ГОСТ 2012 512.
+                        if (kek is Gost3410_2012_512 gost_2012_512)
+                        {
+                            return EncryptedXml.DecryptKey(encryptedKey.CipherData.CipherValue, gost_2012_512, symmetricAlgorithmUri);
+                        }
+                    }
+                    break;
+                }
+                kiX509Data = keyInfoEnum.Current as KeyInfoX509Data;
+                if (kiX509Data != null)
+                {
+                    X509Certificate2Collection collection = Utils.BuildBagOfCerts(kiX509Data, CertUsageType.Decryption);
+                    foreach (X509Certificate2 certificate in collection)
+                    {
+                        using (var privateKey = certificate.PrivateKey)
+                        {
+                            if (privateKey != null)
+                            {
+                                if (encryptedKey.CipherData == null || encryptedKey.CipherData.CipherValue == null)
+                                {
+                                    throw new CryptographicException(SR.Cryptography_Xml_MissingAlgorithm);
+                                }
+                                if (privateKey is RSA rsa)
+                                {
+                                    fOAEP = (encryptedKey.EncryptionMethod != null && encryptedKey.EncryptionMethod.KeyAlgorithm == EncryptedXml.XmlEncRSAOAEPUrl);
+                                    return EncryptedXml.DecryptKey(encryptedKey.CipherData.CipherValue, rsa, fOAEP, symmetricAlgorithmUri);
+                                }
+                                // Экспорт симметричного на ГОСТ 2001.
+                                if (privateKey is Gost3410 gost)
+                                {
+                                    return EncryptedXml.DecryptKey(encryptedKey.CipherData.CipherValue, gost, symmetricAlgorithmUri);
+                                }
+                                // Экспорт симметричного на ГОСТ 2012 256.
+                                if (privateKey is Gost3410_2012_256 gost2012_256)
+                                {
+                                    return EncryptedXml.DecryptKey(encryptedKey.CipherData.CipherValue, gost2012_256, symmetricAlgorithmUri);
+                                }
+                                // Экспорт симметричного на ГОСТ 2012 512.
+                                if (privateKey is Gost3410_2012_512 gost2012_512)
+                                {
+                                    return EncryptedXml.DecryptKey(encryptedKey.CipherData.CipherValue, gost2012_512, symmetricAlgorithmUri);
+                                }
+                            }
+                        }
+                    }
+                    break;
+                }
+                kiRetrievalMethod = keyInfoEnum.Current as KeyInfoRetrievalMethod;
+                if (kiRetrievalMethod != null)
+                {
+                    string idref = Utils.ExtractIdFromLocalUri(kiRetrievalMethod.Uri);
+                    ek = new EncryptedKey();
+                    ek.LoadXml(GetIdElement(_document, idref));
+                    try
+                    {
+                        //Following checks if XML dsig processing is in loop and within the limit defined by machine
+                        // admin or developer. Once the recursion depth crosses the defined limit it will throw exception.
+                        _xmlDsigSearchDepthCounter++;
+                        if (IsOverXmlDsigRecursionLimit())
+                        {
+                            //Throw exception once recursion limit is hit. 
+                            throw new CryptoSignedXmlRecursionException();
+                        }
+                        else
+                        {
+                            return DecryptEncryptedKey(ek, symmetricAlgorithmUri);
+                        }
+                    }
+                    finally
+                    {
+                        _xmlDsigSearchDepthCounter--;
+                    }
+                }
+                kiEncKey = keyInfoEnum.Current as KeyInfoEncryptedKey;
+                if (kiEncKey != null)
+                {
+                    ek = kiEncKey.EncryptedKey;
+                    // recursively process EncryptedKey elements
+                    SymmetricAlgorithm encryptionKey = DecryptEncryptedKey(ek, symmetricAlgorithmUri);
+                    if (encryptionKey != null)
+                    {
+                        if (encryptedKey.CipherData == null || encryptedKey.CipherData.CipherValue == null)
+                        {
+                            throw new CryptographicException(SR.Cryptography_Xml_MissingAlgorithm);
+                        }
+                        return EncryptedXml.DecryptKey(
+                            encryptedKey.CipherData.CipherValue,
+                            encryptionKey,
+                            symmetricAlgorithmUri,
+                            encryptedKey.EncryptionMethod.KeyAlgorithm);
+                    }
+                }
+            }
+            return null;
+        }
+        // end: gost
+
         //
         // public methods
         //
@@ -525,7 +716,11 @@ namespace System.Security.Cryptography.Xml
             if (keyObject == null)
                 throw new ArgumentNullException(nameof(keyObject));
 
-            if (!(keyObject is SymmetricAlgorithm) && !(keyObject is RSA))
+            if (!(keyObject is SymmetricAlgorithm) 
+                && !(keyObject is RSA)
+                && !(keyObject is Gost3410)
+                && !(keyObject is Gost3410_2012_256)
+                && !(keyObject is Gost3410_2012_512))
                 throw new CryptographicException(SR.Cryptography_Xml_NotSupportedCryptographicTransform);
             _keyNameMapping.Add(keyName, keyObject);
         }
@@ -1049,18 +1244,16 @@ namespace System.Security.Cryptography.Xml
         /// <intdoc><para>Предоставляем public доступ по аналогии с RSA.</para></intdoc>
         public static byte[] EncryptKey(Gost28147 simm, Gost3410 gost)
         {
-            throw new Exception();
-            //// Это дополнительная функция, не DETOUR
-            //if (simm == null)
-            //{
-            //    throw new ArgumentNullException("keyData");
-            //}
-            //if (gost == null)
-            //{
-            //    throw new ArgumentNullException("gost");
-            //}
-            //GostKeyExchangeFormatter formatter = new GostKeyExchangeFormatter(gost);
-            //return formatter.CreateKeyExchangeData(simm);
+            if (simm == null)
+            {
+                throw new ArgumentNullException("keyData");
+            }
+            if (gost == null)
+            {
+                throw new ArgumentNullException("gost");
+            }
+            GostKeyExchangeFormatter formatter = new GostKeyExchangeFormatter(gost);
+            return formatter.CreateKeyExchangeData(simm);
         }
 
         /// <summary>
@@ -1088,18 +1281,16 @@ namespace System.Security.Cryptography.Xml
         /// <intdoc><para>Предоставляем public доступ по аналогии с RSA.</para></intdoc>
         public static byte[] EncryptKey(Gost28147 simm, Gost3410_2012_256 gost)
         {
-            throw new Exception();
-            //// Это дополнительная функция, не DETOUR
-            //if (simm == null)
-            //{
-            //    throw new ArgumentNullException("keyData");
-            //}
-            //if (gost == null)
-            //{
-            //    throw new ArgumentNullException("gost");
-            //}
-            //Gost2012_256KeyExchangeFormatter formatter = new Gost2012_256KeyExchangeFormatter(gost);
-            //return formatter.CreateKeyExchangeData(simm);
+            if (simm == null)
+            {
+                throw new ArgumentNullException("keyData");
+            }
+            if (gost == null)
+            {
+                throw new ArgumentNullException("gost");
+            }
+            GostKeyExchangeFormatter formatter = new GostKeyExchangeFormatter(gost);
+            return formatter.CreateKeyExchangeData(simm);
         }
 
         /// <summary>
@@ -1128,18 +1319,16 @@ namespace System.Security.Cryptography.Xml
         /// <intdoc><para>Предоставляем public доступ по аналогии с RSA.</para></intdoc>
         public static byte[] EncryptKey(Gost28147 simm, Gost3410_2012_256 gost, GostKeyWrapMethod wrapMethod)
         {
-            throw new Exception();
-            //// Это дополнительная функция, не DETOUR
-            //if (simm == null)
-            //{
-            //    throw new ArgumentNullException("keyData");
-            //}
-            //if (gost == null)
-            //{
-            //    throw new ArgumentNullException("gost");
-            //}
-            //Gost2012_256KeyExchangeFormatter formatter = new Gost2012_256KeyExchangeFormatter(gost);
-            //return formatter.CreateKeyExchangeData(simm, wrapMethod);
+            if (simm == null)
+            {
+                throw new ArgumentNullException("keyData");
+            }
+            if (gost == null)
+            {
+                throw new ArgumentNullException("gost");
+            }
+            GostKeyExchangeFormatter formatter = new GostKeyExchangeFormatter(gost);
+            return formatter.CreateKeyExchangeData(simm, wrapMethod);
         }
 
         /// <summary>
@@ -1167,18 +1356,16 @@ namespace System.Security.Cryptography.Xml
         /// <intdoc><para>Предоставляем public доступ по аналогии с RSA.</para></intdoc>
         public static byte[] EncryptKey(Gost28147 simm, Gost3410_2012_512 gost)
         {
-            throw new Exception();
-            //// Это дополнительная функция, не DETOUR
-            //if (simm == null)
-            //{
-            //    throw new ArgumentNullException("keyData");
-            //}
-            //if (gost == null)
-            //{
-            //    throw new ArgumentNullException("gost");
-            //}
-            //Gost2012_512KeyExchangeFormatter formatter = new Gost2012_512KeyExchangeFormatter(gost);
-            //return formatter.CreateKeyExchangeData(simm);
+            if (simm == null)
+            {
+                throw new ArgumentNullException("keyData");
+            }
+            if (gost == null)
+            {
+                throw new ArgumentNullException("gost");
+            }
+            GostKeyExchangeFormatter formatter = new GostKeyExchangeFormatter(gost);
+            return formatter.CreateKeyExchangeData(simm);
         }
 
         /// <summary>
@@ -1207,18 +1394,16 @@ namespace System.Security.Cryptography.Xml
         /// <intdoc><para>Предоставляем public доступ по аналогии с RSA.</para></intdoc>
         public static byte[] EncryptKey(Gost28147 simm, Gost3410_2012_512 gost, GostKeyWrapMethod wrapMethod)
         {
-            throw new Exception();
-            //// Это дополнительная функция, не DETOUR
-            //if (simm == null)
-            //{
-            //    throw new ArgumentNullException("keyData");
-            //}
-            //if (gost == null)
-            //{
-            //    throw new ArgumentNullException("gost");
-            //}
-            //Gost2012_512KeyExchangeFormatter formatter = new Gost2012_512KeyExchangeFormatter(gost);
-            //return formatter.CreateKeyExchangeData(simm, wrapMethod);
+            if (simm == null)
+            {
+                throw new ArgumentNullException("keyData");
+            }
+            if (gost == null)
+            {
+                throw new ArgumentNullException("gost");
+            }
+            GostKeyExchangeFormatter formatter = new GostKeyExchangeFormatter(gost);
+            return formatter.CreateKeyExchangeData(simm, wrapMethod);
         }
 
         /// <summary>
@@ -1247,6 +1432,235 @@ namespace System.Security.Cryptography.Xml
                 throw new ArgumentNullException("exportingKey");
             }
             return exportingKey.Wrap((Gost28147)keyToEncrypt, method);
+        }
+
+        /// <summary>
+        /// Расшифровывание элемента &#60;EncryptedKey&#62;
+        /// с использованием алгоритма асимметричного шифрования
+        /// и импорт его в класс симметричного алгоритма.
+        /// </summary>
+        /// 
+        /// <returns><see cref="SymmetricAlgorithm"/>, содержащий импортированный 
+        /// ключ.</returns>
+        /// 
+        /// <param name="keyData">Байтовый массив с зашифрованным элементом 
+        /// &#60;EncryptedKey&#62;</param>
+        /// <param name="gost">Ассиметричный ключ, используемый для расшифровки 
+        /// ключевай информации.</param>
+        /// <param name="symmetricAlgorithmUri">URI алгоритм экспорта.</param>
+        /// 
+        /// <argnull name="keyData" />
+        /// <argnull name="gost" />
+        /// 
+        /// <remarks><para>Данный метод производит расшифрование 
+        /// средствами импорта криптопровайдера и не требует прав по 
+        /// экспорту/импорту в байтовый массив.</para>
+        /// <para>Классы шифрования XML платформы .NET Framework реализуют спецификации 
+        /// шифрования XML, определенные консорциумом W3C:
+        /// <a href="http://www.w3.org/TR/xmlenc-core">XML Encryption Syntax and Processing</a>.
+        /// Дополненения к спецификации для российских стандартов
+        /// описано в <a href="http://GOSTXMLMORE">Using GOST Algorithms for XML Security</a>.
+        /// </para></remarks>
+        /// 
+        /// <intdoc><para>Кроме открытия доступа к ГОСТ преобразованию
+        /// по аналогии с RSA, предоставляем досуп, для возможности
+        /// импорта без операций преобразования в байтовый массив.</para>
+        /// </intdoc>
+        public static SymmetricAlgorithm DecryptKey(
+            byte[] keyData, Gost3410 gost, string symmetricAlgorithmUri)
+        {
+            // TODO: Use symmetricAlgorithmUri для разных алгоритмов симметричных ключей
+            if (keyData == null)
+                throw new ArgumentNullException("keyData");
+            if (gost == null)
+                throw new ArgumentNullException("gost");
+            GostKeyExchangeDeformatter deformatter =
+                new GostKeyExchangeDeformatter(gost);
+            return deformatter.DecryptKeyExchangeData(keyData);
+        }
+
+        /// <summary>
+        /// Расшифровывание элемента &#60;EncryptedKey&#62;
+        /// с использованием алгоритма асимметричного шифрования
+        /// и импорт его в класс симметричного алгоритма.
+        /// </summary>
+        /// 
+        /// <returns><see cref="SymmetricAlgorithm"/>, содержащий импортированный 
+        /// ключ.</returns>
+        /// 
+        /// <param name="keyData">Байтовый массив с зашифрованным элементом 
+        /// &#60;EncryptedKey&#62;</param>
+        /// <param name="gost">Ассиметричный ключ, используемый для расшифровки 
+        /// ключевай информации.</param>
+        /// <param name="symmetricAlgorithmUri">URI алгоритм экспорта.</param>
+        /// <argnull name="keyData" />
+        /// <argnull name="gost" />
+        /// 
+        /// <remarks><para>Данный метод производит расшифрование 
+        /// средствами импорта криптопровайдера и не требует прав по 
+        /// экспорту/импорту в байтовый массив.</para>
+        /// <para>Классы шифрования XML платформы .NET Framework реализуют спецификации 
+        /// шифрования XML, определенные консорциумом W3C:
+        /// <a href="http://www.w3.org/TR/xmlenc-core">XML Encryption Syntax and Processing</a>.
+        /// Дополненения к спецификации для российских стандартов
+        /// описано в <a href="http://GOSTXMLMORE">Using GOST Algorithms for XML Security</a>.
+        /// </para></remarks>
+        /// 
+        /// <intdoc><para>Кроме открытия доступа к ГОСТ преобразованию
+        /// по аналогии с RSA, предоставляем досуп, для возможности
+        /// импорта без операций преобразования в байтовый массив.</para>
+        /// </intdoc>
+        public static SymmetricAlgorithm DecryptKey(
+            byte[] keyData, Gost3410_2012_256 gost, string symmetricAlgorithmUri)
+        {
+            // TODO: Use symmetricAlgorithmUri для разных алгоритмов симметричных ключей
+            if (keyData == null)
+                throw new ArgumentNullException("keyData");
+            if (gost == null)
+                throw new ArgumentNullException("gost");
+            GostKeyExchangeDeformatter deformatter =
+                new GostKeyExchangeDeformatter(gost);
+            return deformatter.DecryptKeyExchangeData(keyData);
+        }
+
+        /// <summary>
+        /// Расшифровывание элемента &#60;EncryptedKey&#62;
+        /// с использованием алгоритма асимметричного шифрования
+        /// и импорт его в класс симметричного алгоритма.
+        /// </summary>
+        /// 
+        /// <returns><see cref="SymmetricAlgorithm"/>, содержащий импортированный 
+        /// ключ.</returns>
+        /// 
+        /// <param name="keyData">Байтовый массив с зашифрованным элементом 
+        /// &#60;EncryptedKey&#62;</param>
+        /// <param name="gost">Ассиметричный ключ, используемый для расшифровки 
+        /// ключевай информации.</param>
+        /// <param name="symmetricAlgorithmUri">URI алгоритм экспорта.</param>
+        /// <argnull name="keyData" />
+        /// <argnull name="gost" />
+        /// 
+        /// <remarks><para>Данный метод производит расшифрование 
+        /// средствами импорта криптопровайдера и не требует прав по 
+        /// экспорту/импорту в байтовый массив.</para>
+        /// <para>Классы шифрования XML платформы .NET Framework реализуют спецификации 
+        /// шифрования XML, определенные консорциумом W3C:
+        /// <a href="http://www.w3.org/TR/xmlenc-core">XML Encryption Syntax and Processing</a>.
+        /// Дополненения к спецификации для российских стандартов
+        /// описано в <a href="http://GOSTXMLMORE">Using GOST Algorithms for XML Security</a>.
+        /// </para></remarks>
+        /// 
+        /// <intdoc><para>Кроме открытия доступа к ГОСТ преобразованию
+        /// по аналогии с RSA, предоставляем досуп, для возможности
+        /// импорта без операций преобразования в байтовый массив.</para>
+        /// </intdoc>
+        public static SymmetricAlgorithm DecryptKey(
+            byte[] keyData, Gost3410_2012_512 gost, string symmetricAlgorithmUri)
+        {
+            // TODO: Use symmetricAlgorithmUri для разных алгоритмов симметричных ключей
+            if (keyData == null)
+                throw new ArgumentNullException("keyData");
+            if (gost == null)
+                throw new ArgumentNullException("gost");
+            GostKeyExchangeDeformatter deformatter =
+                new GostKeyExchangeDeformatter(gost);
+            return deformatter.DecryptKeyExchangeData(keyData);
+        }
+
+        /// <summary>
+        /// Расшифровывание элемента &#60;EncryptedKey&#62;
+        /// с использованием алгоритма асимметричного шифрования
+        /// и импорт его в класс симметричного алгоритма.
+        /// </summary>
+        /// 
+        /// <param name="keyData">Массив байтов, представляющий зашифрованный 
+        /// элемент &lt;EncryptedKey&gt;.</param>
+        /// <param name="rsa">Асимметричный ключ, который используется для 
+        /// расшифрования <paramref name="keyData"/></param>
+        /// <param name="useOAEP">Значение, которое указывает, используется ли 
+        /// заполнение Optimal Asymmetric Encryption Padding (OAEP).</param>
+        /// <param name="symmetricAlgorithmUri">URI алгоритма создаваемого 
+        /// ключа.</param>
+        /// 
+        /// <returns>Ключ в виде класса симметричного алгоритма.</returns>
+        /// 
+        /// <remarks><para>Функция выполняет пробразование в массив байтов,
+        /// а затем импорт в класс; поэтому не применима для алгоритмов
+        /// не допускающих импорт симметричных ключей в чистом виде.</para>
+        /// <para>Классы шифрования XML платформы .NET Framework реализуют спецификации 
+        /// шифрования XML, определенные консорциумом W3C:
+        /// <a href="http://www.w3.org/TR/xmlenc-core">XML Encryption Syntax and Processing</a>.
+        /// Дополненения к спецификации для российских стандартов
+        /// описано в <a href="http://GOSTXMLMORE">Using GOST Algorithms for XML Security</a>.
+        /// </para></remarks>
+        public static SymmetricAlgorithm DecryptKey(byte[] keyData,
+            RSA rsa, bool useOAEP, string symmetricAlgorithmUri)
+        {
+            // Proxy на соответствующую функцию, но возвращающую SymmetricAlgorithm
+            byte[] buffer1 = EncryptedXml.DecryptKey(keyData, rsa, useOAEP);
+            if (buffer1 == null)
+            {
+                throw new CryptographicException(SR.Cryptography_Xml_MissingDecryptionKey);
+            }
+            SymmetricAlgorithm algorithm1 =
+                (SymmetricAlgorithm)CryptoConfig.CreateFromName(symmetricAlgorithmUri);
+            algorithm1.Key = buffer1;
+            return algorithm1;
+        }
+
+        /// <summary>
+        /// Расшифровывание элемент &#60;EncryptedKey&#62;
+        /// с использованием алгоритма симметричного шифрования
+        /// и импорт его в класс симметричного алгоритма.
+        /// </summary>
+        /// 
+        /// <param name="keyData">Зашифрованный ключ.</param>
+        /// <param name="symmetricAlgorithm">Ключ расшифрования.</param>
+        /// <param name="symmetricAlgorithmUri">URI алгоритма 
+        /// получаемого ключа.</param>
+        /// <param name="encryptionKeyAlgorithm">URI алгоритма 
+        /// расшифрования ключа.</param>
+        /// 
+        /// <returns>Ключ в виде класса симметричного алгоритма.</returns>
+        /// 
+        /// <remarks><para>Функция выполняет пробразование в массив байтов,
+        /// а затем импорт в класс; поэтому не применима для алгоритмов
+        /// не допускающих импорт симметричных ключей в чистом виде.</para>
+        /// <para>Классы шифрования XML платформы .NET Framework реализуют спецификации 
+        /// шифрования XML, определенные консорциумом W3C:
+        /// <a href="http://www.w3.org/TR/xmlenc-core">XML Encryption Syntax and Processing</a>.
+        /// Дополненения к спецификации для российских стандартов
+        /// описано в <a href="http://GOSTXMLMORE">Using GOST Algorithms for XML Security</a>.
+        /// </para></remarks>
+        public static SymmetricAlgorithm DecryptKey(byte[] keyData,
+            SymmetricAlgorithm symmetricAlgorithm, string symmetricAlgorithmUri,
+            string encryptionKeyAlgorithm)
+        {
+            Gost28147 gost = symmetricAlgorithm as Gost28147;
+            if (gost != null)
+            {
+                if (encryptionKeyAlgorithm.Equals(XmlEncGostCryptoProKeyWrapUrl))
+                {
+                    return gost.Unwrap(keyData, GostKeyWrapMethod.CryptoProKeyWrap);
+                }
+                if (encryptionKeyAlgorithm.Equals(XmlEncGostCryptoPro12KeyWrapUrl))
+                {
+                    return gost.Unwrap(keyData, GostKeyWrapMethod.CryptoPro12KeyWrap);
+                }
+                if (encryptionKeyAlgorithm.Equals(XmlEncGost28147KeyWrapUrl))
+                {
+                    return gost.Unwrap(keyData, GostKeyWrapMethod.GostKeyWrap);
+                }
+                throw new CryptographicException(SR.Cryptography_Xml_MissingAlgorithm);
+            }
+            // Proxy на соответствующую функцию, но возвращающую SymmetricAlgorithm
+            byte[] buffer1 = EncryptedXml.DecryptKey(keyData, symmetricAlgorithm);
+            if (buffer1 == null)
+                throw new CryptographicException(SR.Cryptography_Xml_MissingDecryptionKey);
+            SymmetricAlgorithm algorithm1 = (SymmetricAlgorithm)
+                CryptoConfig.CreateFromName(symmetricAlgorithmUri);
+            algorithm1.Key = buffer1;
+            return algorithm1;
         }
         // end: gost
     }

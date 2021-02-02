@@ -101,9 +101,6 @@ namespace System.Security.Cryptography
         /// 
         /// <seealso cref="GostWrappedKey"/>
         /// <seealso cref="GostSharedSecretCryptoServiceProvider.Unwrap"/>
-#if SHARPEI_DESTINATION_FW40
-        [SecuritySafeCritical]
-#endif
         public override byte[] Wrap(SymmetricAlgorithm alg,
             GostKeyWrapMethod method)
         {

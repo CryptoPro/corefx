@@ -21,6 +21,7 @@
     <Compile Include="EncryptionPropertyCollectionTest.cs" />
     <Compile Include="EncryptionPropertyTest.cs" />
     <Compile Include="GostSignedXmlTest.cs" />
+    <Compile Include="GostEncryptedXmlTest.cs" />
     <Compile Include="SignedXml_Helpers.cs" />
     <Compile Include="KeyInfoNameTest.cs" />
     <Compile Include="KeyInfoNodeTest.cs" />

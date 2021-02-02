@@ -89,7 +89,7 @@ namespace System.Security.Cryptography
         /// исключение <see cref="CryptographicException"/>, так
         /// как использует "чистый" ключ. По возможности используйте 
         /// безопасную функцию 
-        /// <see cref="DecryptKeyExchange(GostKeyTransport)"/></para>
+        /// <see cref="DecryptKeyExchange(GostKeyTransport, GostKeyWrapMethod)"/></para>
         /// </remarks>
         /// 
         /// <argnull name="rgb" />
@@ -110,32 +110,31 @@ namespace System.Security.Cryptography
         /// 
         /// <param name="transport"> Зашифрованные данные обмена 
         /// ключами.</param>
+        /// <param name="keyWrapMethod">Алгоритм симметричного экспорта</param>
         /// 
         /// <returns>Симметричный ключ.</returns>
         /// 
         /// <argnull name="transport" />
-        public SymmetricAlgorithm DecryptKeyExchange(GostKeyTransport transport)
+        public SymmetricAlgorithm DecryptKeyExchange(
+            GostKeyTransport transport, 
+            GostKeyWrapMethod keyWrapMethod = GostKeyWrapMethod.CryptoPro12KeyWrap)
         {
             GostSharedSecretAlgorithm agree;
-            GostKeyWrapMethod keyWrapMethod;
             switch (_gostAlgorithmType)
             {
                 case CspAlgorithmType.Gost2001:
                 {
                     agree = ((Gost3410)_gostKey).CreateAgree(transport.TransportParameters);
-                    keyWrapMethod = GostKeyWrapMethod.CryptoProKeyWrap;
                     break;
                 }
                 case CspAlgorithmType.Gost2012_256:
                 {
                     agree = ((Gost3410_2012_256)_gostKey).CreateAgree(transport.TransportParameters);
-                    keyWrapMethod = GostKeyWrapMethod.CryptoPro12KeyWrap;
                     break;
                 }
                 case CspAlgorithmType.Gost2012_512:
                 {
                     agree = ((Gost3410_2012_512)_gostKey).CreateAgree(transport.TransportParameters);
-                    keyWrapMethod = GostKeyWrapMethod.CryptoPro12KeyWrap;
                     break;
                 }
                 default:

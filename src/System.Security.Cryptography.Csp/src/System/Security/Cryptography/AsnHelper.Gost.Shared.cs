@@ -516,5 +516,442 @@ namespace Internal.NativeCrypto
                 asnParams.Encode(buffer);
                 return buffer.MsgCopy;
         }
+
+        /// <summary>
+        /// Декодирование ASN.1 структуры транспорта. 
+        /// </summary>
+        /// 
+        /// <param name="data">ASN.1 закодированная структура.</param>
+        /// <param name="transport">ГОСТ Р 34.10 транспорт.</param>
+        /// 
+        /// <argnull name="data" />
+        /// <exception cref="CryptographicException">При ошибках
+        /// декодирования исходной структуры.</exception>
+        public static void DecodeGostKeyTransport(byte[] data,
+            GostKeyTransportObject transport)
+        {
+            if (data == null)
+                throw new ArgumentNullException("data");
+            if (transport == null)
+                throw new ArgumentNullException("transport");
+            try
+            {
+                Asn1BerDecodeBuffer buffer = new Asn1BerDecodeBuffer(data);
+                GostR3410_KeyTransport asnTransport =
+                    new GostR3410_KeyTransport();
+                asnTransport.Decode(buffer);
+                transport.sessionEncryptedKey_ = new GostWrappedKeyObject();
+                transport.sessionEncryptedKey_._encryptedKey =
+                    asnTransport.sessionEncryptedKey.encryptedKey.Value;
+                transport.sessionEncryptedKey_._mac =
+                    asnTransport.sessionEncryptedKey.macKey.Value;
+                transport.sessionEncryptedKey_._ukm =
+                    asnTransport.transportParameters.ukm.Value;
+                transport.sessionEncryptedKey_._encryptionParamSet =
+                    toString(asnTransport.transportParameters.encryptionParamSet);
+                // Для корректной ошибки, а не ArgumentException
+                string algoid = toString(
+                    asnTransport.transportParameters.ephemeralPublicKey.
+                    algorithm.algorithm);
+
+                if (algoid.Equals(GostConstants.OID_CP_GOST_R3410EL))
+                {
+                    transport.transportParameters_ = UnpackPublicKeyInfo2001(
+                        asnTransport.transportParameters.ephemeralPublicKey);
+                }
+                else if (algoid.Equals(GostConstants.OID_CP_GOST_R3410_12_256) ||
+                    (algoid.Equals(GostConstants.OID_CP_GOST_R3410_12_512)))
+                {
+                    transport.transportParameters_ = UnpackPublicKeyInfo2012(
+                        asnTransport.transportParameters.ephemeralPublicKey);
+                }
+                else
+                {
+                    throw new CryptographicException(
+                        "Resources.Cryptography_ASN1_Decode_Alg " + algoid);
+                }
+
+            }
+            catch (Exception e)
+            {
+                throw new CryptographicException(
+                    "Resources.Cryptography_ASN1_DecodeWithException " +
+                    "GostR3410_KeyTransport", e);
+            }
+        }
+
+        /// <summary>
+        /// ASN.1 кодирование структуры транспорта. 
+        /// </summary>
+        /// 
+        /// <param name="transport">ASN.1 транспорт.</param>
+        /// 
+        /// <returns>Закодированная структура.</returns>
+        /// 
+        /// <argnull name="transport" />
+        /// <exception cref="CryptographicException">При ошибках
+        /// кодирования исходной структуры.</exception>
+        public static byte[] EncodeGostKeyTransport(
+            GostKeyTransportObject transport)
+        {
+            if (transport == null)
+                throw new ArgumentNullException("transport");
+
+            GostR3410_KeyTransport asnTransport =
+                new GostR3410_KeyTransport();
+            Asn1BerEncodeBuffer buffer = new Asn1BerEncodeBuffer();
+            try
+            {
+                asnTransport.sessionEncryptedKey =
+                    new Gost28147_89_EncryptedKey();
+                asnTransport.sessionEncryptedKey.encryptedKey =
+                    new Gost28147_89_Key(
+                        transport.sessionEncryptedKey_._encryptedKey);
+                asnTransport.sessionEncryptedKey.macKey =
+                    new Gost28147_89_MAC(transport.sessionEncryptedKey_._mac);
+                asnTransport.transportParameters =
+                    new GostR3410_TransportParameters();
+                asnTransport.transportParameters.ukm =
+                    new Asn1OctetString(transport.sessionEncryptedKey_._ukm);
+                asnTransport.transportParameters.encryptionParamSet =
+                    CreateGost28147_89_ParamSet(
+                        transport.sessionEncryptedKey_._encryptionParamSet);
+
+                if (transport.Transport.TransportParameters.DigestParamSet == "1.2.643.2.2.30.1")
+                {
+                    asnTransport.transportParameters.ephemeralPublicKey =
+                        PackPublicKeyInfo2001(transport.transportParameters_);
+                }
+                else if (transport.Transport.TransportParameters.DigestParamSet == "1.2.643.7.1.1.2.2")
+                {
+                    asnTransport.transportParameters.ephemeralPublicKey =
+                      PackPublicKeyInfo2012_256(transport.transportParameters_);
+                }
+                else if (transport.Transport.TransportParameters.DigestParamSet == "1.2.643.7.1.1.2.3")
+                {
+                    asnTransport.transportParameters.ephemeralPublicKey =
+                      PackPublicKeyInfo2012_512(transport.transportParameters_);
+                }
+                asnTransport.Encode(buffer);
+            }
+            catch (Exception e)
+            {
+                throw new CryptographicException(
+                    "Resources.Cryptography_ASN1_EncodeWithException " +
+                    "GostR3410_KeyTransport", e);
+            }
+            return buffer.MsgCopy;
+        }
+
+        /// <summary>
+        /// Упаковка открытого ключа ГОСТ 34.10 и его параметров в Asn1c структуру.
+        /// </summary>
+        /// 
+        /// <param name="pub">Открытый ключ.</param>
+        /// <param name="alg"></param>
+        /// 
+        /// <returns>Asn1c структура <c>SubjectPublicKeyInfo</c> открытого
+        /// ключа.</returns>
+        /// 
+        private static SubjectPublicKeyInfo PackPublicKeyInfo(
+            Gost3410CspObject pub, CspAlgorithmType alg)
+        {
+            switch (alg)
+            {
+                case CspAlgorithmType.Gost2001:
+                    return PackPublicKeyInfo2001(pub);
+                case CspAlgorithmType.Gost2012_256:
+                    return PackPublicKeyInfo2012_256(pub);
+                case CspAlgorithmType.Gost2012_512:
+                    return PackPublicKeyInfo2012_512(pub);
+                default:
+                    throw new CryptographicException(
+                        "Cryptography_CSP_WrongKeySpec");
+            }
+        }
+
+        /// <summary>
+        /// Упаковка открытого ключа ГОСТ 34.10-2001 и его параметров в Asn1c структуру.
+        /// </summary>
+        /// 
+        /// <param name="pub">Открытый ключ.</param>
+        /// 
+        /// <returns>Asn1c структура <c>SubjectPublicKeyInfo</c> открытого
+        /// ключа.</returns>
+        /// 
+        private static SubjectPublicKeyInfo PackPublicKeyInfo2001(
+            Gost3410CspObject pub)
+        {
+            SubjectPublicKeyInfo spki = new SubjectPublicKeyInfo();
+            Asn1BerEncodeBuffer buffer = new Asn1BerEncodeBuffer();
+            Asn1OctetString publicKey = new Asn1OctetString(pub._publicKey);
+            publicKey.Encode(buffer);
+            byte[] octetString = buffer.MsgCopy;
+            spki.subjectPublicKey = new Asn1BitString(
+                octetString.Length * 8, octetString);
+            GostR3410_2001_PublicKeyParameters par =
+                new GostR3410_2001_PublicKeyParameters();
+            par.PublicKeyParamSet = fromString(pub._publicKeyParamSet);
+            par.DigestParamSet = fromString(pub._digestParamSet);
+            par.EncryptionParamSet = CreateGost28147_89_ParamSet(
+                pub._encryptionParamSet);
+            buffer.Reset();
+            par.Encode(buffer);
+            spki.algorithm = new AlgorithmIdentifier(
+                fromString(GostConstants.OID_CP_GOST_R3410EL),
+                new Asn1OpenType(buffer.MsgCopy));
+            return spki;
+        }
+
+        /// <summary>
+        /// Упаковка открытого ключа ГОСТ 34.10-2012 256 и его параметров в Asn1c структуру.
+        /// </summary>
+        /// 
+        /// <param name="pub">Открытый ключ.</param>
+        /// 
+        /// <returns>Asn1c структура <c>SubjectPublicKeyInfo</c> открытого
+        /// ключа.</returns>
+        private static SubjectPublicKeyInfo PackPublicKeyInfo2012_256(
+            Gost3410CspObject pub)
+        {
+            SubjectPublicKeyInfo spki = new SubjectPublicKeyInfo();
+            Asn1BerEncodeBuffer buffer = new Asn1BerEncodeBuffer();
+            Asn1OctetString publicKey = new Asn1OctetString(pub._publicKey);
+            publicKey.Encode(buffer);
+            byte[] octetString = buffer.MsgCopy;
+            spki.subjectPublicKey = new Asn1BitString(
+                octetString.Length * 8, octetString);
+            GostR3410_2012_PublicKeyParameters par =
+                new GostR3410_2012_PublicKeyParameters();
+            par.publicKeyParamSet = fromString(pub._publicKeyParamSet);
+            par.digestParamSet = fromString(pub._digestParamSet);
+            par.encryptionParamSet = CreateGost28147_89_ParamSet(
+                pub._encryptionParamSet);
+            buffer.Reset();
+            par.Encode(buffer);
+            spki.algorithm = new AlgorithmIdentifier(
+                fromString(GostConstants.OID_CP_GOST_R3410_12_256),
+                new Asn1OpenType(buffer.MsgCopy));
+            return spki;
+        }
+
+        /// <summary>
+        /// Упаковка открытого ключа ГОСТ 34.10-2012 512 и его параметров в Asn1c структуру.
+        /// </summary>
+        /// 
+        /// <param name="pub">Открытый ключ.</param>
+        /// 
+        /// <returns>Asn1c структура <c>SubjectPublicKeyInfo</c> открытого
+        /// ключа.</returns>
+        private static SubjectPublicKeyInfo PackPublicKeyInfo2012_512(
+            Gost3410CspObject pub)
+        {
+            SubjectPublicKeyInfo spki = new SubjectPublicKeyInfo();
+            Asn1BerEncodeBuffer buffer = new Asn1BerEncodeBuffer();
+            Asn1OctetString publicKey = new Asn1OctetString(pub._publicKey);
+            publicKey.Encode(buffer);
+            byte[] octetString = buffer.MsgCopy;
+            spki.subjectPublicKey = new Asn1BitString(
+                octetString.Length * 8, octetString);
+            GostR3410_2012_PublicKeyParameters par =
+                new GostR3410_2012_PublicKeyParameters();
+            par.publicKeyParamSet = fromString(pub._publicKeyParamSet);
+            par.digestParamSet = fromString(pub._digestParamSet);
+            par.encryptionParamSet = CreateGost28147_89_ParamSet(
+                pub._encryptionParamSet);
+            buffer.Reset();
+            par.Encode(buffer);
+            spki.algorithm = new AlgorithmIdentifier(
+                fromString(GostConstants.OID_CP_GOST_R3410_12_512),
+                new Asn1OpenType(buffer.MsgCopy));
+            return spki;
+        }
+
+
+        /// <summary>
+        /// Разбор декодированной ASN1c структуры ГОСТ 34.10 <c>SubjectPublicKeyInfo</c>.
+        /// </summary>
+        /// 
+        /// <param name="spki">ASN1c структура <c>SubjectPublicKeyInfo</c>.
+        /// </param>
+        /// <param name="alg"></param>
+        /// 
+        /// <returns>Параметры открытого ключа.</returns>
+        /// <argnull name="spki" />
+        /// <exception cref="ArgumentException">Если вложенная структура 
+        /// не приводится к <c>GostR3410_2001_PublicKeyParameters</c>
+        /// </exception>
+        private static Gost3410CspObject UnpackPublicKeyInfo(
+            SubjectPublicKeyInfo spki, CspAlgorithmType alg)
+        {
+            switch (alg)
+            {
+                case CspAlgorithmType.Gost2001:
+                    return UnpackPublicKeyInfo2001(spki);
+                case CspAlgorithmType.Gost2012_256:
+                case CspAlgorithmType.Gost2012_512:
+                    return UnpackPublicKeyInfo2012(spki);
+                default:
+                    throw new CryptographicException(
+                        "Cryptography_CSP_WrongKeySpec");
+            }
+        }
+
+        /// <summary>
+        /// Разбор декодированной ASN1c структуры ГОСТ 34.10-2001 <c>SubjectPublicKeyInfo</c>.
+        /// </summary>
+        /// 
+        /// <param name="spki">ASN1c структура <c>SubjectPublicKeyInfo</c>.
+        /// </param>
+        /// 
+        /// <returns>Параметры открытого ключа.</returns>
+        /// <argnull name="spki" />
+        /// <exception cref="ArgumentException">Если вложенная структура 
+        /// не приводится к <c>GostR3410_2001_PublicKeyParameters</c>
+        /// </exception>
+        private static Gost3410CspObject UnpackPublicKeyInfo2001(
+            SubjectPublicKeyInfo spki)
+        {
+            if (spki == null)
+                throw new ArgumentNullException("spki");
+            Asn1Choice choice = spki.algorithm.parameters as Asn1Choice;
+            if (choice == null)
+                throw new ArgumentException(
+                    "spki.algorithm.parameters");
+            GostR3410_2001_PublicKeyParameters publicKeyParameters =
+                choice.GetElement() as GostR3410_2001_PublicKeyParameters;
+            if (publicKeyParameters == null)
+                throw new ArgumentException(
+                    "spki.algorithm.parameters.element");
+            byte[] bitString = spki.subjectPublicKey.Value;
+            Asn1BerDecodeBuffer buffer = new Asn1BerDecodeBuffer(bitString);
+            Asn1OctetString publicKey = new Asn1OctetString();
+            publicKey.Decode(buffer);
+            Gost3410CspObject ret = new Gost3410CspObject();
+            ret._publicKeyParamSet = toString(
+                publicKeyParameters.PublicKeyParamSet);
+            ret._digestParamSet = toString(
+                publicKeyParameters.DigestParamSet);
+            ret._encryptionParamSet = toString(
+                publicKeyParameters.EncryptionParamSet);
+            ret._publicKey = publicKey.Value;
+            ret._privateKey = null;
+            return ret;
+        }
+
+        /// <summary>
+        /// Разбор декодированной ASN1c структуры ГОСТ 34.10-2012 <c>SubjectPublicKeyInfo</c>.
+        /// </summary>
+        /// 
+        /// <param name="spki">ASN1c структура <c>SubjectPublicKeyInfo</c>.
+        /// </param>
+        /// 
+        /// <returns>Параметры открытого ключа.</returns>
+        /// <argnull name="spki" />
+        /// <exception cref="ArgumentException">Если вложенная структура 
+        /// не приводится к <c>GostR3410_2001_PublicKeyParameters</c>
+        /// </exception>
+        private static Gost3410CspObject UnpackPublicKeyInfo2012(
+            SubjectPublicKeyInfo spki)
+        {
+            if (spki == null)
+                throw new ArgumentNullException("spki");
+            Asn1Choice choice = spki.algorithm.parameters as Asn1Choice;
+            if (choice == null)
+                throw new ArgumentException(
+                    "spki.algorithm.parameters");
+            GostR3410_2012_PublicKeyParameters publicKeyParameters =
+                choice.GetElement() as GostR3410_2012_PublicKeyParameters;
+            if (publicKeyParameters == null)
+                throw new ArgumentException(
+                    "spki.algorithm.parameters.element");
+            byte[] bitString = spki.subjectPublicKey.Value;
+            Asn1BerDecodeBuffer buffer = new Asn1BerDecodeBuffer(bitString);
+            Asn1OctetString publicKey = new Asn1OctetString();
+            publicKey.Decode(buffer);
+            Gost3410CspObject ret = new Gost3410CspObject();
+            ret._publicKeyParamSet = toString(
+                publicKeyParameters.publicKeyParamSet);
+            ret._digestParamSet = toString(
+                publicKeyParameters.digestParamSet);
+            ret._encryptionParamSet = toString(
+                publicKeyParameters.encryptionParamSet);
+            ret._publicKey = publicKey.Value;
+            ret._privateKey = null;
+            return ret;
+        }
+
+        /// <summary>
+        /// Декодирование Asn1c OID.
+        /// </summary>
+        /// 
+        /// <param name="id">OID в виде ASN1c.</param>
+        /// 
+        /// <returns>Строковое представление oid или <see langword="null"/>,
+        /// если входная строка <see langword="null"/>.</returns>
+        private static string toString(Asn1ObjectIdentifier id)
+        {
+            if (id == null)
+                return null;
+            StringBuilder b = new StringBuilder(id.Value.Length * 10);
+            foreach (int i in id.Value)
+                b.Append("." + i);
+            return b.ToString().Substring(1);
+        }
+
+        /// <summary>
+        /// ASN1c кодирование OID из строкового представления.
+        /// </summary>
+        /// 
+        /// <param name="oid">строковое представление OID.</param>
+        /// 
+        /// <returns>OID в представлении asn1c или <see langword="null"/>, 
+        /// если входная строка <see langword="null"/>.</returns>
+        /// 
+        /// <exception cref="CryptographicException">при неправильном
+        /// представлении OID.</exception>
+        private static Asn1ObjectIdentifier fromString(string oid)
+        {
+            if (oid == null)
+                return null;
+            int i = 1;
+            foreach (char c in oid)
+                if (c == '.')
+                    i++;
+            int[] ar = new int[i];
+            int p = 0;
+            i = 0;
+            while (p < oid.Length)
+            {
+                char c = oid[p];
+                if (!Char.IsDigit(c))
+                    throw new CryptographicException(
+                        "Resources.Cryptography_ASN1_EncodeWithValue " +
+                        "Asn1ObjectIdentifier " + oid);
+                int k = 0;
+                while (p < oid.Length)
+                {
+                    c = oid[p++];
+                    if (c == '.')
+                        break;
+                    if (!Char.IsDigit(c))
+                        throw new CryptographicException(
+                        "Resources.Cryptography_ASN1_EncodeWithValue " +
+                        "Asn1ObjectIdentifier " + oid);
+                    k = k * 10 + (int)c - '0';
+                }
+                ar[i++] = k;
+            }
+            try
+            {
+                return new Asn1ObjectIdentifier(ar);
+            }
+            catch (Exception e)
+            {
+                throw new CryptographicException(
+                    "Resources.Cryptography_ASN1_EncodeWithException " +
+                    "Asn1ObjectIdentifier", e);
+            }
+        }
     }
 }

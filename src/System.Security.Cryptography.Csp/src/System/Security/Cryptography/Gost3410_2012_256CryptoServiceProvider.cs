@@ -621,9 +621,9 @@ namespace System.Security.Cryptography
         public override void ImportParameters(Gost3410Parameters parameters)
         {
             Gost3410CspObject pubKey = new Gost3410CspObject(parameters);
-            if ((SafeKeyHandle != null) && !SafeKeyHandle.IsClosed)
+            if ((_safeKeyHandle != null) && !_safeKeyHandle.IsClosed)
             {
-                SafeKeyHandle.Dispose();
+                _safeKeyHandle.Dispose();
             }
 
             _safeKeyHandle = SafeKeyHandle.InvalidHandle;
@@ -761,11 +761,21 @@ namespace System.Security.Cryptography
         {
             get
             {
-                return CapiHelper.GetPersistKeyInCsp(SafeProvHandle);
+                if (_safeProvHandle == null)
+                {
+                    lock (this)
+                    {
+                        if (_safeProvHandle == null)
+                            _safeProvHandle = CapiHelper.CreateProvHandle(
+                                _parameters, _randomKeyContainer);
+                    }
+                }
+                // return CapiHelper.GetPersistKeyInCsp(SafeProvHandle);
+                return _peristKeyInCsp;
             }
             set
             {
-                bool oldPersistKeyInCsp = PersistKeyInCsp;
+                bool oldPersistKeyInCsp = _peristKeyInCsp;
                 if (value == oldPersistKeyInCsp)
                 {
                     return; // Do nothing
@@ -823,6 +833,7 @@ namespace System.Security.Cryptography
                             Debug.Assert(!hKey.IsClosed);
 
                             _safeKeyHandle = hKey;
+                            _peristKeyInCsp = true;
                         }
                     }
                 }
@@ -1056,7 +1067,6 @@ namespace System.Security.Cryptography
 
             // Force-read the SafeKeyHandle property, which will summon it into existence.
             SafeKeyHandle localHandle = SafeKeyHandle;
-            SafeProvHandle.PersistKeyInCsp = true;
             Debug.Assert(localHandle != null);
         }
 

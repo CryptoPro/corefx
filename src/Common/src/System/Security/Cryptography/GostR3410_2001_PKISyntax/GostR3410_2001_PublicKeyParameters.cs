@@ -4,7 +4,7 @@
 
 namespace System.Security.Cryptography
 {
-	class GostR3410_2001_PublicKeyParameters : Asn1Type
+	class GostR3410_2001_PublicKeyParameters : Asn1OpenType
 	{
 		public Asn1ObjectIdentifier DigestParamSet;
 		public Asn1ObjectIdentifier PublicKeyParamSet;

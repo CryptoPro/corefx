@@ -95,7 +95,7 @@ namespace System.Security.Cryptography
         /// исключение <see cref="CryptographicException"/>, так
         /// как использует "чистый" ключ. По возможности используйте 
         /// безопасную функцию 
-        /// <see cref="CreateKeyExchange(SymmetricAlgorithm)"/></para>
+        /// <see cref="CreateKeyExchange(SymmetricAlgorithm, GostKeyWrapMethod)"/></para>
         /// </remarks>
         public override byte[] CreateKeyExchange(byte[] data)
         {
@@ -128,7 +128,7 @@ namespace System.Security.Cryptography
         /// исключение <see cref="CryptographicException"/>, так
         /// как использует "чистый" ключ. По возможности используйте 
         /// безопасную функцию 
-        /// <see cref="CreateKeyExchange(SymmetricAlgorithm)"/></para>
+        /// <see cref="CreateKeyExchange(SymmetricAlgorithm, GostKeyWrapMethod)"/></para>
         /// </remarks>
         public override byte[] CreateKeyExchange(byte[] data, Type symAlgType)
         {
@@ -141,26 +141,27 @@ namespace System.Security.Cryptography
         /// </summary>
         /// 
         /// <param name="alg">Симметричный ключ ГОСТ 28147.</param>
+        /// <param name="keyWrapMethod">Алгоритм симметричного экспорта</param>
         /// 
         /// <returns>Зашифрованные данные для отправки стороне 
         /// получателю.</returns>
         /// 
         /// <argnull name="alg" />
-        public GostKeyTransport CreateKeyExchange(SymmetricAlgorithm alg)
+        public GostKeyTransport CreateKeyExchange(
+            SymmetricAlgorithm alg, 
+            GostKeyWrapMethod keyWrapMethod = GostKeyWrapMethod.CryptoPro12KeyWrap)
         {
             if (alg == null)
                 throw new ArgumentNullException("alg");
 
             // Получаем параметры получателя.
-            GostKeyWrapMethod keyWrapMethod;
             Gost3410Parameters senderParameters;
             switch (_gostAlgorithmType)
             {
                 case CspAlgorithmType.Gost2001:
-                {                    
+                {
                     senderParameters = ((Gost3410)_gostKey).ExportParameters(false);
-                    keyWrapMethod = GostKeyWrapMethod.CryptoProKeyWrap;
-                    using (Gost3410EphemeralCryptoServiceProvider sender = 
+                    using (Gost3410EphemeralCryptoServiceProvider sender =
                         new Gost3410EphemeralCryptoServiceProvider(senderParameters))
                     {
                         return GetGostTransport(
@@ -175,7 +176,6 @@ namespace System.Security.Cryptography
                 case CspAlgorithmType.Gost2012_256:
                 {
                     senderParameters = ((Gost3410_2012_256)_gostKey).ExportParameters(false);
-                    keyWrapMethod = GostKeyWrapMethod.CryptoPro12KeyWrap;
                     using (Gost3410_2012_256EphemeralCryptoServiceProvider sender =
                         new Gost3410_2012_256EphemeralCryptoServiceProvider(senderParameters))
                     {
@@ -191,7 +191,6 @@ namespace System.Security.Cryptography
                 case CspAlgorithmType.Gost2012_512:
                 {
                     senderParameters = ((Gost3410_2012_512)_gostKey).ExportParameters(false);
-                    keyWrapMethod = GostKeyWrapMethod.CryptoPro12KeyWrap;
                     using (Gost3410_2012_512EphemeralCryptoServiceProvider sender =
                         new Gost3410_2012_512EphemeralCryptoServiceProvider(senderParameters))
                     {
@@ -221,11 +220,11 @@ namespace System.Security.Cryptography
         /// <param name="keyWrapMethod"></param>
         /// <returns></returns>
         private GostKeyTransport GetGostTransport(
-            Func<Gost3410Parameters, GostSharedSecretAlgorithm> createAgree,
-            Func<bool, Gost3410Parameters> exportParameters,
-            Gost3410Parameters senderParameters,
-            SymmetricAlgorithm alg,
-            GostKeyWrapMethod keyWrapMethod)
+        Func<Gost3410Parameters, GostSharedSecretAlgorithm> createAgree,
+        Func<bool, Gost3410Parameters> exportParameters,
+        Gost3410Parameters senderParameters,
+        SymmetricAlgorithm alg,
+        GostKeyWrapMethod keyWrapMethod)
         {
             GostKeyTransportObject transport = new GostKeyTransportObject();
             byte[] wrapped_data;
@@ -254,14 +253,14 @@ namespace System.Security.Cryptography
         /// </summary>
         /// 
         /// <param name="alg">Симметричный ключ ГОСТ 28147.</param>
-        /// 
+        /// <param name="wrapMethod">Алгоритм экспорта</param>
         /// <returns>Зашифрованные данные для отправки стороне 
         /// получателю.</returns>
         /// 
         /// <argnull name="alg" />
-        public byte[] CreateKeyExchangeData(SymmetricAlgorithm alg)
+        public byte[] CreateKeyExchangeData(SymmetricAlgorithm alg, GostKeyWrapMethod wrapMethod = GostKeyWrapMethod.CryptoPro12KeyWrap)
         {
-            GostKeyTransport transport = CreateKeyExchange(alg);
+            GostKeyTransport transport = CreateKeyExchange(alg, wrapMethod);
             return transport.Encode();
         }
 

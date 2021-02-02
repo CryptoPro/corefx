@@ -332,19 +332,6 @@ namespace System.Security.Cryptography.Xml.Tests
             return new Gost3410CryptoServiceProvider(cpsParams);
         }
 
-        //private static Gost3410CryptoServiceProvider GetPkGostProvider()
-        //{
-        //    CspParameters cpsParams = new CspParameters()
-        //    {
-        //        KeyContainerName = $"\\\\.\\HDImage\\0000_xml_test_{Guid.NewGuid()}",
-        //        KeyPassword = new SecureString(),
-        //        Flags = CspProviderFlags.NoPrompt,
-        //        ProviderName = "Crypto-Pro GOST R 34.10-2001 Cryptographic Service Provider",
-        //        ProviderType = 75,
-        //    };
-        //    return new Gost3410CryptoServiceProvider(cpsParams);
-        //}
-
         private static Gost3410_2012_256CryptoServiceProvider GetGost2012_256Provider()
         {
             CspParameters cpsParams = new CspParameters(
@@ -354,19 +341,6 @@ namespace System.Security.Cryptography.Xml.Tests
             return new Gost3410_2012_256CryptoServiceProvider(cpsParams);
         }
 
-        //private static Gost3410_2012_256CryptoServiceProvider GetPkGost2012_256Provider()
-        //{
-        //    CspParameters cpsParams = new CspParameters()
-        //    {
-        //        KeyContainerName = $"\\\\.\\HDImage\\0000_xml_test_{Guid.NewGuid()}",
-        //        KeyPassword = new SecureString(),
-        //        Flags = CspProviderFlags.NoPrompt,
-        //        ProviderName = "Crypto-Pro GOST R 34.10-2012 Cryptographic Service Provider",
-        //        ProviderType = 80,
-        //    };
-        //    return new Gost3410_2012_256CryptoServiceProvider(cpsParams);
-        //}
-
         private static Gost3410_2012_512CryptoServiceProvider GetGost2012_512Provider()
         {
             CspParameters cpsParams = new CspParameters(
@@ -375,18 +349,5 @@ namespace System.Security.Cryptography.Xml.Tests
                 "\\\\.\\HDIMAGE\\G2012512");
             return new Gost3410_2012_512CryptoServiceProvider(cpsParams);
         }
-
-        //private static Gost3410_2012_512CryptoServiceProvider GetPkGost2012_512Provider()
-        //{
-        //    CspParameters cpsParams = new CspParameters()
-        //    {
-        //        KeyContainerName = $"\\\\.\\HDImage\\0000_xml_test_{Guid.NewGuid()}",
-        //        KeyPassword = new SecureString(),
-        //        Flags = CspProviderFlags.NoPrompt,
-        //        ProviderName = "Crypto-Pro GOST R 34.10-2012 Strong Cryptographic Service Provider",
-        //        ProviderType = 81,
-        //    };
-        //    return new Gost3410_2012_512CryptoServiceProvider(cpsParams);
-        //}
     }
 }

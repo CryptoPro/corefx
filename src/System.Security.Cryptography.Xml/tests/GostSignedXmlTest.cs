@@ -49,7 +49,11 @@ namespace System.Security.Cryptography.Xml.Tests
             Assert.True(result);
         }
 
-        static XmlDocument SignXmlFile(XmlDocument doc, AsymmetricAlgorithm Key, X509Certificate Certificate)
+        static XmlDocument SignXmlFile(
+            XmlDocument doc,
+            AsymmetricAlgorithm Key, 
+            X509Certificate Certificate, 
+            string DigestMethod = SignedXml.XmlDsigGost3411_2012_256Url)
         {
             // Создаем объект SignedXml по XML документу.
             SignedXml signedXml = new SignedXml(doc);
@@ -64,8 +68,7 @@ namespace System.Security.Cryptography.Xml.Tests
 
             // Явно проставляем алгоритм хэширования,
             // по умолчанию SHA1.
-            reference.DigestMethod =
-                SignedXml.XmlDsigGost3411_2012_256Url;
+            reference.DigestMethod = DigestMethod;
 
             // Добавляем transform на подписываемые данные
             // для удаления вложенной подписи.

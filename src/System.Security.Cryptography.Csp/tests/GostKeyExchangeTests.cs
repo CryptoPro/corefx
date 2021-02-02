@@ -173,6 +173,8 @@ namespace System.Security.Cryptography.Encryption.KeyExchange.Tests
                     // Записываем последний зашифрованный блок 
                     // в массив targetBytes.
                     finalBytes.CopyTo(targetBytes, currentPosition);
+
+                    currentPosition += finalBytes.Length;
                 }
             }
             catch (Exception ex)
@@ -186,7 +188,7 @@ namespace System.Security.Cryptography.Encryption.KeyExchange.Tests
                 cryptoTransform.Dispose();
             }
             // Убираем неиспользуемые байты из массива.
-            return TrimArray(targetBytes);
+            return TrimArray(targetBytes, currentPosition);
         }
 
         // Действия получателя - расшифровываем полученные сессионный ключ и сообщение.
@@ -234,29 +236,21 @@ namespace System.Security.Cryptography.Encryption.KeyExchange.Tests
                 // Записываем последний расшифрованный блок 
                 // в массив targetBytes.
                 finalBytes.CopyTo(targetBytes, currentPosition);
+
+                currentPosition += finalBytes.Length;
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Caught unexpected exception:" + ex.ToString());
             }
             // Убираем неиспользуемые байты из массива.
-            return TrimArray(targetBytes);
+            return TrimArray(targetBytes, currentPosition);
         }
-        private static byte[] TrimArray(byte[] targetArray)
+        private static byte[] TrimArray(byte[] targetArray, int count)
         {
-            IEnumerator enum1 = targetArray.GetEnumerator();
-            int i = 0;
-            while (enum1.MoveNext())
-            {
-                if (enum1.Current.ToString().Equals("0"))
-                {
-                    break;
-                }
-                i++;
-            }
             // Создаем новый массив нужного размера.
-            byte[] returnedArray = new byte[i];
-            for (int j = 0; j < i; j++)
+            byte[] returnedArray = new byte[count];
+            for (int j = 0; j < count; j++)
             {
                 returnedArray[j] = targetArray[j];
             }

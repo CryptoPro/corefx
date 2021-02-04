@@ -4,11 +4,11 @@
 
 namespace System.Security.Cryptography
 {
-	class Gost3410PublicKeyParameters : Asn1Type
+	class GostR3410_2001_PublicKeyParameters : Asn1OpenType
 	{
 		public Asn1ObjectIdentifier DigestParamSet;
 		public Asn1ObjectIdentifier PublicKeyParamSet;
-		public Gost2814789ParamSet EncryptionParamSet;
+		public Gost28147_89_ParamSet EncryptionParamSet;
 
 		public override void Decode(Asn1BerDecodeBuffer buffer, bool explicitTagging, int implicitLength)
 		{
@@ -37,7 +37,7 @@ namespace System.Security.Cryptography
 
 			if (context.MatchElemTag(0, 0, ObjectIdentifierTypeCode, parsedLen, false))
 			{
-				EncryptionParamSet = new Gost2814789ParamSet();
+				EncryptionParamSet = new Gost28147_89_ParamSet();
 				EncryptionParamSet.Decode(buffer, true, parsedLen.Value);
 			}
 		}

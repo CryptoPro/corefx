@@ -16,11 +16,11 @@
         //internal const int HP_HASHVAL = 0x0002;
         //internal const int HP_HASHSTARTVECT = 0x0008;
 
-        //// dwFlag definitions for CryptGenKey
+        // dwFlag definitions for CryptGenKey
         //internal const int CRYPT_EXPORTABLE = 0x00000001;
         //internal const int CRYPT_ARCHIVABLE = 0x00004000;
         //internal const int CRYPT_USER_PROTECTED = 0x00000002;
-        //internal const int CRYPT_PREGEN = 0x00000040;
+        internal const int CRYPT_PREGEN = 0x00000040;
 
         /// <summary>
         /// OID алгоритма хэширования ГОСТ Р 34.11-2001
@@ -102,6 +102,26 @@
         /// </summary>
         internal const string XmlKeyExchangeAlgorithmTransport2012_512 =
             "urn:ietf:params:xml:ns:cpxmlsec:algorithms:transport-gost2012-512";
+
+        /// <summary>
+        /// Алгоримтм шифрования ГОСТ 28147
+        /// </summary>
+        internal const string XmlEncGost28147Url = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gost28147";
+
+        /// <summary>
+        /// Алгоритм экспорта КриптоПро
+        /// </summary>
+        internal const string XmlEncGostCryptoProKeyWrapUrl = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:kw-cp";
+
+        /// <summary>
+        /// Алгоритм экпорта КриптоПро 12
+        /// </summary>
+        internal const string XmlEncGostCryptoPro12KeyWrapUrl = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:kw-cp12";
+
+        /// <summary>
+        /// Алгоритм экспорта ГОСТ
+        /// </summary>
+        internal const string XmlEncGost28147KeyWrapUrl = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:kw-gost";
 
         // Error codes
         internal const int NTE_BAD_HASH = -2146893822; // 0x80090002L;

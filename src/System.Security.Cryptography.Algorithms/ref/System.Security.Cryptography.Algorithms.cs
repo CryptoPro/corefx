@@ -755,6 +755,7 @@ namespace System.Security.Cryptography
         public abstract byte[] SignHash(byte[] hash);
         public abstract byte[] SignHash(byte[] hash, HashAlgorithmName hashAlgorithm);
         public abstract bool VerifyHash(byte[] hash, byte[] signature, HashAlgorithmName hashAlgorithm);
+        public abstract GostSharedSecretAlgorithm CreateAgree(Gost3410Parameters alg);
         protected abstract byte[] HashData(byte[] data, int offset, int count, HashAlgorithmName hashAlgorithm);
         protected abstract byte[] HashData(IO.Stream data, HashAlgorithmName hashAlgorithm);
         public virtual bool TryDecrypt(ReadOnlySpan<byte> data, Span<byte> destination, out int bytesWritten) { throw null; }
@@ -790,6 +791,43 @@ namespace System.Security.Cryptography
         public abstract byte[] SignHash(byte[] hash);
         public abstract byte[] SignHash(byte[] hash, HashAlgorithmName hashAlgorithm);
         public abstract bool VerifyHash(byte[] hash, byte[] signature, HashAlgorithmName hashAlgorithm);
+        public abstract GostSharedSecretAlgorithm CreateAgree(Gost3410Parameters alg);
+        protected abstract byte[] HashData(byte[] data, int offset, int count, HashAlgorithmName hashAlgorithm);
+        protected abstract byte[] HashData(IO.Stream data, HashAlgorithmName hashAlgorithm);
+        public virtual bool TryDecrypt(ReadOnlySpan<byte> data, Span<byte> destination, out int bytesWritten) { throw null; }
+        public virtual bool TryEncrypt(ReadOnlySpan<byte> data, Span<byte> destination, out int bytesWritten) { throw null; }
+        protected virtual bool TryHashData(ReadOnlySpan<byte> data, Span<byte> destination, HashAlgorithmName hashAlgorithm, out int bytesWritten) { throw null; }
+        public virtual bool TrySignHash(ReadOnlySpan<byte> hash, Span<byte> destination, HashAlgorithmName hashAlgorithm, out int bytesWritten) { throw null; }
+        public virtual bool VerifyHash(ReadOnlySpan<byte> hash, ReadOnlySpan<byte> signature, HashAlgorithmName hashAlgorithm) { throw null; }
+        public virtual byte[] DecryptValue(byte[] rgb) { throw null; }
+        public virtual byte[] EncryptValue(byte[] rgb) { throw null; }
+        public byte[] SignData(byte[] data, HashAlgorithmName hashAlgorithm) { throw null; }
+        public virtual byte[] SignData(byte[] data, int offset, int count, HashAlgorithmName hashAlgorithm) { throw null; }
+        public virtual byte[] SignData(IO.Stream data, HashAlgorithmName hashAlgorithm) { throw null; }
+        public virtual bool TrySignData(ReadOnlySpan<byte> data, Span<byte> destination, HashAlgorithmName hashAlgorithm, out int bytesWritten) { throw null; }
+        public bool VerifyData(byte[] data, byte[] signature, HashAlgorithmName hashAlgorithm) { throw null; }
+        public virtual bool VerifyData(byte[] data, int offset, int count, byte[] signature, HashAlgorithmName hashAlgorithm) { throw null; }
+        public bool VerifyData(IO.Stream data, byte[] signature, HashAlgorithmName hashAlgorithm) { throw null; }
+        public virtual bool VerifyData(ReadOnlySpan<byte> data, ReadOnlySpan<byte> signature, HashAlgorithmName hashAlgorithm) { throw null; }
+        private static Exception HashAlgorithmNameNullOrEmpty() { throw null; }
+    }
+
+    public abstract partial class Gost3410_2012_512 : System.Security.Cryptography.AsymmetricAlgorithm
+    {
+        public override string KeyExchangeAlgorithm { get { throw null; } }
+        public override string SignatureAlgorithm { get { throw null; } }
+        public static Gost3410_2012_512 Create(int keySizeInBits) { throw null; }
+        public static Gost3410_2012_512 Create(Gost3410Parameters parameters) { throw null; }
+        public static new Gost3410_2012_512 Create(string algName) { throw null; }
+        public const int DefaultKeySize = 256;
+        public abstract Gost3410Parameters ExportParameters(bool includePrivateParameters);
+        public abstract void ImportParameters(Gost3410Parameters parameters);
+        public virtual byte[] Encrypt(byte[] data) { throw null; }
+        public virtual byte[] Decrypt(byte[] data) { throw null; }
+        public abstract byte[] SignHash(byte[] hash);
+        public abstract byte[] SignHash(byte[] hash, HashAlgorithmName hashAlgorithm);
+        public abstract bool VerifyHash(byte[] hash, byte[] signature, HashAlgorithmName hashAlgorithm);
+        public abstract GostSharedSecretAlgorithm CreateAgree(Gost3410Parameters alg);
         protected abstract byte[] HashData(byte[] data, int offset, int count, HashAlgorithmName hashAlgorithm);
         protected abstract byte[] HashData(IO.Stream data, HashAlgorithmName hashAlgorithm);
         public virtual bool TryDecrypt(ReadOnlySpan<byte> data, Span<byte> destination, out int bytesWritten) { throw null; }
@@ -862,41 +900,6 @@ namespace System.Security.Cryptography
         public override void SetHashAlgorithm(string strName) { }
         public override void SetKey(System.Security.Cryptography.AsymmetricAlgorithm key) { }
         public override bool VerifySignature(byte[] rgbHash, byte[] rgbSignature) { throw null; }
-    }
-
-    public abstract partial class Gost3410_2012_512 : System.Security.Cryptography.AsymmetricAlgorithm
-    {
-        public override string KeyExchangeAlgorithm { get { throw null; } }
-        public override string SignatureAlgorithm { get { throw null; } }
-        public static Gost3410_2012_512 Create(int keySizeInBits) { throw null; }
-        public static Gost3410_2012_512 Create(Gost3410Parameters parameters) { throw null; }
-        public static new Gost3410_2012_512 Create(string algName) { throw null; }
-        public const int DefaultKeySize = 256;
-        public abstract Gost3410Parameters ExportParameters(bool includePrivateParameters);
-        public abstract void ImportParameters(Gost3410Parameters parameters);
-        public virtual byte[] Encrypt(byte[] data) { throw null; }
-        public virtual byte[] Decrypt(byte[] data) { throw null; }
-        public abstract byte[] SignHash(byte[] hash);
-        public abstract byte[] SignHash(byte[] hash, HashAlgorithmName hashAlgorithm);
-        public abstract bool VerifyHash(byte[] hash, byte[] signature, HashAlgorithmName hashAlgorithm);
-        protected abstract byte[] HashData(byte[] data, int offset, int count, HashAlgorithmName hashAlgorithm);
-        protected abstract byte[] HashData(IO.Stream data, HashAlgorithmName hashAlgorithm);
-        public virtual bool TryDecrypt(ReadOnlySpan<byte> data, Span<byte> destination, out int bytesWritten) { throw null; }
-        public virtual bool TryEncrypt(ReadOnlySpan<byte> data, Span<byte> destination, out int bytesWritten) { throw null; }
-        protected virtual bool TryHashData(ReadOnlySpan<byte> data, Span<byte> destination, HashAlgorithmName hashAlgorithm, out int bytesWritten) { throw null; }
-        public virtual bool TrySignHash(ReadOnlySpan<byte> hash, Span<byte> destination, HashAlgorithmName hashAlgorithm, out int bytesWritten) { throw null; }
-        public virtual bool VerifyHash(ReadOnlySpan<byte> hash, ReadOnlySpan<byte> signature, HashAlgorithmName hashAlgorithm) { throw null; }
-        public virtual byte[] DecryptValue(byte[] rgb) { throw null; }
-        public virtual byte[] EncryptValue(byte[] rgb) { throw null; }
-        public byte[] SignData(byte[] data, HashAlgorithmName hashAlgorithm) { throw null; }
-        public virtual byte[] SignData(byte[] data, int offset, int count, HashAlgorithmName hashAlgorithm) { throw null; }
-        public virtual byte[] SignData(IO.Stream data, HashAlgorithmName hashAlgorithm) { throw null; }
-        public virtual bool TrySignData(ReadOnlySpan<byte> data, Span<byte> destination, HashAlgorithmName hashAlgorithm, out int bytesWritten) { throw null; }
-        public bool VerifyData(byte[] data, byte[] signature, HashAlgorithmName hashAlgorithm) { throw null; }
-        public virtual bool VerifyData(byte[] data, int offset, int count, byte[] signature, HashAlgorithmName hashAlgorithm) { throw null; }
-        public bool VerifyData(IO.Stream data, byte[] signature, HashAlgorithmName hashAlgorithm) { throw null; }
-        public virtual bool VerifyData(ReadOnlySpan<byte> data, ReadOnlySpan<byte> signature, HashAlgorithmName hashAlgorithm) { throw null; }
-        private static Exception HashAlgorithmNameNullOrEmpty() { throw null; }
     }
 
     public struct Gost3410Parameters
@@ -1002,6 +1005,14 @@ namespace System.Security.Cryptography
         public abstract byte[] ComputeHash(HashAlgorithm hash);
         public abstract byte[] Wrap(System.Security.Cryptography.Gost28147 prov, System.Security.Cryptography.GostKeyWrapMethod method);
         public abstract SymmetricAlgorithm Unwrap(byte[] wrapped, System.Security.Cryptography.GostKeyWrapMethod method);
+    }
+
+    public abstract class GostSharedSecretAlgorithm : IDisposable
+    {
+        public abstract byte[] Wrap(SymmetricAlgorithm alg, GostKeyWrapMethod method);
+        public abstract SymmetricAlgorithm Unwrap(byte[] wrapped, GostKeyWrapMethod method);
+        protected virtual void Dispose(bool disposing){ }
+        public void Dispose(){ }
     }
 
     //end: gost

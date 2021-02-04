@@ -59,6 +59,7 @@ namespace System.Security.Cryptography
         public abstract byte[] SignHash(byte[] hash);
         public abstract byte[] SignHash(byte[] hash, HashAlgorithmName hashAlgorithm);//=> throw DerivedClassMustOverride();
         public abstract bool VerifyHash(byte[] hash, byte[] signature, HashAlgorithmName hashAlgorithm);// => throw DerivedClassMustOverride();
+        public abstract GostSharedSecretAlgorithm CreateAgree(Gost3410Parameters alg);
 
         protected abstract byte[] HashData(byte[] data, int offset, int count, HashAlgorithmName hashAlgorithm);// => throw DerivedClassMustOverride();
         protected abstract byte[] HashData(Stream data, HashAlgorithmName hashAlgorithm);// => throw DerivedClassMustOverride();
@@ -267,6 +268,7 @@ namespace System.Security.Cryptography
                 }
             }
         }
+
         public override string KeyExchangeAlgorithm => GostConstants.XmlKeyExchangeAlgorithmTransport2012_512;
         public override string SignatureAlgorithm => GostConstants.XmlSignatureAlgorithm2012_512;
 

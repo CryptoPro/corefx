@@ -462,7 +462,7 @@ namespace System.Security.Cryptography
                 CapiHelper.ImportKeyBlob(
                     safeProvHandleTemp,
                     CspProviderFlags.NoFlags,
-                    false, //?
+                    false, 
                     rawData,
                     out safeKeyHandle);
 
@@ -504,46 +504,48 @@ namespace System.Security.Cryptography
         /// ключа.</exception>
         public void ImportCspBlob(byte[] keyBlob, byte[] paramBlob)
         {
-            //SafeKeyHandle safeKeyHandle;
-            //var rawData = CapiHelper.EncodePublicBlob(keyBlob, paramBlob, CspAlgorithmType.PROV_GOST_2001_DH);
+            SafeKeyHandle safeKeyHandle;
+            var rawData = AsnHelper.EncodePublicBlob(keyBlob, paramBlob, CspAlgorithmType.Gost2001);
 
-            //// Права на экспорт / импорт проверять бесполезно
-            //// CSP все равно не поддерживает. Бесполезно да же эмулировать:
-            //// сделать с этим BLOB потом ничего нельзя.
+            // Права на экспорт / импорт проверять бесполезно
+            // CSP все равно не поддерживает. Бесполезно да же эмулировать:
+            // сделать с этим BLOB потом ничего нельзя.
 
-            //// Это открытый ключ, поэтому можно его export
-            //// в verify context.
-            //// Нет обращения к секретному ключу, поэтому
-            //// не создаем контейнер без надобности.
-            //if (IsPublic(rawData))
-            //{
-            //    SafeProvHandle safeProvHandleTemp = AcquireSafeProviderHandle();
+            // Это открытый ключ, поэтому можно его export
+            // в verify context.
+            // Нет обращения к секретному ключу, поэтому
+            // не создаем контейнер без надобности.
+            if (IsPublic(rawData))
+            {
+                SafeProvHandle safeProvHandleTemp = AcquireSafeProviderHandle();
 
-            //    CapiHelper.ImportKeyBlob(safeProvHandleTemp, CspProviderFlags.NoFlags,
-            //false, ?
-            //       rawData,
-            //       out safeKeyHandle);
+                CapiHelper.ImportKeyBlob(
+                    safeProvHandleTemp,
+                    CspProviderFlags.NoFlags,
+                    false,
+                   rawData,
+                   out safeKeyHandle);
 
-            //The property set will take care of releasing any already-existing resources.
-            //    SafeProvHandle = safeProvHandleTemp;
-            //}
-            //else
-            //{
-            //    throw new CryptographicException(SR.CspParameter_invalid, "Cryptography_UserExportBulkBlob");
-            //}
+                //The property set will take care of releasing any already-existing resources.
+               _safeProvHandle = safeProvHandleTemp;
+            }
+            else
+            {
+                throw new CryptographicException(SR.CspParameter_invalid, "Cryptography_UserExportBulkBlob");
+            }
 
-            //// The property set will take care of releasing any already-existing resources.
-            //SafeKeyHandle = safeKeyHandle;
+            // The property set will take care of releasing any already-existing resources.
+            _safeKeyHandle = safeKeyHandle;
 
-            //if (_parameters != null)
-            //{
-            //    _parameters.KeyNumber = SafeKeyHandle.KeySpec;
-            //}
+            if (_parameters != null)
+            {
+                _parameters.KeyNumber = SafeKeyHandle.KeySpec;
+            }
 
-            //// Эмулируем MS HANDLE
-            //SafeKeyHandle.PublicOnly = true;
-            throw new PlatformNotSupportedException(
-                SR.Format(SR.Cryptography_CAPI_Required, nameof(CspKeyContainerInfo)));
+            // Эмулируем MS HANDLE
+            SafeKeyHandle.PublicOnly = true;
+            //throw new PlatformNotSupportedException(
+            //    SR.Format(SR.Cryptography_CAPI_Required, nameof(CspKeyContainerInfo)));
         }
 
         /// <summary>
@@ -584,7 +586,7 @@ namespace System.Security.Cryptography
             }
 
             byte[] data = ExportCspBlob(false);
-            DecodePublicBlob(obj1, data, CspAlgorithmType.Gost2001);
+            AsnHelper.DecodePublicBlob(obj1, data, CspAlgorithmType.Gost2001);
 
             return obj1.Parameters;
 
@@ -621,9 +623,9 @@ namespace System.Security.Cryptography
         public override void ImportParameters(Gost3410Parameters parameters)
         {
             Gost3410CspObject pubKey = new Gost3410CspObject(parameters);
-            if ((SafeKeyHandle != null) && !SafeKeyHandle.IsClosed)
+            if ((_safeKeyHandle != null) && !_safeKeyHandle.IsClosed)
             {
-                SafeKeyHandle.Dispose();
+                _safeKeyHandle.Dispose();
             }
 
             _safeKeyHandle = SafeKeyHandle.InvalidHandle;
@@ -637,7 +639,7 @@ namespace System.Security.Cryptography
                 var safeProvHandleTemp = AcquireSafeProviderHandle();
                 if (pubKey == null) throw new ArgumentNullException(nameof(pubKey));
 
-                byte[] keyBlob = EncodePublicBlob(pubKey, CspAlgorithmType.Gost2001);
+                byte[] keyBlob = AsnHelper.EncodePublicBlob(pubKey, CspAlgorithmType.Gost2001);
                 CapiHelper.ImportKeyBlob(
                     safeProvHandleTemp,
                     CspProviderFlags.NoFlags,
@@ -761,11 +763,21 @@ namespace System.Security.Cryptography
         {
             get
             {
-                return CapiHelper.GetPersistKeyInCsp(SafeProvHandle);
+                if (_safeProvHandle == null)
+                {
+                    lock (this)
+                    {
+                        if (_safeProvHandle == null)
+                            _safeProvHandle = CapiHelper.CreateProvHandle(
+                                _parameters, _randomKeyContainer);
+                    }
+                }
+                // return CapiHelper.GetPersistKeyInCsp(SafeProvHandle);
+                return _peristKeyInCsp;
             }
             set
             {
-                bool oldPersistKeyInCsp = PersistKeyInCsp;
+                bool oldPersistKeyInCsp = _peristKeyInCsp;
                 if (value == oldPersistKeyInCsp)
                 {
                     return; // Do nothing
@@ -823,6 +835,7 @@ namespace System.Security.Cryptography
                             Debug.Assert(!hKey.IsClosed);
 
                             _safeKeyHandle = hKey;
+                            _peristKeyInCsp = true;
                         }
                     }
                 }
@@ -909,34 +922,32 @@ namespace System.Security.Cryptography
             }
         }
 
-        ///// <summary>
-        ///// Создание ключа согласования (agree ключа).
-        ///// </summary>
-        ///// 
-        ///// <param name="alg">Открытый ключ получателя.</param>
-        ///// 
-        ///// <returns>Ключ согласования <see cref="GostSharedSecretAlgorithm"/> 
-        ///// для шифрования ключевой информации.</returns>
-        ///// 
-        ///// <containerperm flag="Open">Для открытия существующего 
-        ///// контейнера.</containerperm>
-        ///// <containerperm flag="Create">Для создания контейнера с заданным
-        ///// (не случаыным именем).</containerperm>
-        //[SecuritySafeCritical]
-        //public override GostSharedSecretAlgorithm CreateAgree(
-        //    Gost3410Parameters alg)
-        //{
-        //TODO: Еще одно дополнительное право доступа!
+        /// <summary>
+        /// Создание ключа согласования (agree ключа).
+        /// </summary>
+        /// 
+        /// <param name="alg">Открытый ключ получателя.</param>
+        /// 
+        /// <returns>Ключ согласования <see cref="GostSharedSecretAlgorithm"/> 
+        /// для шифрования ключевой информации.</returns>
+        /// 
+        /// <containerperm flag="Open">Для открытия существующего 
+        /// контейнера.</containerperm>
+        /// <containerperm flag="Create">Для создания контейнера с заданным
+        /// (не случаыным именем).</containerperm>
+        public override GostSharedSecretAlgorithm CreateAgree(
+            Gost3410Parameters alg)
+        {
 
-        ////Получаем собственный ключ.
-        //    GetKeyPair();
+            //Получаем собственный ключ.
+            GetKeyPair();
 
-        ////Превращаем его в объект для экспорта.
-        //    Gost3410CspObject obj1 = new Gost3410CspObject(alg);
+            //Превращаем его в объект для экспорта.
+            Gost3410CspObject obj1 = new Gost3410CspObject(alg);
 
-        //    return new GostSharedSecretCryptoServiceProvider(_safeKeyHandle,
-        //        _safeProvHandle, obj1, CspAlgorithmType.Gost2001);
-        //}
+            return new GostSharedSecretCryptoServiceProvider(_safeKeyHandle,
+                _safeProvHandle, obj1, CspAlgorithmType.Gost2001);
+        }
 
         /// <summary>
         /// Получение/установка сертификата в конейнер.
@@ -1056,10 +1067,8 @@ namespace System.Security.Cryptography
         /// (не случаыным именем).</containerperm>
         private void GetKeyPair()
         {
-
             // Force-read the SafeKeyHandle property, which will summon it into existence.
             SafeKeyHandle localHandle = SafeKeyHandle;
-            SafeProvHandle.PersistKeyInCsp = true;
             Debug.Assert(localHandle != null);
         }
 

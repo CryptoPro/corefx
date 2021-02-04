@@ -104,6 +104,7 @@
     <Compile Include="System\Security\Cryptography\HMACGost3411.cs" />
     <Compile Include="System\Security\Cryptography\HMACGost3411_2012_256.cs" />
     <Compile Include="System\Security\Cryptography\HMACGost3411_2012_512.cs" />
+    <Compile Include="System\Security\Cryptography\GostSharedSecret.cs" />
     <Compile Include="$(CommonPath)\Interop\Windows\Advapi32\SafeHashHandle.cs">
       <Link>Common\Interop\Windows\Advapi32\SafeHashHandle.cs</Link>
     </Compile>

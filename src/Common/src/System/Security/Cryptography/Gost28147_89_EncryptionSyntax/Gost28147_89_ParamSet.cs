@@ -4,13 +4,13 @@
 
 namespace System.Security.Cryptography
 {
-	class Gost2814789ParamSet : Asn1ObjectIdentifier
+	class Gost28147_89_ParamSet : Asn1ObjectIdentifier
 	{
-		public Gost2814789ParamSet()
+		public Gost28147_89_ParamSet()
 		{
 		}
 
-		public Gost2814789ParamSet(int[] value)
+		public Gost28147_89_ParamSet(int[] value)
 			: base(value)
 		{
 		}

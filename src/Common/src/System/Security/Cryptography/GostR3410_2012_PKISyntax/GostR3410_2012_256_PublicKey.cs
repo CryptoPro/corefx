@@ -4,12 +4,12 @@
 
 namespace System.Security.Cryptography
 {
-	class Gost3410PublicKey : Asn1OctetString
+	class GostR3410_2012_256_PublicKey : Asn1OctetString
 	{
-        public override void Decode(Asn1BerDecodeBuffer buffer, bool explicitTagging, int implicitLength)
+		public override void Decode(Asn1BerDecodeBuffer buffer, bool explicitTagging, int implicitLength)
 		{
 			base.Decode(buffer, explicitTagging, implicitLength);
-			if (Length != 0x40)
+			if (Length != 0x40 )
 			{
 				throw new Exception("Asn1ConsVioException");
 			}

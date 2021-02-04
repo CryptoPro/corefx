@@ -938,6 +938,326 @@ namespace Internal.NativeCrypto
             return hKey;
         }
 
+        // begin: gost
+        /// <summary>
+        /// Генерация ключа.
+        /// </summary>
+        /// 
+        /// <param name="hProv">Провайдер, для которого создается
+        /// ключ.</param>
+        /// <param name="algid">ALGID ключа.</param>
+        /// <param name="flags">Флаги провайдера.</param>
+        /// <param name="keySize">Размер открытого ключа в битах.</param>
+        /// <param name="hKey">Полученный ключ.</param>
+        /// 
+        /// <exception cref="CryptographicException">При ошибках на native
+        /// уровне.</exception>
+        /// 
+        /// <intdoc><para>Есть у MS аналогичная функция с тем же прототипом, 
+        /// и похожей (CRYPT_KEY_CTX другой) реализацией.</para></intdoc>
+        /// 
+        /// <unmanagedperm action="LinkDemand" />
+        internal static void GenerateKey(SafeProvHandle hProv,
+            int algid, CspProviderFlags flags, int keySize,
+            out SafeKeyHandle hKey)
+        {
+            int keyFlags = MapCspKeyFlags((int)flags);
+            // Дожно быть так, но очередная ошибка в CSP не дает так сделать.
+            // keyFlags |= ((uint)keySize) << 16;
+            bool ret = CapiHelper.CryptGenKey(hProv,
+                algid, keyFlags, out hKey);
+            if (!ret)
+                throw new CryptographicException(Marshal.GetLastWin32Error());
+        }
+
+        /// <summary>
+        /// Генерация ключа с заданными параметрами при генерации.
+        /// </summary>
+        /// 
+        /// <param name="hProv">Провайдер, для которого создается
+        /// ключ.</param>
+        /// <param name="calg">ALGID ключа.</param>
+        /// <param name="flags">Флаги создания ключа, часть
+        /// флагов не совместима с генерецией ключа.</param>
+        /// <param name="keySize">Размер открытого ключа в битах.</param>
+        /// <param name="digestParamSet">OID хэширования.</param>
+        /// <param name="publicKeyParamSet">OID возводителя.</param>
+        /// <param name="hKey">Полученный ключ.</param>
+        /// 
+        /// <exception cref="CryptographicException">При ошибках на native
+        /// уровне.</exception>
+        /// 
+        /// <intdoc><para>Аналогичная функция у MS отсутствует.</para></intdoc>
+        /// 
+        /// <unmanagedperm action="LinkDemand" />
+        internal static void GenerateKey(SafeProvHandle hProv,
+            int calg, CspProviderFlags flags, int keySize,
+            string digestParamSet, string publicKeyParamSet,
+            out SafeKeyHandle hKey)
+        {
+            int keyFlags = MapCspKeyFlags((int)flags) | GostConstants.CRYPT_PREGEN;
+            // Дожно быть так, но очередная ошибка в CSP не дает так сделать.
+            // keyFlags |= ((uint)keySize) << 16 (GostConstants.CRYPT_PREGEN);
+
+            bool ret = CapiHelper.CryptGenKey(
+                hProv, calg, keyFlags, out hKey);
+            if (!ret)
+                throw new CryptographicException(Marshal.GetLastWin32Error());
+
+            SetKeyParamString(hKey, GostConstants.KP_HASHOID,
+                digestParamSet);
+            SetKeyParamString(hKey, GostConstants.KP_DHOID,
+                publicKeyParamSet);
+            CapiHelper.SetKeyParameter(hKey, GostConstants.KP_X, null);
+        }
+
+        /// <summary>
+        /// Экспорт открытого ключа ГОСТ 34.10 в структуру <see cref="Gost3410CspObject"/>.
+        /// </summary>
+        /// 
+        /// <param name="hKey">Эскпортируемый HANDLE ключа.</param>
+        /// <param name="pubKey">Открытый ключ.</param>
+        /// <param name="alg">Тип алгоритма</param>
+        /// 
+        /// <exception cref="CryptographicException">При ошибках
+        /// декодирования массива и ошибках на managed уровне.</exception>
+        /// <argnull name="pubKey" />
+        /// 
+        /// <unmanagedperm action="LinkDemand" />
+        internal static void ExportPublicKey(SafeKeyHandle hKey,
+            Gost3410CspObject pubKey, CspAlgorithmType alg)
+        {
+            if (pubKey == null)
+                throw new ArgumentNullException("pubKey");
+            byte[] data = ExportKeyBlob(hKey,
+                SafeKeyHandle.InvalidHandle, GostConstants.PUBLICKEYBLOB);
+            AsnHelper.DecodePublicBlob(pubKey, data, alg);
+        }
+
+        /// <summary>
+        /// Импорт открытого ключа и создание распределенного секрета.
+        /// </summary>
+        /// 
+        /// <param name="hCSP">HANDLE провайдера, в ктороый происходит 
+        /// импорт.</param>
+        /// <param name="flags">Флаги импорта.</param>
+        /// <param name="cspObject">Импортируемый открытый ключ.</param>
+        /// <param name="hImportKey">HANDLE секретного ключа
+        /// для распределенного секрета.</param>
+        /// <param name="hKey">HANDLE ключа распределенного секрета.</param>
+        /// <param name="alg">Тип алгоритма</param>
+        /// 
+        /// <exception cref="CryptographicException">При ошибках
+        /// кодирования BLOB и ошибках на managed уровне.</exception>
+        /// <argnull name="cspObject" />
+        /// 
+        /// <unmanagedperm action="LinkDemand" />
+        internal static void ImportAndMakeSharedSecret(SafeProvHandle hCSP,
+            CspProviderFlags flags, Gost3410CspObject cspObject,
+            SafeKeyHandle hImportKey, ref SafeKeyHandle hKey, CspAlgorithmType alg)
+        {
+            if (cspObject == null)
+                throw new ArgumentNullException("cspObject");
+            byte[] data = AsnHelper.EncodePublicBlob(cspObject, alg);
+            ImportKeyBlob(data, hCSP, flags, hImportKey, out hKey);
+        }
+
+        /// <summary>
+        /// Импорт сессионного ключа в провайдер на другом ключе.
+        /// </summary>
+        /// 
+        /// <param name="hCSP">Провайдер для импорта.</param>
+        /// <param name="flags">Флаги импорта.</param>
+        /// <param name="cspObject">Импортируемый ключ.</param>
+        /// <param name="hImportKey">Ключ, на котором происходит импорт.</param>
+        /// <param name="hKey">Импортированный ключ.</param>
+        /// 
+        /// <exception cref="CryptographicException">При ошибках
+        /// кодирования BLOB и ошибках на managed уровне.</exception>
+        /// <argnull name="cspObject" />
+        /// 
+        /// <unmanagedperm action="LinkDemand" />
+        internal static void ImportSessionWrappedKey(SafeProvHandle hCSP,
+            CspProviderFlags flags, GostWrappedKeyObject cspObject,
+            SafeKeyHandle hImportKey, ref SafeKeyHandle hKey)
+        {
+            if (cspObject == null)
+                throw new ArgumentNullException("cspObject");
+            byte[] data = AsnHelper.EncodeSimpleBlob(cspObject,
+                GostConstants.CALG_G28147);
+            ImportKeyBlob(data, hCSP, flags, hImportKey, out hKey);
+        }
+
+        /// <summary>
+        /// Экспорт сессионного ключа на ключе экспорта в структуру
+        /// <see cref="GostWrappedKeyObject"/>
+        /// </summary>
+        /// 
+        /// <param name="hSimmKey">Экспортируемый HANDLE ключа.</param>
+        /// <param name="hExpKey">HANDLE ключа, на котором происходит 
+        /// экспорт.</param>
+        /// <param name="wrappedKey">Результат экспорта.</param>
+        /// 
+        /// <exception cref="CryptographicException">При ошибках
+        /// декодирования массива и ошибках на managed уровне.</exception>
+        /// <argnull name="wrappedKey" />
+        /// 
+        /// <unmanagedperm action="LinkDemand" />
+        internal static void ExportSessionWrapedKey(SafeKeyHandle hSimmKey,
+            SafeKeyHandle hExpKey, GostWrappedKeyObject wrappedKey)
+        {
+            if (wrappedKey == null)
+                throw new ArgumentNullException("wrappedKey");
+            byte[] data = ExportKeyBlob(hSimmKey,
+                hExpKey, GostConstants.SIMPLEBLOB);
+            AsnHelper.DecodeSimpleBlob(wrappedKey, data);
+        }
+
+        /// <summary>
+        /// Импорт BLOB ключа в провайдер.
+        /// </summary>
+        /// 
+        /// <param name="keyBlob">BLOB</param>
+        /// <param name="hProv">HANDLE провайдера.</param>
+        /// <param name="flags">Флаги импорта.</param>
+        /// <param name="hImportKey">Ключ, на котором происходит импорт.</param>
+        /// <param name="hKey">HANDLE импортированного ключа.</param>
+        /// 
+        /// <returns><see cref="KeyNumber.Exchange"/> или 
+        /// <see cref="KeyNumber.Signature"/></returns>
+        /// 
+        /// <exception cref="CryptographicException">При ошибках на native
+        /// уровне.</exception>
+        /// 
+        /// <intdoc><para>Есть у MS аналогичная функция с похожим прототипом
+        /// (добавлен параметр hImportKey) и похожей реализацией.</para></intdoc>
+        /// 
+        /// <unmanagedperm action="LinkDemand" />
+        internal static int ImportKeyBlob(byte[] keyBlob,
+            SafeProvHandle hProv, CspProviderFlags flags,
+            SafeKeyHandle hImportKey, out SafeKeyHandle hKey)
+        {
+            int keyFlags = MapCspKeyFlags((int)flags);
+            bool ret = CapiHelper.CryptImportKey(hProv, keyBlob,
+                keyBlob.Length, hImportKey, keyFlags, out hKey);
+            if (!ret)
+                throw new CryptographicException(Marshal.GetLastWin32Error());
+            int algid_class = BitConverter.ToInt32(keyBlob, 4) & (7 << 13);
+            if (algid_class == (5 << 13))
+                return (int)KeyNumber.Exchange;
+            return (int)KeyNumber.Signature;
+        }
+
+        /// <summary>
+        /// Экспорт ключа в байтовый массив.
+        /// </summary>
+        /// 
+        /// <param name="hKey">Экспортируемый ключ.</param>
+        /// <param name="hExpKey">Ключ, на котором происходит экспорт или
+        /// <see cref="SafeKeyHandle.InvalidHandle"/> для экспорта в чистом
+        /// виде.</param>
+        /// <param name="blobType">Тип экспортируемого BLOB</param>
+        /// 
+        /// <param name="isPublicCompress">Предоставление отрытого ключа парой (x,b), 
+        /// где байт b равен 2, если координата y чётная и 3 в противном случае.</param>
+        /// <returns>BLOB.</returns>
+        /// 
+        /// <exception cref="CryptographicException">При ошибках на native
+        /// уровне.</exception>
+        /// 
+        /// <intdoc><para>У MS есть аналогичная функция с другим прототипом
+        /// (без ключа для экспорта) на native уровне. Прототип изменен, так
+        /// как большинство экспорта поддерживается только на другом ключе.</para></intdoc>
+        internal static byte[] ExportKeyBlob(SafeKeyHandle hKey,
+            SafeKeyHandle hExpKey, int blobType, bool isPublicCompress = false)
+        {
+            int dwDataLen = 0;
+            int dwFlags = 0;
+            if (isPublicCompress)
+                dwFlags = GostConstants.CRYPT_PUBLICCOMPRESS;
+
+            bool ret = Interop.Advapi32.CryptExportKey(hKey, hExpKey,
+                blobType, dwFlags, null, ref dwDataLen);
+            if (!ret)
+                throw new CryptographicException(Marshal.GetLastWin32Error());
+            byte[] data = new byte[dwDataLen];
+            ret = Interop.Advapi32.CryptExportKey(hKey, hExpKey,
+                blobType, dwFlags, data, ref dwDataLen);
+            if (!ret)
+                throw new CryptographicException(Marshal.GetLastWin32Error());
+            return data;
+        }
+
+        /// <summary>
+        /// <c>CryptSetKeyParam( ..., const char* data, .... )</c>
+        /// </summary>
+        /// 
+        /// <param name="hKey">HKEY</param>
+        /// <param name="param"><c>KP_</c></param>
+        /// <param name="value">Значение для установки.</param>
+        /// 
+        /// <exception cref="CryptographicException">При ошибках на native
+        /// уровне.</exception>
+        /// 
+        /// <intdoc><para>Есть у MS нет аналога.</para></intdoc>
+        /// 
+        /// <unmanagedperm action="LinkDemand" />
+        internal static void SetKeyParamString(SafeKeyHandle hKey, int param,
+            string value)
+        {
+            byte[] value_data = Encoding.GetEncoding(0).GetBytes(value);
+            CapiHelper.SetKeyParameter(hKey, param, value_data);
+        }
+
+        /// <summary>
+        /// CryptGetKeyParam с возвратом результата в виде DWORD.
+        /// </summary>
+        /// 
+        /// <param name="hKey">HKEY</param>
+        /// <param name="paramID">KP_</param>
+        /// 
+        /// <returns>DWORD результата.</returns>
+        /// 
+        /// <exception cref="CryptographicException">При ошибках на native
+        /// уровне.</exception>
+        /// 
+        /// <intdoc><para>У MS отсутствует аналог, создана для эффективности
+        /// (один вызов Crypt) и перекодирования порядка байтов.</para></intdoc>
+        /// 
+        /// <unmanagedperm action="LinkDemand" />
+        internal static int GetKeyParamDw(SafeKeyHandle hKey,
+            int paramID)
+        {
+            byte[] data = CapiHelper.GetKeyParameter(hKey, paramID);
+            if (data.Length != 4)
+                throw new CryptographicException(GostConstants.NTE_BAD_DATA);
+            return BitConverter.ToInt32(data, 0);
+        }
+
+        /// <summary>
+        /// <c>CryptSetKeyParam( ..., DWORD value, .... )</c>
+        /// </summary>
+        /// 
+        /// <param name="hKey">HKEY</param>
+        /// <param name="param"><c>KP_</c></param>
+        /// <param name="dwValue">Значение для установки.</param>
+        /// 
+        /// <exception cref="CryptographicException">При ошибках на native
+        /// уровне.</exception>
+        /// 
+        /// <intdoc><para>Есть у MS аналогичная функция с тем же прототипом,
+        /// но native реализацией.</para></intdoc>
+        /// 
+        /// <unmanagedperm action="LinkDemand" />
+        internal static void SetKeyParamDw(SafeKeyHandle hKey, int param,
+            int dwValue)
+        {
+            byte[] data = BitConverter.GetBytes(dwValue);
+            CapiHelper.SetKeyParameter(hKey, param, data);
+        }
+
+        // end: gost
+
         /// <summary>
         /// Wrapper for get last error function
         /// </summary>

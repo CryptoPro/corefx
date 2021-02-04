@@ -4,7 +4,7 @@
 
 namespace System.Security.Cryptography
 {
-	class Gost3410_2012_512PublicKey : Asn1OctetString
+	class GostR3410_2012_512_PublicKey : Asn1OctetString
 	{
 		public override void Decode(Asn1BerDecodeBuffer buffer, bool explicitTagging, int implicitLength)
 		{

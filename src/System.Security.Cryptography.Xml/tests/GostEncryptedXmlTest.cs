@@ -64,6 +64,30 @@ namespace System.Security.Cryptography.Xml.Tests
             }
         }
 
+        [Fact]
+        public void EncryptSymmectricKey()
+        {
+            using (Gost28147CryptoServiceProvider key = new Gost28147CryptoServiceProvider())
+            {
+                // Создаем Xml файл для зашифрования.
+                CreateSomeXml("sto_encrypt.xml");
+                Console.WriteLine("Создан новый XML файл.");
+
+                // На стороне отправителя.
+                // Зашифровываем узел, заданный xpath выражением, XML документа 
+                // ato_encrypt.xml в документ a_encrypted.xml
+                Encrypt("sto_encrypt.xml", "s_encrypt.xml", "//SomeNode[@ToEncrypt='true']", key);
+                Console.WriteLine("Узел XML файла зашифрован.");
+
+                Decrypt("s_encrypt.xml", "s_decrypted.xml", key);
+                Console.WriteLine("XML документ расшифрован.");
+            }
+        }
+
+        /// <summary>
+        /// Вспомогательный прокси метод для тестирования шифрования на асимметричном ключе
+        /// </summary>
+        /// <param name="gostKey"></param>
         private void Encrypt(AsymmetricAlgorithm gostKey)
         {
             if (gostKey is Gost3410 gost3410)
@@ -329,6 +353,9 @@ namespace System.Security.Cryptography.Xml.Tests
             xmlDoc.Save(destName);
         }
 
+        /// <summary>
+        /// Вспомогательный прокси метод для тестирования шифрования на сертификате
+        /// </summary>
         private void Encrypt(X509Certificate2 cert)
         {
             // Создаем тестовый XML документ.
@@ -347,7 +374,6 @@ namespace System.Security.Cryptography.Xml.Tests
             // Сохраняем XML документ.
             xmlDoc.Save($"d_encrypted_{cert.SubjectName}.xml");
         }
-
 
         // Зашифрование узла в адрес абонента, заданного сертификатом 
         // получателя.
@@ -370,6 +396,10 @@ namespace System.Security.Cryptography.Xml.Tests
             EncryptedXml.ReplaceElement(elementToEncrypt, edElement, false);
         }
 
+        /// <summary>
+        /// Расшифрование на сертификате
+        /// </summary>
+        /// <param name="gostKey"></param>
         static void Decrypt(string srcName, string destName, X509Certificate2 cert)
         {
             // Создаем новый объект xml документа.
@@ -406,6 +436,90 @@ namespace System.Security.Cryptography.Xml.Tests
 
             // Расшифровываем зашифрованные узлы XML документа.
             exml.DecryptDocument();
+
+            // Сохраняем расшифрованный документ.
+            xmlDoc.Save(destName);
+        }
+
+        // Зашифрование узла XML документа на симметричном ключе
+        private static void Encrypt(string srcName, string destName,
+            string xpath, SymmetricAlgorithm Key)
+        {
+            // Создаем новый объект xml документа.
+            XmlDocument xmlDoc = new XmlDocument();
+
+            // Пробельные символы участвуют в вычислении подписи и должны быть сохранены для совместимости с другими реализациями.
+            xmlDoc.PreserveWhitespace = true;
+
+            // Загружаем в объект созданный XML документ.
+            xmlDoc.Load(srcName);
+
+            // Ищем заданный элемент для заширования.
+            XmlElement elementToEncrypt = xmlDoc.SelectSingleNode(xpath)
+                as XmlElement;
+            if (elementToEncrypt == null)
+                throw new XmlException("Узел не найден");
+
+            // Создаем объект класса EncryptedXml и используем 
+            // его для зашифрования узла на симметричном ключе.
+            EncryptedXml eXml = new EncryptedXml();
+
+            byte[] encryptedElement = eXml.EncryptData(
+                elementToEncrypt, Key, false);
+
+            // Создаем объект EncryptedData и заполняем его
+            // необходимой информацией.
+            EncryptedData edElement = new EncryptedData();
+            edElement.Type = EncryptedXml.XmlEncElementUrl;
+
+            // Заполняем алгоритм зашифрования данных. 
+            // Он будет использован при расшифровании.
+            edElement.EncryptionMethod = new EncryptionMethod(
+                EncryptedXml.XmlEncGost28147Url);
+
+            // Добавляем зашифрованные данные 
+            // к объекту EncryptedData.
+            edElement.CipherData.CipherValue = encryptedElement;
+
+            // Заменяем исходный узел на зашифрованный.
+            EncryptedXml.ReplaceElement(elementToEncrypt, edElement, false);
+
+            // Сохраняем зашифрованный документ.
+            xmlDoc.Save(destName);
+        }
+
+        // Расшифрование узла XML документа на симметричном ключе
+        private static void Decrypt(string srcName, string destName, SymmetricAlgorithm Alg)
+        {
+            // Создаем новый объект xml документа.
+            XmlDocument xmlDoc = new XmlDocument();
+
+            // Пробельные символы участвуют в вычислении подписи и должны быть сохранены для совместимости с другими реализациями.
+            xmlDoc.PreserveWhitespace = true;
+
+            // Загружаем в объект созданный XML документ.
+            xmlDoc.Load(srcName);
+
+            // Ищем узел для расшифрования.
+            XmlElement encryptedElement = xmlDoc.GetElementsByTagName(
+                "EncryptedData")[0] as XmlElement;
+            if (encryptedElement == null)
+                throw new XmlException("Узел EncryptedData не найден");
+
+            // Создаем объект EncryptedData.
+            EncryptedData edElement = new EncryptedData();
+            // и загружаем в него зашифрованный узел
+            edElement.LoadXml(encryptedElement);
+
+            // Создаем объект EncryptedXml
+            EncryptedXml exml = new EncryptedXml();
+
+            // Расшифровываем элемент используя 
+            // симметричный ключ.
+            byte[] rgbOutput = exml.DecryptData(edElement, Alg);
+
+            // Заменяем зашифрованный узел расшифрованным 
+            exml.ReplaceData(encryptedElement, rgbOutput);
 
             // Сохраняем расшифрованный документ.
             xmlDoc.Save(destName);

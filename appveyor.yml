@@ -107,6 +107,7 @@ for:
     - .\\.dotnet\\dotnet msbuild src\\System.Security.Cryptography.Csp\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Encryption.Gost3410.Tests.Gost3410_2012_256CryptoServiceProviderTests" /p:ForceRunTests=true
     - .\\.dotnet\\dotnet msbuild src\\System.Security.Cryptography.Csp\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Encryption.Gost3410.Tests.Gost3410_2012_512CryptoServiceProviderTests" /p:ForceRunTests=true
     - .\\.dotnet\\dotnet msbuild src\\System.Security.Cryptography.Csp\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Csp.Tests.Gost28147CryptoServiceProviderTest" /p:ForceRunTests=true
+    - .\\.dotnet\\dotnet msbuild src\\System.Security.Cryptography.Csp\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Encryption.KeyExchange.Tests.GostKeyWrapTest" /p:ForceRunTests=true
     - .\\.dotnet\\dotnet msbuild src\\System.Security.Cryptography.Csp\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Encryption.KeyExchange.Tests.GostKeyExchange" /p:ForceRunTests=true
     - .\\.dotnet\\dotnet msbuild src\\System.Security.Cryptography.Csp\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Encryption.KeyExchange.Tests.GostSharedSecretTest" /p:ForceRunTests=true
     - .\\.dotnet\\dotnet msbuild src\\System.Security.Cryptography.Xml\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Xml.Tests.GostSignedXmlTest"  /p:ForceRunTests=true
@@ -181,6 +182,7 @@ for:
     - ./.dotnet/dotnet msbuild src\\System.Security.Cryptography.Csp\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Encryption.Gost3410.Tests.Gost3410_2012_256CryptoServiceProviderTests" /p:ForceRunTests=true
     - ./.dotnet/dotnet msbuild src\\System.Security.Cryptography.Csp\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Encryption.Gost3410.Tests.Gost3410_2012_512CryptoServiceProviderTests" /p:ForceRunTests=true
     - ./.dotnet/dotnet msbuild src\\System.Security.Cryptography.Csp\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Csp.Tests.Gost28147CryptoServiceProviderTest" /p:ForceRunTests=true
+    - ./.dotnet/dotnet msbuild src\\System.Security.Cryptography.Csp\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Encryption.KeyExchange.Tests.GostKeyWrapTest" /p:ForceRunTests=true
     - ./.dotnet/dotnet msbuild src\\System.Security.Cryptography.Csp\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Encryption.KeyExchange.Tests.GostKeyExchange" /p:ForceRunTests=true
     - ./.dotnet/dotnet msbuild src\\System.Security.Cryptography.Csp\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Encryption.KeyExchange.Tests.GostSharedSecretTest" /p:ForceRunTests=true
     - ./.dotnet/dotnet msbuild src\\System.Security.Cryptography.Xml\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Xml.Tests.GostSignedXmlTest"  /p:ForceRunTests=true

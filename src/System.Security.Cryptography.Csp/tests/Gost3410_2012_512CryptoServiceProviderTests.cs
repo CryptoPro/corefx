@@ -239,6 +239,22 @@ namespace System.Security.Cryptography.Encryption.Gost3410.Tests
             }
         }
 
+        [Fact]
+        public void CipherOidTest()
+        {
+            var szOID_Gost28147_89_CryptoPro_A_ParamSet = "1.2.643.2.2.31.1";
+            var szOID_Gost28147_89_TC26_Z_ParamSet = "1.2.643.7.1.2.5.1.1";
+
+            using (var gost = GetGostProvider())
+            {
+                gost.CipherOid = szOID_Gost28147_89_CryptoPro_A_ParamSet;
+                Assert.Equal(gost.CipherOid, szOID_Gost28147_89_CryptoPro_A_ParamSet);
+
+                gost.CipherOid = szOID_Gost28147_89_TC26_Z_ParamSet;
+                Assert.Equal(gost.CipherOid, szOID_Gost28147_89_TC26_Z_ParamSet);
+            }
+        }
+
         private static Gost3410_2012_512CryptoServiceProvider GetGostProvider()
         {
             CspParameters cpsParams = new CspParameters(

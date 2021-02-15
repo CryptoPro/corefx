@@ -89,6 +89,22 @@ namespace System.Security.Cryptography
         private Gost3411_2012_256 _hashImpl;
 
         /// <summary>
+        /// Параметры шифрования
+        /// </summary>
+        public string CipherOid
+        {
+            // Если ключ не был создан к моменту обращения - создаётся при обращении к SafeKeyHandle
+            get
+            {
+                return CapiHelper.GetKeyParameterString(SafeKeyHandle, Constants.CLR_CIPHEROID);
+            }
+            set
+            {
+                CapiHelper.SetKeyParamString(SafeKeyHandle, GostConstants.KP_CIPHEROID, value);
+            }
+        }
+
+        /// <summary>
         /// Конструктор, создающий объект класса 
         /// <see cref="Gost3410_2012_256CryptoServiceProvider"/>.
         /// </summary>

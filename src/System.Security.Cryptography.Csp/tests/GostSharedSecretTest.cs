@@ -119,6 +119,150 @@ namespace System.Security.Cryptography.Encryption.KeyExchange.Tests
             }
         }
 
+        [Fact]
+        public void TestAgreeCert2001Verba()
+        {
+            using (var cert = GetGost2001Certificate())
+            {
+                var gost = (Gost3410CryptoServiceProvider)cert.PrivateKey;
+                var gostRes = (Gost3410CryptoServiceProvider)cert.PrivateKey;
+
+                var gostPk = (Gost3410CryptoServiceProvider)cert.PublicKey.Key;
+                var gostResPk = (Gost3410CryptoServiceProvider)cert.PublicKey.Key;
+
+                var symmetric = new Gost28147CryptoServiceProvider();
+
+                gostPk.CipherOid = "1.2.643.2.2.31.1";
+                gostResPk.CipherOid = "1.2.643.2.2.31.1";
+
+                var agree = (GostSharedSecretCryptoServiceProvider)gost.CreateAgree(gostResPk.ExportParameters(false));
+                byte[] wrappedKeyBytesArray = agree.Wrap(symmetric, GostKeyWrapMethod.CryptoProKeyWrap);
+
+                var agreeRes = (GostSharedSecretCryptoServiceProvider)gostRes.CreateAgree(gostPk.ExportParameters(false));
+                var key = agreeRes.Unwrap(wrappedKeyBytesArray, GostKeyWrapMethod.CryptoProKeyWrap);
+            }
+        }
+
+        [Fact]
+        public void TestAgreeCert2012_256Verba()
+        {
+            using (var cert = GetGost2012_256Certificate())
+            {
+                var gost = (Gost3410_2012_256CryptoServiceProvider)cert.PrivateKey;
+                var gostRes = (Gost3410_2012_256CryptoServiceProvider)cert.PrivateKey;
+
+                var gostPk = (Gost3410_2012_256CryptoServiceProvider)cert.PublicKey.Key;
+                var gostResPk = (Gost3410_2012_256CryptoServiceProvider)cert.PublicKey.Key;
+
+                var symmetric = new Gost28147CryptoServiceProvider();
+
+                gostPk.CipherOid = "1.2.643.2.2.31.1";
+                gostResPk.CipherOid = "1.2.643.2.2.31.1";
+
+                var agree = (GostSharedSecretCryptoServiceProvider)gost.CreateAgree(gostResPk.ExportParameters(false));
+                byte[] wrappedKeyBytesArray = agree.Wrap(symmetric, GostKeyWrapMethod.CryptoProKeyWrap);
+
+                var agreeRes = (GostSharedSecretCryptoServiceProvider)gostRes.CreateAgree(gostPk.ExportParameters(false));
+                var key = agreeRes.Unwrap(wrappedKeyBytesArray, GostKeyWrapMethod.CryptoProKeyWrap);
+            }
+        }
+
+        [Fact]
+        public void TestAgreeCert2012_512Verba()
+        {
+            using (var cert = GetGost2012_512Certificate())
+            {
+                var gost = (Gost3410_2012_512CryptoServiceProvider)cert.PrivateKey;
+                var gostRes = (Gost3410_2012_512CryptoServiceProvider)cert.PrivateKey;
+
+                var gostPk = (Gost3410_2012_512CryptoServiceProvider)cert.PublicKey.Key;
+                var gostResPk = (Gost3410_2012_512CryptoServiceProvider)cert.PublicKey.Key;
+
+                var symmetric = new Gost28147CryptoServiceProvider();
+
+                gostPk.CipherOid = "1.2.643.2.2.31.1";
+                gostResPk.CipherOid = "1.2.643.2.2.31.1";
+
+                var agree = (GostSharedSecretCryptoServiceProvider)gost.CreateAgree(gostResPk.ExportParameters(false));
+                byte[] wrappedKeyBytesArray = agree.Wrap(symmetric, GostKeyWrapMethod.CryptoProKeyWrap);
+
+                var agreeRes = (GostSharedSecretCryptoServiceProvider)gostRes.CreateAgree(gostPk.ExportParameters(false));
+                var key = agreeRes.Unwrap(wrappedKeyBytesArray, GostKeyWrapMethod.CryptoProKeyWrap);
+            }
+        }
+
+        [Fact]
+        public void TestAgreeCert200TkZ()
+        {
+            using (var cert = GetGost2001Certificate())
+            {
+                var gost = (Gost3410CryptoServiceProvider)cert.PrivateKey;
+                var gostRes = (Gost3410CryptoServiceProvider)cert.PrivateKey;
+
+                var gostPk = (Gost3410CryptoServiceProvider)cert.PublicKey.Key;
+                var gostResPk = (Gost3410CryptoServiceProvider)cert.PublicKey.Key;
+
+                var symmetric = new Gost28147CryptoServiceProvider();
+
+                gostPk.CipherOid = "1.2.643.7.1.2.5.1.1";
+                gostResPk.CipherOid = "1.2.643.7.1.2.5.1.1";
+
+                var agree = (GostSharedSecretCryptoServiceProvider)gost.CreateAgree(gostResPk.ExportParameters(false));
+                byte[] wrappedKeyBytesArray = agree.Wrap(symmetric, GostKeyWrapMethod.CryptoProKeyWrap);
+
+                var agreeRes = (GostSharedSecretCryptoServiceProvider)gostRes.CreateAgree(gostPk.ExportParameters(false));
+                var key = agreeRes.Unwrap(wrappedKeyBytesArray, GostKeyWrapMethod.CryptoProKeyWrap);
+            }
+        }
+
+        [Fact]
+        public void TestAgreeCert2012_256TkZ()
+        {
+            using (var cert = GetGost2012_256Certificate())
+            {
+                var gost = (Gost3410_2012_256CryptoServiceProvider)cert.PrivateKey;
+                var gostRes = (Gost3410_2012_256CryptoServiceProvider)cert.PrivateKey;
+
+                var gostPk = (Gost3410_2012_256CryptoServiceProvider)cert.PublicKey.Key;
+                var gostResPk = (Gost3410_2012_256CryptoServiceProvider)cert.PublicKey.Key;
+
+                var symmetric = new Gost28147CryptoServiceProvider();
+
+                gostPk.CipherOid = "1.2.643.7.1.2.5.1.1";
+                gostResPk.CipherOid = "1.2.643.7.1.2.5.1.1";
+
+                var agree = (GostSharedSecretCryptoServiceProvider)gost.CreateAgree(gostResPk.ExportParameters(false));
+                byte[] wrappedKeyBytesArray = agree.Wrap(symmetric, GostKeyWrapMethod.CryptoProKeyWrap);
+
+                var agreeRes = (GostSharedSecretCryptoServiceProvider)gostRes.CreateAgree(gostPk.ExportParameters(false));
+                var key = agreeRes.Unwrap(wrappedKeyBytesArray, GostKeyWrapMethod.CryptoProKeyWrap);
+            }
+        }
+
+        [Fact]
+        public void TestAgreeCert2012_512TkZ()
+        {
+            using (var cert = GetGost2012_512Certificate())
+            {
+                var gost = (Gost3410_2012_512CryptoServiceProvider)cert.PrivateKey;
+                var gostRes = (Gost3410_2012_512CryptoServiceProvider)cert.PrivateKey;
+
+                var gostPk = (Gost3410_2012_512CryptoServiceProvider)cert.PublicKey.Key;
+                var gostResPk = (Gost3410_2012_512CryptoServiceProvider)cert.PublicKey.Key;
+
+                var symmetric = new Gost28147CryptoServiceProvider();
+
+                gostPk.CipherOid = "1.2.643.7.1.2.5.1.1";
+                gostResPk.CipherOid = "1.2.643.7.1.2.5.1.1";
+
+                var agree = (GostSharedSecretCryptoServiceProvider)gost.CreateAgree(gostResPk.ExportParameters(false));
+                byte[] wrappedKeyBytesArray = agree.Wrap(symmetric, GostKeyWrapMethod.CryptoProKeyWrap);
+
+                var agreeRes = (GostSharedSecretCryptoServiceProvider)gostRes.CreateAgree(gostPk.ExportParameters(false));
+                var key = agreeRes.Unwrap(wrappedKeyBytesArray, GostKeyWrapMethod.CryptoProKeyWrap);
+            }
+        }
+
         // Создание тестового файла для шифрования.
         static void CreateTestFile(string id)
         {

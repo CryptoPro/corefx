@@ -116,8 +116,9 @@ namespace System.Security.Cryptography
     public sealed partial class Gost28147CryptoServiceProvider : System.Security.Cryptography.Gost28147
     {
         public Gost28147CryptoServiceProvider() { }
-        public Gost28147CryptoServiceProvider(CspParameters parameters) { }
         public Gost28147CryptoServiceProvider(System.IntPtr keyHandle, System.IntPtr providerHandle) { }
+        public Gost28147CryptoServiceProvider(System.Security.Cryptography.CspParameters parameters) { }
+        public string CipherOid { get { throw null; } set { } }
         public override byte[] ComputeHash(System.Security.Cryptography.HashAlgorithm hash) { throw null; }
         public override System.Security.Cryptography.ICryptoTransform CreateDecryptor() { throw null; }
         public override System.Security.Cryptography.ICryptoTransform CreateDecryptor(byte[] rgbKey, byte[] rgbIV) { throw null; }
@@ -133,6 +134,7 @@ namespace System.Security.Cryptography
         public Gost3410CryptoServiceProvider() { }
         public Gost3410CryptoServiceProvider(System.IntPtr hProvHandle, int keySpec) { }
         public Gost3410CryptoServiceProvider(System.Security.Cryptography.CspParameters parameters) { }
+        public string CipherOid { get { throw null; } set { } }
         public byte[] ContainerCertificate { get { throw null; } set { } }
         public System.Security.Cryptography.CspKeyContainerInfo CspKeyContainerInfo { get { throw null; } }
         public override int KeySize { get { throw null; } }
@@ -172,6 +174,35 @@ namespace System.Security.Cryptography
         public override byte[] SignHash(byte[] hash, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
         public override bool VerifyHash(byte[] hash, byte[] signature, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
     }
+    public sealed partial class Gost3410_2012_256CryptoServiceProvider : System.Security.Cryptography.Gost3410_2012_256, System.Security.Cryptography.ICspAsymmetricAlgorithm
+    {
+        public Gost3410_2012_256CryptoServiceProvider() { }
+        public Gost3410_2012_256CryptoServiceProvider(System.IntPtr hProvHandle, int keySpec) { }
+        public Gost3410_2012_256CryptoServiceProvider(System.Security.Cryptography.CspParameters parameters) { }
+        public string CipherOid { get { throw null; } set { } }
+        public byte[] ContainerCertificate { get { throw null; } set { } }
+        public System.Security.Cryptography.CspKeyContainerInfo CspKeyContainerInfo { get { throw null; } }
+        public override int KeySize { get { throw null; } }
+        public bool PersistKeyInCsp { get { throw null; } set { } }
+        public bool PublicOnly { get { throw null; } }
+        public static bool UseMachineKeyStore { get { throw null; } set { } }
+        public override System.Security.Cryptography.GostSharedSecretAlgorithm CreateAgree(System.Security.Cryptography.Gost3410Parameters alg) { throw null; }
+        protected override void Dispose(bool disposing) { }
+        public byte[] ExportCspBlob(bool includePrivateParameters) { throw null; }
+        public override System.Security.Cryptography.Gost3410Parameters ExportParameters(bool includePrivateParameters) { throw null; }
+        protected override byte[] HashData(byte[] data, int offset, int count, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
+        protected override byte[] HashData(System.IO.Stream data, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
+        public void ImportCspBlob(byte[] rawData) { }
+        public void ImportCspBlob(byte[] keyBlob, byte[] paramBlob) { }
+        public override void ImportParameters(System.Security.Cryptography.Gost3410Parameters parameters) { }
+        public override byte[] SignData(byte[] data, int offset, int count, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
+        public override byte[] SignData(System.IO.Stream data, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
+        public override byte[] SignHash(byte[] rgbHash) { throw null; }
+        public override byte[] SignHash(byte[] rgbHash, System.Security.Cryptography.HashAlgorithmName hashAlgName) { throw null; }
+        public override bool VerifyData(byte[] data, int offset, int count, byte[] rgbSignature, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
+        public bool VerifyHash(byte[] rgbHash, byte[] rgbSignature) { throw null; }
+        public override bool VerifyHash(byte[] hash, byte[] signature, System.Security.Cryptography.HashAlgorithmName hashAlgName) { throw null; }
+    }
     public sealed partial class Gost3410_2012_256EphemeralCryptoServiceProvider : System.Security.Cryptography.Gost3410_2012_256
     {
         public Gost3410_2012_256EphemeralCryptoServiceProvider() { }
@@ -188,6 +219,35 @@ namespace System.Security.Cryptography
         public override byte[] SignHash(byte[] hash, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
         public override bool VerifyHash(byte[] hash, byte[] signature, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
     }
+    public sealed partial class Gost3410_2012_512CryptoServiceProvider : System.Security.Cryptography.Gost3410_2012_512, System.Security.Cryptography.ICspAsymmetricAlgorithm
+    {
+        public Gost3410_2012_512CryptoServiceProvider() { }
+        public Gost3410_2012_512CryptoServiceProvider(System.IntPtr hProvHandle, int keySpec) { }
+        public Gost3410_2012_512CryptoServiceProvider(System.Security.Cryptography.CspParameters parameters) { }
+        public string CipherOid { get { throw null; } set { } }
+        public byte[] ContainerCertificate { get { throw null; } set { } }
+        public System.Security.Cryptography.CspKeyContainerInfo CspKeyContainerInfo { get { throw null; } }
+        public override int KeySize { get { throw null; } }
+        public bool PersistKeyInCsp { get { throw null; } set { } }
+        public bool PublicOnly { get { throw null; } }
+        public static bool UseMachineKeyStore { get { throw null; } set { } }
+        public override System.Security.Cryptography.GostSharedSecretAlgorithm CreateAgree(System.Security.Cryptography.Gost3410Parameters alg) { throw null; }
+        protected override void Dispose(bool disposing) { }
+        public byte[] ExportCspBlob(bool includePrivateParameters) { throw null; }
+        public override System.Security.Cryptography.Gost3410Parameters ExportParameters(bool includePrivateParameters) { throw null; }
+        protected override byte[] HashData(byte[] data, int offset, int count, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
+        protected override byte[] HashData(System.IO.Stream data, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
+        public void ImportCspBlob(byte[] rawData) { }
+        public void ImportCspBlob(byte[] keyBlob, byte[] paramBlob) { }
+        public override void ImportParameters(System.Security.Cryptography.Gost3410Parameters parameters) { }
+        public override byte[] SignData(byte[] data, int offset, int count, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
+        public override byte[] SignData(System.IO.Stream data, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
+        public override byte[] SignHash(byte[] rgbHash) { throw null; }
+        public override byte[] SignHash(byte[] rgbHash, System.Security.Cryptography.HashAlgorithmName hashAlgName) { throw null; }
+        public override bool VerifyData(byte[] data, int offset, int count, byte[] rgbSignature, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
+        public bool VerifyHash(byte[] rgbHash, byte[] rgbSignature) { throw null; }
+        public override bool VerifyHash(byte[] hash, byte[] signature, System.Security.Cryptography.HashAlgorithmName hashAlgName) { throw null; }
+    }
     public sealed partial class Gost3410_2012_512EphemeralCryptoServiceProvider : System.Security.Cryptography.Gost3410_2012_512
     {
         public Gost3410_2012_512EphemeralCryptoServiceProvider() { }
@@ -203,62 +263,6 @@ namespace System.Security.Cryptography
         public override byte[] SignHash(byte[] hash) { throw null; }
         public override byte[] SignHash(byte[] hash, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
         public override bool VerifyHash(byte[] hash, byte[] signature, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
-    }
-    public sealed partial class Gost3410_2012_256CryptoServiceProvider : System.Security.Cryptography.Gost3410_2012_256, System.Security.Cryptography.ICspAsymmetricAlgorithm
-    {
-        public Gost3410_2012_256CryptoServiceProvider() { }
-        public Gost3410_2012_256CryptoServiceProvider(System.IntPtr hProvHandle, int keySpec) { }
-        public Gost3410_2012_256CryptoServiceProvider(System.Security.Cryptography.CspParameters parameters) { }
-        public byte[] ContainerCertificate { get { throw null; } set { } }
-        public System.Security.Cryptography.CspKeyContainerInfo CspKeyContainerInfo { get { throw null; } }
-        public override int KeySize { get { throw null; } }
-        public bool PersistKeyInCsp { get { throw null; } set { } }
-        public bool PublicOnly { get { throw null; } }
-        public static bool UseMachineKeyStore { get { throw null; } set { } }
-        public override System.Security.Cryptography.GostSharedSecretAlgorithm CreateAgree(System.Security.Cryptography.Gost3410Parameters alg) { throw null; }
-        protected override void Dispose(bool disposing) { }
-        public byte[] ExportCspBlob(bool includePrivateParameters) { throw null; }
-        public override System.Security.Cryptography.Gost3410Parameters ExportParameters(bool includePrivateParameters) { throw null; }
-        protected override byte[] HashData(byte[] data, int offset, int count, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
-        protected override byte[] HashData(System.IO.Stream data, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
-        public void ImportCspBlob(byte[] rawData) { }
-        public void ImportCspBlob(byte[] keyBlob, byte[] paramBlob) { }
-        public override void ImportParameters(System.Security.Cryptography.Gost3410Parameters parameters) { }
-        public override byte[] SignData(byte[] data, int offset, int count, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
-        public override byte[] SignData(System.IO.Stream data, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
-        public override byte[] SignHash(byte[] rgbHash) { throw null; }
-        public override byte[] SignHash(byte[] rgbHash, System.Security.Cryptography.HashAlgorithmName hashAlgName) { throw null; }
-        public override bool VerifyData(byte[] data, int offset, int count, byte[] rgbSignature, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
-        public bool VerifyHash(byte[] rgbHash, byte[] rgbSignature) { throw null; }
-        public override bool VerifyHash(byte[] hash, byte[] signature, System.Security.Cryptography.HashAlgorithmName hashAlgName) { throw null; }
-    }
-    public sealed partial class Gost3410_2012_512CryptoServiceProvider : System.Security.Cryptography.Gost3410_2012_512, System.Security.Cryptography.ICspAsymmetricAlgorithm
-    {
-        public Gost3410_2012_512CryptoServiceProvider() { }
-        public Gost3410_2012_512CryptoServiceProvider(System.IntPtr hProvHandle, int keySpec) { }
-        public Gost3410_2012_512CryptoServiceProvider(System.Security.Cryptography.CspParameters parameters) { }
-        public byte[] ContainerCertificate { get { throw null; } set { } }
-        public System.Security.Cryptography.CspKeyContainerInfo CspKeyContainerInfo { get { throw null; } }
-        public override int KeySize { get { throw null; } }
-        public bool PersistKeyInCsp { get { throw null; } set { } }
-        public bool PublicOnly { get { throw null; } }
-        public static bool UseMachineKeyStore { get { throw null; } set { } }
-        public override System.Security.Cryptography.GostSharedSecretAlgorithm CreateAgree(System.Security.Cryptography.Gost3410Parameters alg) { throw null; }
-        protected override void Dispose(bool disposing) { }
-        public byte[] ExportCspBlob(bool includePrivateParameters) { throw null; }
-        public override System.Security.Cryptography.Gost3410Parameters ExportParameters(bool includePrivateParameters) { throw null; }
-        protected override byte[] HashData(byte[] data, int offset, int count, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
-        protected override byte[] HashData(System.IO.Stream data, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
-        public void ImportCspBlob(byte[] rawData) { }
-        public void ImportCspBlob(byte[] keyBlob, byte[] paramBlob) { }
-        public override void ImportParameters(System.Security.Cryptography.Gost3410Parameters parameters) { }
-        public override byte[] SignData(byte[] data, int offset, int count, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
-        public override byte[] SignData(System.IO.Stream data, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
-        public override byte[] SignHash(byte[] rgbHash) { throw null; }
-        public override byte[] SignHash(byte[] rgbHash, System.Security.Cryptography.HashAlgorithmName hashAlgName) { throw null; }
-        public override bool VerifyData(byte[] data, int offset, int count, byte[] rgbSignature, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
-        public bool VerifyHash(byte[] rgbHash, byte[] rgbSignature) { throw null; }
-        public override bool VerifyHash(byte[] hash, byte[] signature, System.Security.Cryptography.HashAlgorithmName hashAlgName) { throw null; }
     }
     public sealed partial class Gost3411CryptoServiceProvider : System.Security.Cryptography.Gost3411
     {
@@ -296,7 +300,7 @@ namespace System.Security.Cryptography
         public GostKeyExchangeDeformatter(System.Security.Cryptography.AsymmetricAlgorithm key) { }
         public override string Parameters { get { throw null; } set { } }
         public override byte[] DecryptKeyExchange(byte[] rgb) { throw null; }
-        public System.Security.Cryptography.SymmetricAlgorithm DecryptKeyExchange(System.Security.Cryptography.GostKeyTransport transport, GostKeyWrapMethod keyWrapMethod = GostKeyWrapMethod.CryptoPro12KeyWrap) { throw null; }
+        public System.Security.Cryptography.SymmetricAlgorithm DecryptKeyExchange(System.Security.Cryptography.GostKeyTransport transport, System.Security.Cryptography.GostKeyWrapMethod keyWrapMethod = System.Security.Cryptography.GostKeyWrapMethod.CryptoPro12KeyWrap) { throw null; }
         public System.Security.Cryptography.SymmetricAlgorithm DecryptKeyExchangeData(byte[] data) { throw null; }
         public override void SetKey(System.Security.Cryptography.AsymmetricAlgorithm key) { }
     }
@@ -307,8 +311,8 @@ namespace System.Security.Cryptography
         public override string Parameters { get { throw null; } }
         public override byte[] CreateKeyExchange(byte[] data) { throw null; }
         public override byte[] CreateKeyExchange(byte[] data, System.Type symAlgType) { throw null; }
-        public System.Security.Cryptography.GostKeyTransport CreateKeyExchange(System.Security.Cryptography.SymmetricAlgorithm alg, GostKeyWrapMethod wrapMethod = GostKeyWrapMethod.CryptoPro12KeyWrap) { throw null; }
-        public byte[] CreateKeyExchangeData(System.Security.Cryptography.SymmetricAlgorithm alg, GostKeyWrapMethod keyWrapMethod = GostKeyWrapMethod.CryptoPro12KeyWrap) { throw null; }
+        public System.Security.Cryptography.GostKeyTransport CreateKeyExchange(System.Security.Cryptography.SymmetricAlgorithm alg, System.Security.Cryptography.GostKeyWrapMethod keyWrapMethod = System.Security.Cryptography.GostKeyWrapMethod.CryptoPro12KeyWrap) { throw null; }
+        public byte[] CreateKeyExchangeData(System.Security.Cryptography.SymmetricAlgorithm alg, System.Security.Cryptography.GostKeyWrapMethod wrapMethod = System.Security.Cryptography.GostKeyWrapMethod.CryptoPro12KeyWrap) { throw null; }
         public override void SetKey(System.Security.Cryptography.AsymmetricAlgorithm key) { }
     }
     public sealed partial class GostKeyExchangeParameters

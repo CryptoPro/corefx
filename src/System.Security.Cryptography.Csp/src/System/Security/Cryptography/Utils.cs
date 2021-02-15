@@ -20,6 +20,9 @@ namespace System.Security.Cryptography
         internal const int CLR_ALGID = 9;
         internal const int CLR_PP_CLIENT_HWND = 10;
         internal const int CLR_PP_PIN = 11;
+        // begin: gost
+        internal const int CLR_CIPHEROID = 101;
+        // end: gost
 
         internal const int SIZE_OF_DWORD = 4;
     }

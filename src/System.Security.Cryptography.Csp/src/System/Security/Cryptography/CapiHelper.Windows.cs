@@ -611,6 +611,22 @@ namespace Internal.NativeCrypto
                     }
                     break;
                 }
+                // begin: gost
+                case Constants.CLR_CIPHEROID:
+                {
+                    // returns the KP_CIPHEROID for the key
+                    if (!Interop.Advapi32.CryptGetKeyParam(safeKeyHandle, Interop.Advapi32.CryptGetKeyParamFlags.KP_CIPHEROID, null, ref cb, 0))
+                    {
+                        throw GetErrorCode().ToCryptographicException();
+                    }
+                    pb = new byte[cb];
+                    if (!Interop.Advapi32.CryptGetKeyParam(safeKeyHandle, Interop.Advapi32.CryptGetKeyParamFlags.KP_CIPHEROID, pb, ref cb, 0))
+                    {
+                        throw GetErrorCode().ToCryptographicException();
+                    }
+                    break;
+                }
+                // end: gost
                 default:
                 {
                     Debug.Assert(false);
@@ -1210,6 +1226,28 @@ namespace Internal.NativeCrypto
         }
 
         /// <summary>
+        /// <c>CryptGetKeyParam</c> с возвратом результата в виде строки.
+        /// </summary>
+        /// 
+        /// <param name="hKey">HKEY</param>
+        /// <param name="param">KP_</param>
+        /// 
+        /// <returns>Строка.</returns>
+        /// 
+        /// <exception cref="CryptographicException">При ошибках на native
+        /// уровне и ошибках перекодировки строки в текущей locale.</exception>
+        /// 
+        /// <intdoc><para>У MS отсутствует аналог.</para></intdoc>
+        /// 
+        /// <unmanagedperm action="LinkDemand" />
+        internal static string GetKeyParameterString(SafeKeyHandle hKey,
+            int param)
+        {
+            byte[] blob = GetKeyParameter(hKey, param);
+            return ToLocalSecurityString(blob);
+        }
+
+        /// <summary>
         /// CryptGetKeyParam с возвратом результата в виде DWORD.
         /// </summary>
         /// 
@@ -1719,6 +1757,42 @@ namespace Internal.NativeCrypto
             if (!ret)
                 throw new CryptographicException(GetErrorCode());
             return phKeyDest;
+        }
+
+        /// <summary>
+        /// Перевод в строку из массива байтов ASCIIZ строки в локальной
+        /// кодировке.
+        /// </summary>
+        /// 
+        /// <param name="blob">исходный массив.</param>
+        /// 
+        /// <returns>Строка.</returns>
+        /// 
+        /// <exception cref="CryptographicException">При ошибках
+        /// декодирования исходной строки.</exception>
+        /// 
+        /// <unmanagedperm action="LinkDemand" />
+        private static string ToLocalSecurityString(byte[] blob)
+        {
+            string ret;
+            try
+            {
+                ret = Encoding.GetEncoding(0).GetString(blob);
+                int i = 0;
+                for (; i < ret.Length; i++)
+                    if (ret[i] == 0)
+                        break;
+                if (i == ret.Length)
+                    throw new CryptographicException(
+                        "Cryptography_CSP_InvalidString");
+                ret = ret.Substring(0, i);
+            }
+            catch (DecoderFallbackException ex)
+            {
+                throw new CryptographicException(
+                    "Cryptography_CSP_InvalidString", ex);
+            }
+            return ret;
         }
 
         //end: gost

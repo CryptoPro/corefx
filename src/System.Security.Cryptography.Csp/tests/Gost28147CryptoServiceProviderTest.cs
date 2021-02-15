@@ -471,6 +471,22 @@ namespace System.Security.Cryptography.Csp.Tests
             Assert.Equal(WellKnownUnpaddedData, decrypted);
         }
 
+        [Fact]
+        public void CipherOidTest()
+        {
+            var szOID_Gost28147_89_CryptoPro_A_ParamSet = "1.2.643.2.2.31.1";
+            var szOID_Gost28147_89_TC26_Z_ParamSet = "1.2.643.7.1.2.5.1.1";
+
+            using (var gost = new Gost28147CryptoServiceProvider())
+            {
+                gost.CipherOid = szOID_Gost28147_89_CryptoPro_A_ParamSet;
+                Assert.Equal(gost.CipherOid, szOID_Gost28147_89_CryptoPro_A_ParamSet);
+
+                gost.CipherOid = szOID_Gost28147_89_TC26_Z_ParamSet;
+                Assert.Equal(gost.CipherOid, szOID_Gost28147_89_TC26_Z_ParamSet);
+            }
+        }
+
         //[Fact]
         //public void ResetOnErrorEncrypt()
         //{

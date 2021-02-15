@@ -109,6 +109,22 @@ namespace System.Security.Cryptography
             }
         }
 
+        /// <summary>
+        /// Параметры шифрования
+        /// </summary>
+        public string CipherOid
+        {
+            // Если ключ не был создан к моменту обращения - создаётся при обращении к SafeKeyHandle
+            get
+            {
+                return CapiHelper.GetKeyParameterString(SafeKeyHandle, Constants.CLR_CIPHEROID);
+            }
+            set
+            {
+                CapiHelper.SetKeyParamString(SafeKeyHandle, GostConstants.KP_CIPHEROID, value);
+            }
+        }
+
         public Gost28147CryptoServiceProvider()
         {
             Mode = CipherMode.CFB;
@@ -253,7 +269,7 @@ namespace System.Security.Cryptography
             // KeySizeValue устанавливается в базовом классе.
             // FeedbackSizeValue устанавливается в базовом классе.
             // BlockSizeValue устанавливается в базовом классе.
-        }
+        }        
 
         public override ICryptoTransform CreateDecryptor(byte[] rgbKey, byte[] rgbIV)
         {

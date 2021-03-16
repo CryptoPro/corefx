@@ -77,10 +77,7 @@ namespace Internal.Cryptography.Pal
                     return new Gost3410CryptoServiceProvider(csp);
                 }
                 ,
-                delegate (CngKey cngKey)
-                {
-                    throw new NotSupportedException("CNG Gost3410 keys are not supported.");//(SR.NotSupported_Gost3410_Cng); 
-                },
+                null, // CNG keys are not supported
                 delegate (IntPtr hProvHandle, int keySpec)
                 {
                     return new Gost3410CryptoServiceProvider(hProvHandle, keySpec);
@@ -96,10 +93,7 @@ namespace Internal.Cryptography.Pal
                     return new Gost3410_2012_256CryptoServiceProvider(csp);
                 }
                 ,
-                delegate (CngKey cngKey)
-                {
-                    throw new NotSupportedException("CNG Gost3410 keys are not supported.");//(SR.NotSupported_Gost3410_Cng); 
-                },
+                null, // CNG keys are not supported
                 delegate (IntPtr hProvHandle, int keySpec)
                 {
                     return new Gost3410_2012_256CryptoServiceProvider(hProvHandle, keySpec);
@@ -115,10 +109,7 @@ namespace Internal.Cryptography.Pal
                     return new Gost3410_2012_512CryptoServiceProvider(csp);
                 }
                 ,
-                delegate (CngKey cngKey)
-                {
-                    throw new NotSupportedException("CNG Gost3410 keys are not supported.");//(SR.NotSupported_Gost3410_Cng); 
-                },
+                null, // CNG keys are not supported
                 delegate (IntPtr hProvHandle, int keySpec)
                 {
                     return new Gost3410_2012_512CryptoServiceProvider(hProvHandle, keySpec);
@@ -252,12 +243,17 @@ namespace Internal.Cryptography.Pal
 
         private T GetPrivateKey<T>(Func<CspParameters, T> createCsp, Func<CngKey, T> createCng, Func<IntPtr, int, T> createNoPersistCsp = null) where T : AsymmetricAlgorithm
         {
-            CngKeyHandleOpenOptions cngHandleOptions;
-            SafeNCryptKeyHandle ncryptKey = TryAcquireCngPrivateKey(CertContext, out cngHandleOptions);
-            if (ncryptKey != null)
+            // begin: gost
+            if (createCng != null)
             {
-                CngKey cngKey = CngKey.Open(ncryptKey, cngHandleOptions);
-                return createCng(cngKey);
+                // end: gost
+                CngKeyHandleOpenOptions cngHandleOptions;
+                SafeNCryptKeyHandle ncryptKey = TryAcquireCngPrivateKey(CertContext, out cngHandleOptions);
+                if (ncryptKey != null)
+                {
+                    CngKey cngKey = CngKey.Open(ncryptKey, cngHandleOptions);
+                    return createCng(cngKey);
+                }
             }
 
             if (createNoPersistCsp != null)
@@ -273,7 +269,10 @@ namespace Internal.Cryptography.Pal
             if (cspParameters == null)
                     return null;
 
-            if (cspParameters.ProviderType == 0)
+            // begin: gost
+            if (createCng != null &&
+                // end: gost
+                cspParameters.ProviderType == 0)
             {
                 // ProviderType being 0 signifies that this is actually a CNG key, not a CAPI key. Crypt32.dll stuffs the CNG Key Storage Provider
                 // name into CRYPT_KEY_PROV_INFO->ProviderName, and the CNG key name into CRYPT_KEY_PROV_INFO->KeyContainerName.

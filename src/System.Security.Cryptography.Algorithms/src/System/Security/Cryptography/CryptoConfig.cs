@@ -192,9 +192,21 @@ namespace System.Security.Cryptography
 
                 string Gost28147Type = "System.Security.Cryptography.Gost28147CryptoServiceProvider, " + AssemblyName_Csp;
 
-                string HMACGost3411Type = "System.Security.Cryptography.HMACGost3411, " + AssemblyName_Csp;
-                string HMACGost3411_2012_256Type = "System.Security.Cryptography.HMACGost3411_2012_256, " + AssemblyName_Csp;
-                string HMACGost3411_2012_512Type = "System.Security.Cryptography.HMACGost3411_2012_512, " + AssemblyName_Csp;                
+                Type HMACGost3411Type = typeof(System.Security.Cryptography.HMACGost3411);
+                Type HMACGost3411_2012_256Type = typeof(System.Security.Cryptography.HMACGost3411_2012_256);
+                Type HMACGost3411_2012_512Type = typeof(System.Security.Cryptography.HMACGost3411_2012_512);
+
+                string PrfGost3411Type = "System.Security.Cryptography.PrfGost3411, " + AssemblyName_Csp;
+                string PrfGost3411_2012_256Type = "System.Security.Cryptography.PrfGost3411_2012_256, " + AssemblyName_Csp;
+                string PrfGost3411_2012_512Type = "System.Security.Cryptography.PrfGost3411_2012_512, " + AssemblyName_Csp;
+
+                Type GostSignatureFomatterType = typeof(System.Security.Cryptography.GostSignatureFormatter);
+                Type Gost2012_256SignatureFormatterType = typeof(System.Security.Cryptography.Gost2012_256SignatureFormatter);
+                Type Gost2012_512SignatureFormatterType = typeof(System.Security.Cryptography.Gost2012_512SignatureFormatter);
+                Type GostSignatureDeformatterType = typeof(System.Security.Cryptography.GostSignatureDeformatter);
+                Type Gost2012_256SignatureDeformatterType = typeof(System.Security.Cryptography.Gost2012_256SignatureDeformatter);
+                Type Gost2012_512SignatureDeformatterType = typeof(System.Security.Cryptography.Gost2012_512SignatureDeformatter);
+
                 //end: gost
 
                 // Random number generator
@@ -220,9 +232,21 @@ namespace System.Security.Cryptography
                 ht.Add("Gost28147", Gost28147Type);
                 ht.Add("System.Security.Cryptography.Gost28147", Gost28147Type);
 
+                ht.Add("PRFGOST3411", PrfGost3411Type);
+                ht.Add("PRFGOST3411_2012_256", PrfGost3411_2012_256Type);
+                ht.Add("PRFGOST3411_2012_512", PrfGost3411_2012_512Type);
+
                 ht.Add("HMACGOST3411", HMACGost3411Type);
                 ht.Add("HMACGOST3411_2012_256", HMACGost3411_2012_256Type);
                 ht.Add("HMACGOST3411_2012_512", HMACGost3411_2012_512Type);
+
+                ht.Add("System.Security.Cryptography.GostSignatureFormatter", GostSignatureFomatterType);
+                ht.Add("System.Security.Cryptography.Gost_2012_256SignatureFormatter", Gost2012_256SignatureFormatterType);
+                ht.Add("System.Security.Cryptography.Gost_2012_512SignatureFormatter", Gost2012_512SignatureFormatterType);
+
+                ht.Add("System.Security.Cryptography.GostSignatureDeformatter", GostSignatureDeformatterType);
+                ht.Add("System.Security.Cryptography.Gost_2012_256SignatureDeformatter", Gost2012_256SignatureDeformatterType);
+                ht.Add("System.Security.Cryptography.Gost_2012_512SignatureDeformatter", Gost2012_512SignatureDeformatterType);
 
                 //end: gost
 
@@ -313,6 +337,9 @@ namespace System.Security.Cryptography
                 ht.Add("http://www.w3.org/2001/04/xmlenc#sha512", SHA512DefaultType);
 
                 //begin: gost
+                // Устаревшнее.
+                ht.Add("http://www.w3.org/2001/04/xmldsig-more#gostr3411",
+                    Gost3411Type);
                 ht.Add("urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr3411",
                     Gost3411Type);
                 ht.Add("urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34112012-256",

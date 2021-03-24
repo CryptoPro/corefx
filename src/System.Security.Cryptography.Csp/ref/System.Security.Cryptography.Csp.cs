@@ -150,6 +150,9 @@ namespace System.Security.Cryptography
         public void ImportCspBlob(byte[] rawData) { }
         public void ImportCspBlob(byte[] keyBlob, byte[] paramBlob) { }
         public override void ImportParameters(System.Security.Cryptography.Gost3410Parameters parameters) { }
+        public void PreloadContainer() { }
+        public static string SelectContainer(bool fullyQualifiedContainerName, bool machine, System.IntPtr parent) { throw null; }
+        public void SetContainerPassword(System.Security.SecureString password) { }
         public override byte[] SignData(byte[] data, int offset, int count, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
         public override byte[] SignData(System.IO.Stream data, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
         public override byte[] SignHash(byte[] rgbHash) { throw null; }
@@ -195,6 +198,9 @@ namespace System.Security.Cryptography
         public void ImportCspBlob(byte[] rawData) { }
         public void ImportCspBlob(byte[] keyBlob, byte[] paramBlob) { }
         public override void ImportParameters(System.Security.Cryptography.Gost3410Parameters parameters) { }
+        public void PreloadContainer() { }
+        public static string SelectContainer(bool fullyQualifiedContainerName, bool machine, System.IntPtr parent) { throw null; }
+        public void SetContainerPassword(System.Security.SecureString password) { }
         public override byte[] SignData(byte[] data, int offset, int count, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
         public override byte[] SignData(System.IO.Stream data, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
         public override byte[] SignHash(byte[] rgbHash) { throw null; }
@@ -240,6 +246,9 @@ namespace System.Security.Cryptography
         public void ImportCspBlob(byte[] rawData) { }
         public void ImportCspBlob(byte[] keyBlob, byte[] paramBlob) { }
         public override void ImportParameters(System.Security.Cryptography.Gost3410Parameters parameters) { }
+        public void PreloadContainer() { }
+        public static string SelectContainer(bool fullyQualifiedContainerName, bool machine, System.IntPtr parent) { throw null; }
+        public void SetContainerPassword(System.Security.SecureString password) { }
         public override byte[] SignData(byte[] data, int offset, int count, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
         public override byte[] SignData(System.IO.Stream data, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
         public override byte[] SignHash(byte[] rgbHash) { throw null; }

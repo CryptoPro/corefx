@@ -5,6 +5,7 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Security;
 using System.Security.Cryptography;
 using System.Text;
 using Internal.Cryptography;
@@ -1294,6 +1295,49 @@ namespace Internal.NativeCrypto
             CapiHelper.SetKeyParameter(hKey, param, data);
         }
 
+        /// <summary>
+        /// <c>SetProvParam( ... )</c>
+        /// </summary>
+        /// 
+        /// <param name="hProv">HANDLE провайдера.</param>
+        /// <param name="param"></param>
+        /// <param name="keyNumber"><see cref="KeyNumber.Exchange"/> или 
+        /// <see cref="KeyNumber.Signature"/></param>
+        /// <param name="pbData">Данные</param>
+        /// 
+        /// <exception cref="CryptographicException">При ошибках на native
+        /// уровне.</exception>
+        /// <exception cref="ArgumentException">Если <paramref name="keyNumber"/>,
+        /// ни <see cref="KeyNumber.Exchange"/>, ни 
+        /// <see cref="KeyNumber.Signature"/> </exception>
+        internal static void SetProviderParameter(
+            SafeProvHandle hProv, 
+            CryptProvParam param,
+            int keyNumber, IntPtr pbData)
+        {
+            if (param == CryptProvParam.PP_KEYEXCHANGE_PIN
+               || param == CryptProvParam.PP_SIGNATURE_PIN)
+            {
+                if (keyNumber == (int)KeyNumber.Exchange)
+                {
+                    param = CryptProvParam.PP_KEYEXCHANGE_PIN;
+                }
+                else if (keyNumber == (int)KeyNumber.Signature)
+                {
+                    param = CryptProvParam.PP_SIGNATURE_PIN;
+                }
+                else
+                {
+                    throw new ArgumentException(
+                        SR.Cryptography_CSP_WrongKeySpec);
+                }
+            }
+            bool ret = Interop.Advapi32.CryptSetProvParam(hProv, param, pbData, 0);
+            if (!ret)
+            {
+                throw new CryptographicException(Marshal.GetLastWin32Error());
+            }
+        }
         // end: gost
 
         /// <summary>
@@ -1793,6 +1837,107 @@ namespace Internal.NativeCrypto
                     "Cryptography_CSP_InvalidString", ex);
             }
             return ret;
+        }
+
+        /// <summary>
+        /// Установка пароля на контейнер.
+        /// </summary>
+        /// <param name="safeProvHandle">HANDLE провайдера.</param>
+        /// <param name="keyPassword">Пароль в виде SecureString</param>
+        /// <param name="keyNumber">номер ключа (signature, exchnage)</param>
+        /// <unmanagedperm action="LinkDemand" />
+        internal static void SetPin(SafeProvHandle safeProvHandle,
+            SecureString keyPassword, int keyNumber)
+        {
+            IntPtr ptr1 = IntPtr.Zero;
+            if (keyPassword != null)
+            {
+                ptr1 = Marshal.SecureStringToCoTaskMemAnsi(keyPassword);
+            }
+            try
+            {
+                CapiHelper.SetProviderParameter(safeProvHandle, CryptProvParam.PP_KEYEXCHANGE_PIN, keyNumber, ptr1);
+            }
+            finally
+            {
+                if (ptr1 != IntPtr.Zero)
+                {
+                    Marshal.ZeroFreeCoTaskMemAnsi(ptr1);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Предварительная прогрузка контейнера в память и получение
+        /// HANDLE провайдера уровня CP.
+        /// </summary>
+        /// 
+        /// <param name="safeProvHandle">HANDLE провайдера.</param>
+        /// 
+        /// <returns>HANDLE провайдера уровня CP.</returns>
+        /// 
+        /// <intdoc><para>Нет аналога на уровне MS.</para></intdoc>
+        internal static IntPtr GetHCryptProv(
+            SafeProvHandle safeProvHandle)
+        {
+            int preret = 0;
+            CapiHelper.GetProviderParameterWorker(
+                safeProvHandle, null, ref preret, CryptProvParam.PP_HCRYPTPROV);
+            return new IntPtr(preret);
+        }
+
+        /// <summary>
+        /// Вывод диалогового окна выбора контейнера и получение 
+        /// имени выбранного контейнера
+        /// </summary>
+        /// 
+        /// <param name="fullyQualifiedContainerName">Вернуть полностью
+        /// кваллифицированное имя контейнера.</param>
+        /// <param name="machine">Использовать локальное хранилище
+        /// компьютера (<see langword="true"/>) или пользователя
+        /// (<see langword="true"/>).</param>
+        /// <param name="parent">HWND родительского окна или IntPtr.Zero,
+        /// для выдачи окна без родителя.</param>
+        /// <param name="providerId">Идентификатор криптопровайдера</param>
+        /// 
+        /// <exception cref="CryptographicException">При ошибках на native
+        /// уровне.</exception>
+        /// 
+        /// <returns>Строку имени контейнера.</returns>
+        /// 
+        /// <intdoc><para>Функция не имеет аналога у MS,
+        /// это чисто наша функция.</para></intdoc>
+        internal static string SelectContainer(
+            bool fullyQualifiedContainerName, bool machine, IntPtr parent, int providerId)
+        {
+            CspParameters acquireParameters = new CspParameters(providerId);
+            if (machine)
+                acquireParameters.Flags |= CspProviderFlags.UseMachineKeyStore;
+            // Не можем использовать статический провайдер,
+            // нам нужна установка Parent и нужен флаг machine
+            CapiHelper.AcquireCsp(acquireParameters, out SafeProvHandle safeProvHandle);
+            using (safeProvHandle)
+            {
+                if (parent != IntPtr.Zero)
+                {
+                    CapiHelper.SetProviderParameter(safeProvHandle, CryptProvParam.PP_CLIENT_HWND, 0, parent);
+                }
+                StringBuilder builder = new StringBuilder(1024 * 2);
+                int dwDataLen = 1024;
+                int flags = 0;
+                if (fullyQualifiedContainerName)
+                    flags |= GostConstants.CRYPT_FQCN;
+
+                bool ret = Interop.Advapi32.CryptGetProvParam(
+                    safeProvHandle,
+                    CryptProvParam.PP_SELECT_CONTAINER, 
+                    builder, 
+                    ref dwDataLen, 
+                    flags);
+                if (!ret)
+                    throw new CryptographicException(Marshal.GetLastWin32Error());
+                return builder.ToString();
+            }
         }
 
         //end: gost

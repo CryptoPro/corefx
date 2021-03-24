@@ -995,81 +995,70 @@ namespace System.Security.Cryptography
             }
         }
 
-        ///// <summary>
-        ///// Установка пароля доступа к контейнеру.
-        ///// </summary>
-        ///// 
-        ///// <param name="password">Пароль доступа к контейнеру.</param>
-        ///// 
-        ///// <remarks><para>Если ключ уже загружен в память, то поведение 
-        ///// данной функции зависит от провайдера, обычно проверяется 
-        ///// соответствие передаваемого пароля и пароля
-        ///// доступа на контейнер.</para> 
-        ///// <para>Если ключ не был загружен в память, данная функция
-        ///// не проверяет корректность вводимого пароля, а только 
-        ///// запоминает его. Проверка правильности введенного пароля
-        ///// будет происходить при доступе к ключу, например при
-        ///// операции подписи. </para></remarks>
-        //[SecuritySafeCritical]
-        //public void SetContainerPassword(SecureString password)
-        //{
-        ////Дополнительных прав не требуем.
-        //ничего плохого в окне выбора контейнера нет.
-        ////    SecurityPermission perm = new SecurityPermission(SecurityPermissionFlag.UnmanagedCode);
-        ////    perm.Assert();
-        ////Специально не документируем поведение при password == null
-        ////комментарий см. CPUtils.SetPin
-        //    if (PublicOnly)
-        //        throw new CryptographicException(
-        //            Resources.Cryptography_CSP_NoPrivateKey);
-        //    GetKeyPair();
-        //    CPUtils.SetPin(_safeProvHandle, password, this._keySpec);
-        //}
+        /// <summary>
+        /// Установка пароля доступа к контейнеру.
+        /// </summary>
+        /// 
+        /// <param name="password">Пароль доступа к контейнеру.</param>
+        /// 
+        /// <remarks><para>Если ключ уже загружен в память, то поведение 
+        /// данной функции зависит от провайдера, обычно проверяется 
+        /// соответствие передаваемого пароля и пароля
+        /// доступа на контейнер.</para> 
+        /// <para>Если ключ не был загружен в память, данная функция
+        /// не проверяет корректность вводимого пароля, а только 
+        /// запоминает его. Проверка правильности введенного пароля
+        /// будет происходить при доступе к ключу, например при
+        /// операции подписи. </para></remarks>
+        public void SetContainerPassword(SecureString password)
+        {
+            //Специально не документируем поведение при password == null
+            //комментарий см. CPUtils.SetPin
+            if (PublicOnly)
+            {
+                throw new CryptographicException(
+                    SR.Cryptography_CSP_NoPrivateKey);
+            }
+            GetKeyPair();
+            CapiHelper.SetPin(_safeProvHandle, password, this._keySpec);
+        }
 
-        ///// <summary>
-        ///// Предварительная загрузка контейнера в память.
-        ///// </summary>
-        ///// 
-        ///// <cspversions><exclude version="20"/></cspversions>
-        //[SecuritySafeCritical]
-        //public void PreloadContainer()
-        //{
-        ////Дополнительных прав не требуем.
-        ////ничего плохого в окне выбора контейнера нет.
-        //    SecurityPermission perm = new SecurityPermission(SecurityPermissionFlag.UnmanagedCode);
-        //    perm.Assert();
-        //    if (PublicOnly)
-        //        throw new CryptographicException(
-        //            Resources.Cryptography_CSP_NoPrivateKey);
-        //    GetKeyPair();
-        //    CPUtils.GetHCryptProv(_safeProvHandle);
-        //}
+        /// <summary>
+        /// Предварительная загрузка контейнера в память.
+        /// </summary>
+        /// 
+        /// <cspversions><exclude version="20"/></cspversions>
+        public void PreloadContainer()
+        {
+            if (PublicOnly)
+            {
+                throw new CryptographicException(
+                    SR.Cryptography_CSP_NoPrivateKey);
+            }
+            GetKeyPair();
+            CapiHelper.GetHCryptProv(_safeProvHandle);
+        }
 
-        ///// <summary>
-        ///// Вывод диалогового окна выбора контейнера и получение 
-        ///// имени выбранного контейнера
-        ///// </summary>
-        ///// 
-        ///// <param name="fullyQualifiedContainerName">Вернуть полностью
-        ///// кваллифицированное имя контейнера.</param>
-        ///// <param name="machine">Использовать локальное хранилище
-        ///// компьютера (<see langword="true"/>) или пользователя
-        ///// (<see langword="true"/>).</param>
-        ///// <param name="parent">HWND родительского окна или IntPtr.Zero,
-        ///// для выдачи окна без родителя.</param>
-        ///// 
-        ///// <returns>Строку имени контейнера.</returns>
-        //[SecuritySafeCritical]
-        //public static string SelectContainer(bool fullyQualifiedContainerName,
-        //    bool machine, IntPtr parent)
-        //{
-        ////Дополнительных прав не требуем.
-        ////ничего плохого в окне выбора контейнера нет.
-        //SecurityPermission perm = new SecurityPermission(SecurityPermissionFlag.UnmanagedCode);
-        //perm.Assert();
-        //    return COMCryptography.SelectContainer(fullyQualifiedContainerName,
-        //        machine, parent, GostConstants.PROV_GOST_2001_DH);
-        //}
+        /// <summary>
+        /// Вывод диалогового окна выбора контейнера и получение 
+        /// имени выбранного контейнера
+        /// </summary>
+        /// 
+        /// <param name="fullyQualifiedContainerName">Вернуть полностью
+        /// кваллифицированное имя контейнера.</param>
+        /// <param name="machine">Использовать локальное хранилище
+        /// компьютера (<see langword="true"/>) или пользователя
+        /// (<see langword="true"/>).</param>
+        /// <param name="parent">HWND родительского окна или IntPtr.Zero,
+        /// для выдачи окна без родителя.</param>
+        /// 
+        /// <returns>Строку имени контейнера.</returns>
+        public static string SelectContainer(bool fullyQualifiedContainerName,
+            bool machine, IntPtr parent)
+        {
+            return CapiHelper.SelectContainer(fullyQualifiedContainerName,
+                machine, parent, GostConstants.PROV_GOST_2012_256);
+        }
 
 
         /// <summary>

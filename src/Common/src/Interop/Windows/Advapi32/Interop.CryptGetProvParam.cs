@@ -5,6 +5,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using System.Text;
 
 internal static partial class Interop
 {
@@ -20,7 +21,9 @@ internal static partial class Interop
             PP_KEYSET_TYPE = 27,
             PP_KEYEXCHANGE_PIN = 32,
             PP_SIGNATURE_PIN = 33,
-            PP_UNIQUE_CONTAINER = 36
+            PP_UNIQUE_CONTAINER = 36,
+            PP_HCRYPTPROV = 109,
+            PP_SELECT_CONTAINER = 110
         }
 
         [DllImport(Libraries.Advapi32, SetLastError = true)]
@@ -42,6 +45,14 @@ internal static partial class Interop
             SafeHandle safeProvHandle,
             CryptProvParam dwParam,
             IntPtr pbData,
+            ref int dwDataLen,
+            int dwFlags);
+
+        [DllImport(Libraries.Advapi32, SetLastError = true)]
+        public static extern bool CryptGetProvParam(
+            SafeHandle safeProvHandle,
+            CryptProvParam dwParam,
+            [MarshalAs(UnmanagedType.LPStr)] StringBuilder pbData,
             ref int dwDataLen,
             int dwFlags);
 

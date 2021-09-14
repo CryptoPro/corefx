@@ -22,23 +22,6 @@ namespace Internal.Cryptography.Pal
     /// </summary>
     internal sealed partial class X509Pal : IX509Pal
     {
-        public byte[] X500DistinguishedNameEncode(string distinguishedName, X500DistinguishedNameFlags flag)
-        {
-            Debug.Assert(distinguishedName != null);
-
-            CertNameStrTypeAndFlags dwStrType = CertNameStrTypeAndFlags.CERT_X500_NAME_STR | MapNameToStrFlag(flag);
-
-            int cbEncoded = 0;
-            if (!Interop.crypt32.CertStrToName(CertEncodingType.All, distinguishedName, dwStrType, IntPtr.Zero, null, ref cbEncoded, IntPtr.Zero))
-                throw Interop.CPError.GetLastWin32Error().ToCryptographicException();
-
-            byte[] encodedName = new byte[cbEncoded];
-            if (!Interop.crypt32.CertStrToName(CertEncodingType.All, distinguishedName, dwStrType, IntPtr.Zero, encodedName, ref cbEncoded, IntPtr.Zero))
-                throw Interop.CPError.GetLastWin32Error().ToCryptographicException();
-
-            return encodedName;
-        }
-
         public unsafe string X500DistinguishedNameFormat(byte[] encodedDistinguishedName, bool multiLine)
         {
             if (encodedDistinguishedName == null || encodedDistinguishedName.Length == 0)

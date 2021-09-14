@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{6F8576C2-6CD0-4DF3-8394-00B002D82E40}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -298,6 +298,7 @@
 
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetsWindows)' == 'true'">
+    <Compile Include="Internal\Cryptography\Pal.Windows\X509Pal.X500DistinguishedName.Win.cs" />
     <Compile Include="Internal\Cryptography\Pal.Windows\CertificatePal.Import.Win.cs" />
     <Compile Include="Internal\Cryptography\Pal.Windows\FindPal.Win.cs" />
     <Compile Include="$(CommonPath)\Interop\Interop.CPGetLastWin32Error.cs">
@@ -338,6 +339,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetsUnix)' == 'true'">
+    <Compile Include="Internal\Cryptography\Pal.Windows\X509Pal.X500DistinguishedName.Unix.cs" />
     <Compile Include="Internal\Cryptography\Pal.Windows\CertificatePal.Import.Unix.cs" />
     <Compile Include="Internal\Cryptography\Pal.Windows\FindPal.Unix.cs" />
     <Compile Include="$(CommonPath)\Interop\Interop.CPGetLastWin32Error.Unix.cs">
@@ -773,6 +775,7 @@
     <Reference Include="System.Diagnostics.StackTrace" />
     <Reference Include="System.Security.Cryptography.Csp" />
     <Reference Include="System.Security.Cryptography.OpenSsl" />
+    <Reference Include="System.Text.Encoding.CodePages" />
   </ItemGroup>
   <ItemGroup>
     <None Include="@(AsnXml)" />

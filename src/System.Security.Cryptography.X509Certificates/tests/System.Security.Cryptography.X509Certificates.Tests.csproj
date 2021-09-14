@@ -13,6 +13,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Cert.cs" />
+    <Compile Include="CertificateCreation\GostCertificateRequestTests.cs" />
     <Compile Include="CertTests.cs" />
     <Compile Include="ChainHolder.cs" />
     <Compile Include="ChainTests.cs" />

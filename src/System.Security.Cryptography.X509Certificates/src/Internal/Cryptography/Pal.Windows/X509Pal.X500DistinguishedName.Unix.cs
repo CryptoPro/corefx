@@ -28,7 +28,6 @@ namespace Internal.Cryptography.Pal
 
             CertNameStrTypeAndFlags dwStrType = 
                 CertNameStrTypeAndFlags.CERT_X500_NAME_STR |
-                CertNameStrTypeAndFlags.CERT_NAME_STR_FORCE_UTF8_DIR_STR_FLAG |
                 MapNameToStrFlag(flag);
 
             var distinguishedNameBytes = Encoding.UTF32.GetBytes(distinguishedName);

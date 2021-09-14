@@ -85,7 +85,7 @@ namespace System.Security.Cryptography.X509Certificates.Tests.CertificateCreatio
                             DateTimeOffset.Now.AddDays(-45),
                             (DateTimeOffset.Now.AddDays(45)));
 
-                    Assert.Equal(cert.Subject, cn);
+                    Assert.Equal(cn, cert.Subject);
                 }
                 finally
                 {

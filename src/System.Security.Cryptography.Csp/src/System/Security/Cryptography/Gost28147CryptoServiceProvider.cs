@@ -283,17 +283,11 @@ namespace System.Security.Cryptography
 
         public override ICryptoTransform CreateEncryptor()
         {
-            // При обращении к KeyHandle возможна генерация ключа.
-            SafeKeyHandle hDupKey = CapiHelper.DuplicateKey(SafeKeyHandle.DangerousGetHandle());
-            // При обращении к IV возможна генерация синхропосылки.
             return CreateTransform(true);
         }
 
         public override ICryptoTransform CreateDecryptor()
         {
-            // При обращении к KeyHandle возможна генерация ключа.
-            SafeKeyHandle hDupKey = CapiHelper.DuplicateKey(SafeKeyHandle.DangerousGetHandle());
-            // При обращении к IV возможна генерация синхропосылки.
             return CreateTransform(false);
         }
 
@@ -386,9 +380,13 @@ namespace System.Security.Cryptography
 
         private ICryptoTransform CreateTransform(bool encrypting)
         {
+            // При обращении к KeyHandle возможна генерация ключа.
+            SafeKeyHandle hDupKey = CapiHelper.DuplicateKey(SafeKeyHandle.DangerousGetHandle());
+            // При обращении к IV возможна генерация синхропосылки.
+
             return CreateTransformCore(
                 SafeProvHandle,
-                SafeKeyHandle, 
+                hDupKey, 
                 base.ModeValue, 
                 base.PaddingValue, 
                 IV, 

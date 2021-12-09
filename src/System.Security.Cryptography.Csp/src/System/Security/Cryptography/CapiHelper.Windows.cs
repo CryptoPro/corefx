@@ -1784,6 +1784,7 @@ namespace Internal.NativeCrypto
         /// </summary>
         /// 
         /// <param name="hKeySrc">Исходный HANDLE ключа.</param>
+        /// <param name="safeProvHandle">HANDLE родительского провайдера</param>
         /// 
         /// <returns>HANDLE дубликата.</returns>
         /// 
@@ -1793,13 +1794,15 @@ namespace Internal.NativeCrypto
         /// <intdoc><para>У MS отсутствует аналог.</para></intdoc>
         /// 
         /// <unmanagedperm action="LinkDemand" />
-        internal static SafeKeyHandle DuplicateKey(IntPtr hKeySrc)
+        internal static SafeKeyHandle DuplicateKey(IntPtr hKeySrc, SafeProvHandle safeProvHandle)
         {
             SafeKeyHandle phKeyDest = SafeKeyHandle.InvalidHandle;
             bool ret = Interop.Advapi32.CryptDuplicateKey(hKeySrc,
                 null, 0, ref phKeyDest);
             if (!ret)
                 throw new CryptographicException(GetErrorCode());
+
+            phKeyDest.SetParent(safeProvHandle);
             return phKeyDest;
         }
 

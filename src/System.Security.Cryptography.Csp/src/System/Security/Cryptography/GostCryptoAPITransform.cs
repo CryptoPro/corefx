@@ -128,6 +128,11 @@ namespace System.Security.Cryptography
             }
             safeKeyHandle_ = hKey;
             _safeProvHandle = hProv;
+
+            // Не добавляем ссылки на ключи и провайдеры
+            // провайдер передан уже с addRef
+            // ключ - получен через DuplicateKey
+
             for (int num3 = 0; num3 < cArgs; num3++)
             {
                 switch (rgArgIds[num3])

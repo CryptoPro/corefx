@@ -193,7 +193,9 @@ namespace System.Security.Cryptography
             : this()
         {
             _safeProvHandle = new SafeProvHandle(providerHandle, true);
-            _safeKeyHandle = CapiHelper.DuplicateKey(keyHandle);            
+            _safeKeyHandle = CapiHelper.DuplicateKey(
+                keyHandle,
+                _safeProvHandle);
             int algid = CapiHelper.GetKeyParamDw(_safeKeyHandle, Constants.CLR_ALGID);
             if (algid != GostConstants.CALG_G28147)
                 throw new ArgumentException("algid");
@@ -257,7 +259,9 @@ namespace System.Security.Cryptography
             //    throw new CryptographicException(
             //        Resources.Cryptography_CSP_AlgorithmNotAvailable);
             //}
-            _safeKeyHandle = CapiHelper.DuplicateKey(keyHandle.DangerousGetHandle());
+            _safeKeyHandle = CapiHelper.DuplicateKey(
+                keyHandle.DangerousGetHandle(),
+                provHandle);
 
             bool succeded = false;
             provHandle.DangerousAddRef(ref succeded);
@@ -332,7 +336,9 @@ namespace System.Security.Cryptography
                 throw new ArgumentOutOfRangeException("method");
             byte[] ret = null;
             // Сохраняем состояние algid GOST12147
-            using (SafeKeyHandle hExpKey = CapiHelper.DuplicateKey(SafeKeyHandle.DangerousGetHandle()))
+            using (SafeKeyHandle hExpKey = CapiHelper.DuplicateKey(
+                SafeKeyHandle.DangerousGetHandle(),
+                SafeProvHandle))
             {
                 CapiHelper.SetKeyParameter(hExpKey, GostConstants.KP_ALGID, calg);
                 CapiHelper.SetKeyParameter(hExpKey, GostConstants.KP_IV, IV);
@@ -364,7 +370,9 @@ namespace System.Security.Cryptography
                 throw new ArgumentOutOfRangeException("method");
             SymmetricAlgorithm ret = null;
             // Сохраняем состояние algid GOST12147
-            using (SafeKeyHandle hExpKey = CapiHelper.DuplicateKey(SafeKeyHandle.DangerousGetHandle()))
+            using (SafeKeyHandle hExpKey = CapiHelper.DuplicateKey(
+                SafeKeyHandle.DangerousGetHandle(),
+                SafeProvHandle))
             {
                 CapiHelper.SetKeyParamDw(hExpKey, GostConstants.KP_ALGID, calg);
                 SafeKeyHandle simmKey = SafeKeyHandle.InvalidHandle;
@@ -381,7 +389,14 @@ namespace System.Security.Cryptography
         private ICryptoTransform CreateTransform(bool encrypting)
         {
             // При обращении к KeyHandle возможна генерация ключа.
-            SafeKeyHandle hDupKey = CapiHelper.DuplicateKey(SafeKeyHandle.DangerousGetHandle());
+            SafeKeyHandle hDupKey = CapiHelper.DuplicateKey(
+                SafeKeyHandle.DangerousGetHandle(),
+                SafeProvHandle);
+
+            // Добавляем ссылку на провайдер
+            bool success = false;
+            SafeProvHandle.DangerousAddRef(ref success);
+
             // При обращении к IV возможна генерация синхропосылки.
 
             return CreateTransformCore(

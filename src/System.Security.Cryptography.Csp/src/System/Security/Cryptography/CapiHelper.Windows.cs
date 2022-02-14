@@ -1158,7 +1158,10 @@ namespace Internal.NativeCrypto
             bool ret = CapiHelper.CryptImportKey(hProv, keyBlob,
                 keyBlob.Length, hImportKey, keyFlags, out hKey);
             if (!ret)
-                throw new CryptographicException(Marshal.GetLastWin32Error());
+            {
+                var hr = Interop.CPError.GetHRForLastWin32Error();
+                throw hr.ToCryptographicException();
+            }
             int algid_class = BitConverter.ToInt32(keyBlob, 4) & (7 << 13);
             if (algid_class == (5 << 13))
                 return (int)KeyNumber.Exchange;

@@ -18,6 +18,7 @@
     <Compile Include="CertLoader.Settings.cs" />
     <Compile Include="CmsRecipientCollectionTests.cs" />
     <Compile Include="CryptographicAttributeObjectCollectionTests.cs" />
+    <Compile Include="EnvelopedCms\GostEnvelopedTests.cs" />
     <Compile Include="EnvelopedCms\CertificateTests.cs" />
     <Compile Include="EnvelopedCms\ContentEncryptionAlgorithmTests.cs" />
     <Compile Include="EnvelopedCms\DecryptTests.cs" />

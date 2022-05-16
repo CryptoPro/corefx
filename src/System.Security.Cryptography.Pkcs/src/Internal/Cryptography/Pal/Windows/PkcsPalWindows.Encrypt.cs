@@ -276,15 +276,42 @@ namespace Internal.Cryptography.Pal.Windows
                         }
                         else
                         {
+                            // gost falls in here
                             padding = RSAEncryptionPadding.Pkcs1;
                         }
                     }
 
                     if (padding == RSAEncryptionPadding.Pkcs1)
                     {
-                        pEncodeInfo->KeyEncryptionAlgorithm.pszObjId = hb.AllocAsciiString(Oids.Rsa);
-                        pEncodeInfo->KeyEncryptionAlgorithm.Parameters.cbData = (uint)s_rsaPkcsParameters.Length;
-                        pEncodeInfo->KeyEncryptionAlgorithm.Parameters.pbData = hb.AllocBytes(s_rsaPkcsParameters);
+                        // begin: gost
+                        switch (recipient.Certificate.GetKeyAlgorithm())
+                        {                            
+                            case Oids.Gost3410:
+                            case Oids.Gost3410_2012_256:
+                            case Oids.Gost3410_2012_512:
+                            {
+                                // copy from cert info explicitly
+                                pEncodeInfo->KeyEncryptionAlgorithm.pszObjId = hb.AllocAsciiString(recipient.Certificate.GetKeyAlgorithm());
+ 
+                                // uint, копируем
+                                pEncodeInfo->KeyEncryptionAlgorithm.Parameters.cbData = pCertInfo->SubjectPublicKeyInfo.Algorithm.Parameters.cbData;
+
+                                // копируем из памяти и записываем
+                                var pbDataBytes = new byte[pCertInfo->SubjectPublicKeyInfo.Algorithm.Parameters.cbData];
+                                Marshal.Copy(pCertInfo->SubjectPublicKeyInfo.Algorithm.Parameters.pbData, pbDataBytes, 0, pbDataBytes.Length);
+                                pEncodeInfo->KeyEncryptionAlgorithm.Parameters.pbData = hb.AllocBytes(pbDataBytes);
+                                break;
+                                
+                            }
+                            default:
+                            {
+                                // end: gost
+                                pEncodeInfo->KeyEncryptionAlgorithm.pszObjId = hb.AllocAsciiString(Oids.Rsa);
+                                pEncodeInfo->KeyEncryptionAlgorithm.Parameters.cbData = (uint)s_rsaPkcsParameters.Length;
+                                pEncodeInfo->KeyEncryptionAlgorithm.Parameters.pbData = hb.AllocBytes(s_rsaPkcsParameters);
+                                break;
+                            }
+                        }
                     }
                     else if (padding == RSAEncryptionPadding.OaepSHA1)
                     {

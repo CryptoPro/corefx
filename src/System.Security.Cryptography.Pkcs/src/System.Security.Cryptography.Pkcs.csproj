@@ -354,6 +354,7 @@
     <Compile Include="$(CommonPath)\Interop\Windows\Interop.Libraries.cs">
       <Link>Common\Interop\Windows\Interop.Libraries.cs</Link>
     </Compile>
+	<Compile Include="Internal\Cryptography\Pal\Windows\HelpersWindows.Windows.cs" />
     <Compile Include="$(CommonPath)\Interop\Interop.CPGetLastWin32Error.cs">
       <Link>Common\Interop\Interop.CPGetLastWin32Error.cs</Link>
     </Compile>
@@ -386,7 +387,8 @@
     <Compile Include="$(CommonPath)\Interop\Interop.CPGetLastWin32Error.Unix.cs">
       <Link>Common\Interop\Interop.CPGetLastWin32Error.Unix.cs</Link>
     </Compile>
-    <Compile Include="Interop\Unix\NCryptGetByteProperty.Unix.cs"/>
+	<Compile Include="Internal\Cryptography\Pal\Windows\HelpersWindows.Unix.cs" />
+    <Compile Include="Interop\Unix\NCryptGetByteProperty.Unix.cs" />
     <Compile Include="Microsoft\Win32\SafeHandles\SafeProvOrNCryptKeyHandleUwp.Unix.cs" />
     <Compile Include="Interop\Unix\Interop.Heap.Unix.cs" />
     <!-- <Compile Include="Internal\Cryptography\Pal\AnyOS\PkcsPal.AnyOS.cs" /> -->

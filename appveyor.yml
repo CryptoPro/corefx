@@ -138,8 +138,8 @@ for:
   - sh: sudo apt-get update
   - sh: sudo apt install -y lsb lsb-core alien libkrb5-dev
   - sh: cd ./cspTools
-  - sh: tar -xf linux_amd64_deb.tar
-  - sh: sudo ./linux_amd64_deb/install.sh
+  - sh: tar -xf linux-amd64_deb.tar
+  - sh: sudo ./linux-amd64_deb/install.sh
   - sh: sudo /opt/cprocsp/sbin/amd64/cpconfig -license -set "5050C-90030-05B5W-LTHVH-PFPU2"
   #install container
   - sh: mkdir -p /var/opt/cprocsp/keys/appveyor/

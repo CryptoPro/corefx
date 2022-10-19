@@ -42,7 +42,7 @@ deploy:
   description: $(APPVEYOR_REPO_COMMIT_MESSAGE)
   provider: GitHub
   auth_token:
-    secure: Vq7Hgyhj8MD2z7CWuI2HGCCcONVepJVQmDMg8oLUSk9fSJjbghYMgVYwl6BESuI5 # your encrypted token from GitHub
+    secure: TwoiFybRAovZZLNXHtoyHMOW8g356T9MSB1419dnVqdaDWWVdJ/hkn9B5tbDnNSu # your encrypted token from GitHub
   artifact: packages, runtime-release-linux, runtime-debug-linux, runtime-release-windows, runtime-debug-windows
   draft: true
   prerelease: true

@@ -205,6 +205,8 @@ namespace System.Net.Http
 
         public HttpConnectionKind Kind => _pool.Kind;
 
+        private int MaxResponseHeadersLength => (int)Math.Min(int.MaxValue, _pool.Settings._maxResponseHeadersLength * 1024L);
+
         private int ReadBufferSize => _readBuffer.Length;
 
         private ReadOnlyMemory<byte> RemainingBuffer => new ReadOnlyMemory<byte>(_readBuffer, _readOffset, _readLength - _readOffset);
@@ -480,7 +482,7 @@ namespace System.Net.Http
                 }
 
                 // Start to read response.
-                _allowedReadLineBytes = (int)Math.Min(int.MaxValue, _pool.Settings._maxResponseHeadersLength * 1024L);
+                _allowedReadLineBytes = MaxResponseHeadersLength;
 
                 // We should not have any buffered data here; if there was, it should have been treated as an error
                 // by the previous request handling.  (Note we do not support HTTP pipelining.)
@@ -1147,14 +1149,16 @@ namespace System.Net.Http
             if (s.Length <= _writeBuffer.Length - offset)
             {
                 byte[] writeBuffer = _writeBuffer;
-                foreach (char c in s)
+                int mask = StaticHttpSettings.EncodingValidationMask;
+                foreach (int c in s)
                 {
-                    if ((c & 0xFF80) != 0)
+                    if ((c & mask) != 0)
                     {
                         throw new HttpRequestException(SR.net_http_request_invalid_char_encoding);
                     }
                     writeBuffer[offset++] = (byte)c;
                 }
+
                 _writeOffset = offset;
                 return Task.CompletedTask;
             }
@@ -1186,13 +1190,17 @@ namespace System.Net.Http
 
         private async Task WriteStringAsyncSlow(string s)
         {
+            int mask = StaticHttpSettings.EncodingValidationMask;
+
             for (int i = 0; i < s.Length; i++)
             {
-                char c = s[i];
-                if ((c & 0xFF80) != 0)
+                int c = s[i];
+
+                if ((c & mask) != 0)
                 {
                     throw new HttpRequestException(SR.net_http_request_invalid_char_encoding);
                 }
+
                 await WriteByteAsync((byte)c).ConfigureAwait(false);
             }
         }
@@ -1237,7 +1245,7 @@ namespace System.Net.Http
             {
                 if (_allowedReadLineBytes < buffer.Length)
                 {
-                    throw new HttpRequestException(SR.Format(SR.net_http_response_headers_exceeded_length, _pool.Settings._maxResponseHeadersLength * 1024L));
+                    throw new HttpRequestException(SR.Format(SR.net_http_response_headers_exceeded_length, MaxResponseHeadersLength));
                 }
 
                 line = default;
@@ -1348,7 +1356,7 @@ namespace System.Net.Http
         {
             if (_allowedReadLineBytes < 0)
             {
-                throw new HttpRequestException(SR.Format(SR.net_http_response_headers_exceeded_length, _pool.Settings._maxResponseHeadersLength * 1024L));
+                throw new HttpRequestException(SR.Format(SR.net_http_response_headers_exceeded_length, MaxResponseHeadersLength));
             }
         }
 

@@ -677,7 +677,8 @@ namespace System.Net.Http.Functional.Tests
 
         [Theory]
         [InlineData("Age", "1")]
-        [InlineData("Authorization", "Basic YWxhZGRpbjpvcGVuc2VzYW1l")]
+        // [SuppressMessage("Microsoft.Security", "CS002:SecretInNextLine", Justification="Test credentials. Authorization header.")]
+        [InlineData("Authorization", "Basic YWxhZGRpbjpQTEFDRUhPTERFUgo=")]
         [InlineData("Cache-Control", "no-cache")]
         [InlineData("Content-Encoding", "gzip")]
         [InlineData("Content-Length", "22")]
@@ -765,6 +766,60 @@ namespace System.Net.Http.Functional.Tests
                     }
                 }
             });
+        }
+
+        [Theory]
+        [InlineData(1024, 64, false)]
+        [InlineData(1024, 1024 - 2, false)] // we need at least 2 spare bytes for the next CRLF
+        [InlineData(1024, 1024 - 1, true)]
+        [InlineData(1024, 1024, true)]
+        [InlineData(1024, 1024 + 1, true)]
+        [InlineData(1024 * 1024, 1024 * 1024 - 2, false)]
+        [InlineData(1024 * 1024, 1024 * 1024 - 1, true)]
+        [InlineData(1024 * 1024, 1024 * 1024, true)]
+        public async Task GetAsync_MaxResponseHeadersLength_EnforcedOnTrailingHeaders(int maxResponseHeadersLength, int trailersLength, bool shouldThrow)
+        {
+            await LoopbackServer.CreateClientAndServerAsync(
+                async uri =>
+                {
+                    using HttpClientHandler handler = CreateHttpClientHandler();
+                    using HttpClient client = CreateHttpClient(handler);
+
+                    handler.MaxResponseHeadersLength = maxResponseHeadersLength / 1024;
+
+                    if (shouldThrow)
+                    {
+                        await Assert.ThrowsAsync<HttpRequestException>(() => client.GetAsync(uri));
+                    }
+                    else
+                    {
+                        (await client.GetAsync(uri)).Dispose();
+                    }
+                },
+                async server =>
+                {
+                    try
+                    {
+                        const string TrailerName1 = "My-Trailer-1";
+                        const string TrailerName2 = "My-Trailer-2";
+
+                        int trailerOneLength = trailersLength / 2;
+                        int trailerTwoLength = trailersLength - trailerOneLength;
+
+                        await server.AcceptConnectionSendCustomResponseAndCloseAsync(
+                            "HTTP/1.1 200 OK\r\n" +
+                            "Connection: close\r\n" +
+                            "Transfer-Encoding: chunked\r\n" +
+                            "\r\n" +
+                            "4\r\n" +
+                            "data\r\n" +
+                            "0\r\n" +
+                            $"{TrailerName1}: {new string('a', trailerOneLength - TrailerName1.Length - 4)}\r\n" +
+                            $"{TrailerName2}: {new string('b', trailerTwoLength - TrailerName2.Length - 4)}\r\n" +
+                            "\r\n");
+                    }
+                    catch { }
+                });
         }
     }
 
@@ -2255,12 +2310,70 @@ namespace System.Net.Http.Functional.Tests
         protected override bool UseSocketsHttpHandler => true;
     }
 
+    public sealed class SocketsHttpHandlerTest_HttpClientHandlerTest_Headers_Http11_NonAscii : HttpClientHandlerTest_Headers_NonAscii
+    {
+        [Theory]
+        [MemberData(nameof(NonAsciiTestConfigurations))]
+        public void SendAsync_SendNonAsciiCharacters(bool useAppCtxSwitch, bool switchValue, bool unicode)
+        {
+            RemoteExecutor.Invoke(
+                (useAppCtxSwitchInner, switchValueInner, unicodeInner) => SendAsync_SendNonAsciiCharacters_Inner(useAppCtxSwitchInner, switchValueInner, unicodeInner),
+                useAppCtxSwitch.ToString(),
+                switchValue.ToString(),
+                unicode.ToString())
+                .Dispose();
+        }
+
+        [Theory]
+        [MemberData(nameof(NonAsciiTestConfigurations))]
+        public void SendAsync_ReceiveNonAsciiCharacters(bool useAppCtxSwitch, bool switchValue, bool unicode)
+        {
+            RemoteExecutor.Invoke(
+               (useAppCtxSwitchInner, switchValueInner, unicodeInner) => SendAsync_ReceiveNonAsciiCharacters_Inner(useAppCtxSwitchInner, switchValueInner, unicodeInner),
+               useAppCtxSwitch.ToString(),
+               switchValue.ToString(),
+               unicode.ToString())
+               .Dispose();
+        }
+    }
+
     [ConditionalClass(typeof(PlatformDetection), nameof(PlatformDetection.SupportsAlpn))]
     public sealed class SocketsHttpHandlerTest_HttpClientHandlerTest_Headers_Http2 : HttpClientHandlerTest_Headers
     {
         public SocketsHttpHandlerTest_HttpClientHandlerTest_Headers_Http2(ITestOutputHelper output) : base(output) { }
         protected override bool UseSocketsHttpHandler => true;
         protected override bool UseHttp2 => true;
+    }
+
+    [ConditionalClass(typeof(PlatformDetection), nameof(PlatformDetection.SupportsAlpn))]
+    public sealed class SocketsHttpHandlerTest_HttpClientHandlerTest_Headers_Http2_NonAscii : HttpClientHandlerTest_Headers_NonAscii
+    {
+        protected override bool UseSocketsHttpHandler => true;
+        protected override bool UseHttp2 => true;
+
+        [Theory]
+        [MemberData(nameof(NonAsciiTestConfigurations))]
+        public void SendAsync_SendNonAsciiCharacters(bool useAppCtxSwitch, bool switchValue, bool unicode)
+        {
+            RemoteExecutor.Invoke(
+                (useAppCtxSwitchInner, switchValueInner, unicodeInner) => SendAsync_SendNonAsciiCharacters_Inner(useAppCtxSwitchInner, switchValueInner, unicodeInner),
+                useAppCtxSwitch.ToString(),
+                switchValue.ToString(),
+                unicode.ToString())
+                .Dispose();
+        }
+
+        [Theory]
+        [MemberData(nameof(NonAsciiTestConfigurations))]
+        public void SendAsync_ReceiveNonAsciiCharacters(bool useAppCtxSwitch, bool switchValue, bool unicode)
+        {
+            RemoteExecutor.Invoke(
+               (useAppCtxSwitchInner, switchValueInner, unicodeInner) => SendAsync_ReceiveNonAsciiCharacters_Inner(useAppCtxSwitchInner, switchValueInner, unicodeInner),
+               useAppCtxSwitch.ToString(),
+               switchValue.ToString(),
+               unicode.ToString())
+               .Dispose();
+        }
     }
 
     [ConditionalClass(typeof(PlatformDetection), nameof(PlatformDetection.SupportsAlpn))]

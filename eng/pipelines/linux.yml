@@ -28,18 +28,19 @@ stages:
         displayName: Build
         strategy:
           matrix:
-            # Run RedHat6 in release mode on CI to cover Release configuration differences
-            RedHat6_x64_Release:
+            # Run RedHat7 in release mode on CI to cover Release configuration differences
+            x64_Release:
               _BuildConfig: Release
               _architecture: x64
               _framework: netcoreapp
+              _helixQueues: $(linuxDefaultQueues)
+              _dockerContainer: rhel7_container
               _buildScriptPrefix: ''
-              _buildExtraArguments: /p:RuntimeOS=rhel.6 /p:PortableBuild=false
-              _dockerContainer: rhel6_container
-              _helixQueues: $(redhatHelixQueue)
+              _buildExtraArguments: ''
               _publishTests: ${{ parameters.fullMatrix }}
 
             ${{ if eq(parameters.fullMatrix, 'false') }}:
+
               x64_Debug:
                 _BuildConfig: Debug
                 _architecture: x64
@@ -59,15 +60,6 @@ stages:
                 _buildExtraArguments: /p:RuntimeOS=linux-musl
 
             ${{ if eq(parameters.fullMatrix, 'true') }}:
-              x64_Release:
-                _BuildConfig: Release
-                _architecture: x64
-                _framework: netcoreapp
-                _helixQueues: $(linuxDefaultQueues)
-                _dockerContainer: rhel7_container
-                _buildScriptPrefix: ''
-                _buildExtraArguments: ''
-                _publishTests: true
 
               musl_x64_Release:
                 _BuildConfig: Release
@@ -110,7 +102,7 @@ stages:
                 _publishTests: true
 
         pool:
-          name: Hosted Ubuntu 1604
+          vmImage: ubuntu-20.04
 
         container: $[ variables['_dockerContainer'] ]
         buildScriptPrefix: $(_buildScriptPrefix)
@@ -121,52 +113,73 @@ stages:
         timeoutInMinutes: 240
 
         variables:
-          - redhatHelixQueue: RedHat.6.Amd64.Open
 
-          - ${{ if eq(parameters.fullMatrix, 'false') }}:
-            - linuxDefaultQueues: Centos.7.Amd64.Open+RedHat.7.Amd64.Open+Debian.9.Amd64.Open+Ubuntu.1604.Amd64.Open+Ubuntu.1804.Amd64.Open+SLES.15.Amd64.Open+\(Fedora.29.Amd64.Open\)ubuntu.1604.amd64.open@mcr.microsoft.com/dotnet-buildtools/prereqs:fedora-29-helix-a12566d-20191210224553
-            - alpineQueues: \(Alpine.39.Amd64.Open\)ubuntu.1604.amd64.open@mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.9-helix-bfcd90a-20200123191053
+          - ${{ if eq(parameters.isInternalBuild, 'false') }}:
+            - ${{ if eq(parameters.fullMatrix, 'false') }}:
+              - linuxDefaultQueues: Centos.7.Amd64.Open+RedHat.7.Amd64.Open+Debian.9.Amd64.Open+Ubuntu.1604.Amd64.Open+Ubuntu.1804.Amd64.Open+SLES.15.Amd64.Open+\(Fedora.29.Amd64.Open\)ubuntu.1604.amd64.open@mcr.microsoft.com/dotnet-buildtools/prereqs:fedora-29-helix-a12566d-20191210224553
+              - alpineQueues: \(Alpine.314.Amd64.Open\)ubuntu.1604.amd64.open@mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.14-helix-amd64-20210910135833-1848e19
 
-          - ${{ if eq(parameters.fullMatrix, 'true') }}:
-            - linuxDefaultQueues: Centos.7.Amd64.Open+RedHat.7.Amd64.Open+Debian.9.Amd64.Open+Ubuntu.1604.Amd64.Open+Ubuntu.1804.Amd64.Open+SLES.12.Amd64.Open+SLES.15.Amd64.Open+\(Fedora.29.Amd64.Open\)ubuntu.1604.amd64.open@mcr.microsoft.com/dotnet-buildtools/prereqs:fedora-29-helix-a12566d-20191210224553+\(Fedora.30.Amd64.Open\)ubuntu.1604.amd64.open@mcr.microsoft.com/dotnet-buildtools/prereqs:fedora-30-helix-4f8cef7-20200121150022+\(Ubuntu.1910.Amd64.Open\)ubuntu.1604.amd64.open@mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-19.10-helix-amd64-cfcfd50-20191030180623+\(Debian.10.Amd64.Open\)ubuntu.1604.amd64.open@mcr.microsoft.com/dotnet-buildtools/prereqs:debian-10-helix-amd64-bfcd90a-20200121150006
-            - linuxArmQueues: \(Debian.9.Arm32.Open\)Ubuntu.1804.ArmArch.Open@mcr.microsoft.com/dotnet-buildtools/prereqs:debian-9-helix-arm32v7-bfcd90a-20200121150037
-            - alpineQueues: \(Alpine.38.Amd64.Open\)ubuntu.1604.amd64.Open@mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.8-helix-bfcd90a-20200123191050+\(Alpine.39.Amd64.Open\)ubuntu.1604.amd64.open@mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.9-helix-bfcd90a-20200123191053+\(Alpine.311.Amd64.Open\)ubuntu.1604.amd64.open@mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.11-helix-bfcd90a-20200123191053
-            - alpineArm64Queues: \(Alpine.38.Arm64.Open\)Ubuntu.1804.ArmArch.Open@mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.8-helix-arm64v8-bfcd90a-20200123191027
-            - linuxArm64Queues: \(Ubuntu.1604.Arm64.Open\)Ubuntu.1804.ArmArch.Open@mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-16.04-helix-arm64v8-bfcd90a-20200127194925
+            - ${{ if eq(parameters.fullMatrix, 'true') }}:
+              - linuxDefaultQueues: Centos.7.Amd64.Open+RedHat.7.Amd64.Open+Debian.9.Amd64.Open+Ubuntu.1604.Amd64.Open+Ubuntu.1804.Amd64.Open+SLES.12.Amd64.Open+SLES.15.Amd64.Open+\(Fedora.29.Amd64.Open\)ubuntu.1604.amd64.open@mcr.microsoft.com/dotnet-buildtools/prereqs:fedora-29-helix-a12566d-20191210224553+\(Fedora.30.Amd64.Open\)ubuntu.1604.amd64.open@mcr.microsoft.com/dotnet-buildtools/prereqs:fedora-30-helix-4f8cef7-20200121150022+\(Ubuntu.1910.Amd64.Open\)ubuntu.1604.amd64.open@mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-19.10-helix-amd64-cfcfd50-20191030180623+\(Debian.10.Amd64.Open\)ubuntu.1604.amd64.open@mcr.microsoft.com/dotnet-buildtools/prereqs:debian-10-helix-amd64-bfcd90a-20200121150006
+              - linuxArmQueues: \(Debian.9.Arm32.Open\)Ubuntu.1804.ArmArch.Open@mcr.microsoft.com/dotnet-buildtools/prereqs:debian-9-helix-arm32v7-bfcd90a-20200121150037
+              - alpineQueues: \(Alpine.314.Amd64.Open\)ubuntu.1604.amd64.open@mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.14-helix-amd64-20210910135833-1848e19+\(Alpine.312.Amd64.Open\)ubuntu.1604.amd64.open@mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.12-helix-20211214164128-aca80d8
+              - alpineArm64Queues: \(Alpine.313.Arm64.Open\)ubuntu.1804.armarch.open@mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.13-helix-arm64v8-20210910135808-8a6f4f3+\(Alpine.314.Arm64.Open\)ubuntu.1804.armarch.open@mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.14-helix-arm64v8-20210910135810-8a6f4f3
+              - linuxArm64Queues: \(Ubuntu.1604.Arm64.Open\)Ubuntu.1804.ArmArch.Open@mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-16.04-helix-arm64v8-bfcd90a-20200127194925
+
+          - ${{ else }}:
+            - ${{ if eq(parameters.fullMatrix, 'false') }}:
+              - linuxDefaultQueues: Centos.7.Amd64+RedHat.7.Amd64+Debian.9.Amd64+Ubuntu.1604.Amd64+Ubuntu.1804.Amd64+SLES.15.Amd64+\(Fedora.29.Amd64\)ubuntu.1604.amd64@mcr.microsoft.com/dotnet-buildtools/prereqs:fedora-29-helix-a12566d-20191210224553
+              - alpineQueues: \(Alpine.314.Amd64\)ubuntu.1604.amd64@mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.14-helix-amd64-20210910135833-1848e19
+
+            - ${{ if eq(parameters.fullMatrix, 'true') }}:
+              - linuxDefaultQueues: Centos.7.Amd64+RedHat.7.Amd64+Debian.9.Amd64+Ubuntu.1604.Amd64+Ubuntu.1804.Amd64+SLES.12.Amd64+SLES.15.Amd64+\(Fedora.29.Amd64\)ubuntu.1604.amd64@mcr.microsoft.com/dotnet-buildtools/prereqs:fedora-29-helix-a12566d-20191210224553+\(Fedora.30.Amd64\)ubuntu.1604.amd64@mcr.microsoft.com/dotnet-buildtools/prereqs:fedora-30-helix-4f8cef7-20200121150022+\(Ubuntu.1910.Amd64\)ubuntu.1604.amd64@mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-19.10-helix-amd64-cfcfd50-20191030180623+\(Debian.10.Amd64\)ubuntu.1604.amd64@mcr.microsoft.com/dotnet-buildtools/prereqs:debian-10-helix-amd64-bfcd90a-20200121150006
+              - linuxArmQueues: \(Debian.9.Arm32\)Ubuntu.1804.ArmArch@mcr.microsoft.com/dotnet-buildtools/prereqs:debian-9-helix-arm32v7-bfcd90a-20200121150037
+              - alpineQueues: \(Alpine.314.Amd64\)ubuntu.1604.amd64@mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.14-helix-amd64-20210910135833-1848e19+\(Alpine.312.Amd64\)ubuntu.1604.amd64@mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.12-helix-20211214164128-aca80d8
+              - alpineArm64Queues: \(Alpine.313.Arm64\)ubuntu.1804.armarch@mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.13-helix-arm64v8-20210910135808-8a6f4f3+\(Alpine.314.Arm64\)ubuntu.1804.armarch@mcr.microsoft.com/dotnet-buildtools/prereqs:alpine-3.14-helix-arm64v8-20210910135810-8a6f4f3
+              - linuxArm64Queues: \(Ubuntu.1604.Arm64\)Ubuntu.1804.ArmArch@mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-16.04-helix-arm64v8-bfcd90a-20200127194925
 
       # Legs without helix testing
       # Only run this leg in PRs.
-      - ${{ if and(eq(parameters.fullMatrix, 'false'), and(ne(parameters.testScope, 'outerloop'), ne(parameters.testScope, 'all'))) }}:
+      - ${{ if and(eq(parameters.isOfficialBuild, 'false'), and(ne(parameters.testScope, 'outerloop'), ne(parameters.testScope, 'all'))) }}:
         - job: LinuxNoTest
           displayName: Build
           strategy:
             matrix:
-              arm_Debug:
-                _BuildConfig: Debug
-                _architecture: arm
+              RedHat7_x64_Release:
+                _BuildConfig: Release
+                _architecture: x64
                 _framework: netcoreapp
-                _buildExtraArguments: /p:RuntimeOS=ubuntu.16.04 -warnAsError false
-                _buildScriptPrefix: 'ROOTFS_DIR=/crossrootfs/arm '
-                _dockerContainer: ubuntu_1604_arm_cross_container
+                _buildScriptPrefix: ''
+                _buildExtraArguments: /p:RuntimeOS=rhel.7 /p:PortableBuild=false
+                _dockerContainer: rhel7_container
 
-              musl_arm64_Debug:
-                _BuildConfig: Debug
-                _architecture: arm64
-                _framework: netcoreapp
-                _dockerContainer: alpine_37_arm64_container
-                _buildScriptPrefix: 'ROOTFS_DIR=/crossrootfs/arm64 '
-                _buildExtraArguments: -warnAsError false /p:BuildNativeCompiler=--clang5.0 /p:RuntimeOS=linux-musl
+              ${{ if eq(parameters.isFullMatrix, 'false') }}:
+                arm_Debug:
+                  _BuildConfig: Debug
+                  _architecture: arm
+                  _framework: netcoreapp
+                  _buildExtraArguments: /p:RuntimeOS=ubuntu.16.04 -warnAsError false
+                  _buildScriptPrefix: 'ROOTFS_DIR=/crossrootfs/arm '
+                  _dockerContainer: ubuntu_1604_arm_cross_container
 
-              arm64_Debug:
-                _BuildConfig: Debug
-                _architecture: arm64
-                _framework: netcoreapp
-                _dockerContainer: ubuntu_1604_arm64_cross_container
-                _buildScriptPrefix: 'ROOTFS_DIR=/crossrootfs/arm64 '
-                _buildExtraArguments: --warnAsError false
+                musl_arm64_Debug:
+                  _BuildConfig: Debug
+                  _architecture: arm64
+                  _framework: netcoreapp
+                  _dockerContainer: alpine_37_arm64_container
+                  _buildScriptPrefix: 'ROOTFS_DIR=/crossrootfs/arm64 '
+                  _buildExtraArguments: -warnAsError false /p:BuildNativeCompiler=--clang5.0 /p:RuntimeOS=linux-musl
+
+                arm64_Debug:
+                  _BuildConfig: Debug
+                  _architecture: arm64
+                  _framework: netcoreapp
+                  _dockerContainer: ubuntu_1604_arm64_cross_container
+                  _buildScriptPrefix: 'ROOTFS_DIR=/crossrootfs/arm64 '
+                  _buildExtraArguments: --warnAsError false
 
           pool:
-            name: Hosted Ubuntu 1604
+            vmImage: ubuntu-20.04
 
           container: $[ variables['_dockerContainer'] ]
           buildExtraArguments: $(_buildExtraArguments)

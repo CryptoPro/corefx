@@ -44,6 +44,50 @@
         "alpine.3.11-x64"
       ]
     },
+    "alpine.3.13": {
+      "#import": [
+        "alpine.3.12"
+      ]
+    },
+    "alpine.3.13-x64": {
+      "#import": [
+        "alpine.3.13",
+        "alpine.3.12-x64"
+      ]
+    },
+    "alpine.3.14": {
+      "#import": [
+        "alpine.3.13"
+      ]
+    },
+    "alpine.3.14-x64": {
+      "#import": [
+        "alpine.3.14",
+        "alpine.3.13-x64"
+      ]
+    },
+    "alpine.3.15": {
+      "#import": [
+        "alpine.3.14"
+      ]
+    },
+    "alpine.3.15-x64": {
+      "#import": [
+        "alpine.3.15",
+        "alpine.3.14-x64"
+      ]
+    },
+    "alpine.3.16": {
+      "#import": [
+        "alpine.3.15"
+      ]
+    },
+    "alpine.3.16-x64": {
+      "#import": [
+        "alpine.3.16",
+        "alpine.3.15-x64"
+      ]
+    },
     "alpine.3.6": {
       "#import": [
         "alpine"
@@ -140,6 +184,12 @@
         "rhel"
       ]
     },
+    "centos-arm64": {
+      "#import": [
+        "centos",
+        "rhel-arm64"
+      ]
+    },
     "centos-x64": {
       "#import": [
         "centos",
@@ -165,11 +215,38 @@
         "rhel.8"
       ]
     },
+    "centos.8-arm64": {
+      "#import": [
+        "centos.8",
+        "centos-arm64",
+        "rhel.8-arm64"
+      ]
+    },
     "centos.8-x64": {
       "#import": [
         "centos.8",
         "centos-x64",
         "rhel.8-x64"
+      ]
+    },
+    "centos.9": {
+      "#import": [
+        "centos",
+        "rhel.9"
+      ]
+    },
+    "centos.9-arm64": {
+      "#import": [
+        "centos.9",
+        "centos-arm64",
+        "rhel.9-arm64"
+      ]
+    },
+    "centos.9-x64": {
+      "#import": [
+        "centos.9",
+        "centos-x64",
+        "rhel.9-x64"
       ]
     },
     "debian": {
@@ -242,6 +319,41 @@
         "debian-x86"
       ]
     },
+    "debian.11": {
+      "#import": [
+        "debian"
+      ]
+    },
+    "debian.11-arm": {
+      "#import": [
+        "debian.11",
+        "debian-arm"
+      ]
+    },
+    "debian.11-arm64": {
+      "#import": [
+        "debian.11",
+        "debian-arm64"
+      ]
+    },
+    "debian.11-armel": {
+      "#import": [
+        "debian.11",
+        "debian-armel"
+      ]
+    },
+    "debian.11-x64": {
+      "#import": [
+        "debian.11",
+        "debian-x64"
+      ]
+    },
+    "debian.11-x86": {
+      "#import": [
+        "debian.11",
+        "debian-x86"
+      ]
+    },
     "debian.8": {
       "#import": [
         "debian"
@@ -310,6 +422,17 @@
       "#import": [
         "debian.9",
         "debian-x86"
+      ]
+    },
+    "exherbo": {
+      "#import": [
+        "linux"
+      ]
+    },
+    "exherbo-x64": {
+      "#import": [
+        "exherbo",
+        "linux-x64"
       ]
     },
     "fedora": {
@@ -513,6 +636,74 @@
     "fedora.33-x64": {
       "#import": [
         "fedora.33",
+        "fedora-x64"
+      ]
+    },
+    "fedora.34": {
+      "#import": [
+        "fedora"
+      ]
+    },
+    "fedora.34-arm64": {
+      "#import": [
+        "fedora.34",
+        "fedora-arm64"
+      ]
+    },
+    "fedora.34-x64": {
+      "#import": [
+        "fedora.34",
+        "fedora-x64"
+      ]
+    },
+    "fedora.35": {
+      "#import": [
+        "fedora"
+      ]
+    },
+    "fedora.35-arm64": {
+      "#import": [
+        "fedora.35",
+        "fedora-arm64"
+      ]
+    },
+    "fedora.35-x64": {
+      "#import": [
+        "fedora.35",
+        "fedora-x64"
+      ]
+    },
+    "fedora.36": {
+      "#import": [
+        "fedora"
+      ]
+    },
+    "fedora.36-arm64": {
+      "#import": [
+        "fedora.36",
+        "fedora-arm64"
+      ]
+    },
+    "fedora.36-x64": {
+      "#import": [
+        "fedora.36",
+        "fedora-x64"
+      ]
+    },
+    "fedora.37": {
+      "#import": [
+        "fedora"
+      ]
+    },
+    "fedora.37-arm64": {
+      "#import": [
+        "fedora.37",
+        "fedora-arm64"
+      ]
+    },
+    "fedora.37-x64": {
+      "#import": [
+        "fedora.37",
         "fedora-x64"
       ]
     },
@@ -1007,6 +1198,12 @@
         "unix"
       ]
     },
+    "osx-arm64": {
+      "#import": [
+        "osx",
+        "unix-arm64"
+      ]
+    },
     "osx-x64": {
       "#import": [
         "osx",
@@ -1016,6 +1213,12 @@
     "osx.10.10": {
       "#import": [
         "osx"
+      ]
+    },
+    "osx.10.10-arm64": {
+      "#import": [
+        "osx.10.10",
+        "osx-arm64"
       ]
     },
     "osx.10.10-x64": {
@@ -1029,6 +1232,12 @@
         "osx.10.10"
       ]
     },
+    "osx.10.11-arm64": {
+      "#import": [
+        "osx.10.11",
+        "osx.10.10-arm64"
+      ]
+    },
     "osx.10.11-x64": {
       "#import": [
         "osx.10.11",
@@ -1038,6 +1247,12 @@
     "osx.10.12": {
       "#import": [
         "osx.10.11"
+      ]
+    },
+    "osx.10.12-arm64": {
+      "#import": [
+        "osx.10.12",
+        "osx.10.11-arm64"
       ]
     },
     "osx.10.12-x64": {
@@ -1051,6 +1266,12 @@
         "osx.10.12"
       ]
     },
+    "osx.10.13-arm64": {
+      "#import": [
+        "osx.10.13",
+        "osx.10.12-arm64"
+      ]
+    },
     "osx.10.13-x64": {
       "#import": [
         "osx.10.13",
@@ -1060,6 +1281,12 @@
     "osx.10.14": {
       "#import": [
         "osx.10.13"
+      ]
+    },
+    "osx.10.14-arm64": {
+      "#import": [
+        "osx.10.14",
+        "osx.10.13-arm64"
       ]
     },
     "osx.10.14-x64": {
@@ -1073,10 +1300,50 @@
         "osx.10.14"
       ]
     },
+    "osx.10.15-arm64": {
+      "#import": [
+        "osx.10.15",
+        "osx.10.14-arm64"
+      ]
+    },
     "osx.10.15-x64": {
       "#import": [
         "osx.10.15",
         "osx.10.14-x64"
+      ]
+    },
+    "osx.10.16": {
+      "#import": [
+        "osx.10.15"
+      ]
+    },
+    "osx.10.16-arm64": {
+      "#import": [
+        "osx.10.16",
+        "osx.10.15-arm64"
+      ]
+    },
+    "osx.10.16-x64": {
+      "#import": [
+        "osx.10.16",
+        "osx.10.15-x64"
+      ]
+    },
+    "osx.11.0": {
+      "#import": [
+        "osx.10.16"
+      ]
+    },
+    "osx.11.0-arm64": {
+      "#import": [
+        "osx.11.0",
+        "osx.10.16-arm64"
+      ]
+    },
+    "osx.11.0-x64": {
+      "#import": [
+        "osx.11.0",
+        "osx.10.16-x64"
       ]
     },
     "rhel": {
@@ -1244,6 +1511,23 @@
       "#import": [
         "rhel.8.1",
         "rhel.8.0-x64"
+      ]
+    },
+    "rhel.9": {
+      "#import": [
+        "rhel"
+      ]
+    },
+    "rhel.9-arm64": {
+      "#import": [
+        "rhel.9",
+        "rhel-arm64"
+      ]
+    },
+    "rhel.9-x64": {
+      "#import": [
+        "rhel.9",
+        "rhel-x64"
       ]
     },
     "sles": {
@@ -1851,6 +2135,35 @@
     "ubuntu.21.10-x86": {
       "#import": [
         "ubuntu.21.10",
+        "ubuntu-x86"
+      ]
+    },
+    "ubuntu.22.04": {
+      "#import": [
+        "ubuntu"
+      ]
+    },
+    "ubuntu.22.04-arm": {
+      "#import": [
+        "ubuntu.22.04",
+        "ubuntu-arm"
+      ]
+    },
+    "ubuntu.22.04-arm64": {
+      "#import": [
+        "ubuntu.22.04",
+        "ubuntu-arm64"
+      ]
+    },
+    "ubuntu.22.04-x64": {
+      "#import": [
+        "ubuntu.22.04",
+        "ubuntu-x64"
+      ]
+    },
+    "ubuntu.22.04-x86": {
+      "#import": [
+        "ubuntu.22.04",
         "ubuntu-x86"
       ]
     },

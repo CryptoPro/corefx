@@ -1,5 +1,5 @@
 # version format
-version: 3.1.1.{build}
+version: 3.1.30.{build}
 
 # branches to build
 #branches:

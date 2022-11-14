@@ -5,6 +5,7 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using Microsoft.Win32.SafeHandles;
 
 namespace System.Security.Cryptography
@@ -164,7 +165,7 @@ namespace System.Security.Cryptography
                     }
                     catch (ArgumentException)
                     {
-                        encoding = Encoding.Latin1;
+                        encoding = Encoding.GetEncoding(28591); // Latin1
                     }
                     byte[] containerNameBytes = encoding.GetBytes(_containerName);
                     bool ignoredSuccess = Interop.Advapi32.CryptAcquireContextB(out hIgnoredProv, containerNameBytes, _providerName, _type, flags);

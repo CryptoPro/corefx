@@ -433,7 +433,7 @@ namespace Internal.Cryptography.Pal.Windows
                     }
                     catch (ArgumentException)
                     {
-                        encoding = Encoding.Latin1;
+                        encoding = Encoding.GetEncoding(28591); // Latin1
                     }
                     var result = new byte[len - 1];
                     Marshal.Copy((IntPtr)asciiPtr, result, 0, len - 1);

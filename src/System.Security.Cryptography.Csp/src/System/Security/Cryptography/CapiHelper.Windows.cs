@@ -199,7 +199,7 @@ namespace Internal.NativeCrypto
                 }
                 catch (ArgumentException)
                 {
-                    encoding = Encoding.Latin1;
+                    encoding = Encoding.GetEncoding(28591); // Latin1
                 }
 
                 byte[] containerNameBytes = encoding.GetBytes(keyContainer);

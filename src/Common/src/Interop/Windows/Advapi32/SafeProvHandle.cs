@@ -144,7 +144,32 @@ namespace System.Security.Cryptography
 
                 uint flags = (_flags & (uint)Interop.Advapi32.CryptAcquireContextFlags.CRYPT_MACHINE_KEYSET) | (uint)Interop.Advapi32.CryptAcquireContextFlags.CRYPT_DELETEKEYSET;
                 SafeProvHandle hIgnoredProv;
+
+#if TargetsWindows
                 bool ignoredSuccess = Interop.Advapi32.CryptAcquireContext(out hIgnoredProv, _containerName, _providerName, _type, flags);
+#else
+                if (_containerName == null)
+                {
+                    bool ignoredSuccess = Interop.Advapi32.CryptAcquireContext(out hIgnoredProv, _containerName, _providerName, _type, flags);
+                }
+                else
+                {
+                    // csp должна отдавать 1251 - но её надо отдельно регистировать
+                    // если её нет - используем униварсальную кодировку, которая хоть
+                    // и не отображает правильно, но не портить байты при конвертации и\в неё
+                    Encoding encoding;
+                    try
+                    {
+                        encoding = Encoding.GetEncoding("windows-1251");
+                    }
+                    catch (ArgumentException)
+                    {
+                        encoding = Encoding.Latin1;
+                    }
+                    byte[] containerNameBytes = encoding.GetBytes(_containerName);
+                    bool ignoredSuccess = Interop.Advapi32.CryptAcquireContextB(out hIgnoredProv, containerNameBytes, _providerName, _type, flags);
+                }
+#endif
                 hIgnoredProv.Dispose();
                 // Ignoring success result code as CryptAcquireContext is being called to delete a key container rather than acquire a context.
                 // If it fails, we can't do anything about it anyway as we're in a dispose method.

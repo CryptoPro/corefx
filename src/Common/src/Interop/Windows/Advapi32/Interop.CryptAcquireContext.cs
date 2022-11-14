@@ -28,5 +28,13 @@ internal partial class Interop
             string szProvider,
             int dwProvType,
             uint dwFlags);
+
+        [DllImport(Libraries.Advapi32, SetLastError = true, CharSet = CharSet.Ansi, EntryPoint = "CryptAcquireContextA")]
+        public static extern bool CryptAcquireContextB(
+            out SafeProvHandle phProv,
+            byte[] szContainer,
+            string szProvider,
+            int dwProvType,
+            uint dwFlags);
     }
 }

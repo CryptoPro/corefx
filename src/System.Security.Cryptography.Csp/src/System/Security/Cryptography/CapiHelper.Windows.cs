@@ -171,12 +171,45 @@ namespace Internal.NativeCrypto
             {
                 flags &= ~MachineContextFlag;
             }
+
+#if TargetsWindows
             //Do not throw in this function. Just return the error code
             if (!Interop.Advapi32.CryptAcquireContext(out safeProvHandle, keyContainer, providerName, providerType, flags))
             {
                 ret = GetErrorCode();
             }
+#else
+            if (keyContainer == null)
+            {
+                //Do not throw in this function. Just return the error code
+                if (!Interop.Advapi32.CryptAcquireContext(out safeProvHandle, keyContainer, providerName, providerType, flags))
+                {
+                    ret = GetErrorCode();
+                }
+            }
+            else
+            {
+                // csp должна отдавать 1251 - но её надо отдельно регистировать
+                // если её нет - используем униварсальную кодировку, которая хоть
+                // и не отображает правильно, но не портить байты при конвертации и\в неё
+                Encoding encoding;
+                try
+                {
+                    encoding = Encoding.GetEncoding("windows-1251");
+                }
+                catch (ArgumentException)
+                {
+                    encoding = Encoding.Latin1;
+                }
 
+                byte[] containerNameBytes = encoding.GetBytes(keyContainer);
+                //Do not throw in this function. Just return the error code
+                if (!Interop.Advapi32.CryptAcquireContextB(out safeProvHandle, containerNameBytes, providerName, providerType, flags))
+                {
+                    ret = GetErrorCode();
+                }
+            }
+#endif
             return ret;
         }
 

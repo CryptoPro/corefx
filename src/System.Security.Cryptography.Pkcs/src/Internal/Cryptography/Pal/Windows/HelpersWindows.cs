@@ -420,7 +420,25 @@ namespace Internal.Cryptography.Pal.Windows
             {
                 fixed (byte* asciiPtr = &MemoryMarshal.GetReference(buf))
                 {
-                    return Marshal.PtrToStringAnsi((IntPtr)asciiPtr, len);
+#if TargetsWindows
+                    return Marshal.PtrToStringAnsi((IntPtr)asciiPtr, len-1);
+#else
+                    // csp должна отдавать 1251 - но её надо отдельно регистировать
+                    // если её нет - используем униварсальную кодировку, которая хоть
+                    // и не отображает правильно, но не портить байты при конвертации и\в неё
+                    Encoding encoding;
+                    try
+                    {
+                        encoding = Encoding.GetEncoding("windows-1251");
+                    }
+                    catch (ArgumentException)
+                    {
+                        encoding = Encoding.Latin1;
+                    }
+                    var result = new byte[len - 1];
+                    Marshal.Copy((IntPtr)asciiPtr, result, 0, len - 1);
+                    return encoding.GetString(result);
+#endif
                 }
             }
         }

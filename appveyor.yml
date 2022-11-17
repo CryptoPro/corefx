@@ -114,6 +114,7 @@ for:
     - .\\.dotnet\\dotnet msbuild src\\System.Security.Cryptography.Xml\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Xml.Tests.GostEncryptedXmlTest"  /p:ForceRunTests=true
     - .\\.dotnet\\dotnet msbuild src\\System.Security.Cryptography.X509Certificates\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.X509Certificates.Tests.GostPfxTests"  /p:ForceRunTests=true
     - .\\.dotnet\\dotnet msbuild src\\System.Security.Cryptography.X509Certificates\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.X509Certificates.Tests.CertificateCreation.GostCertificateRequestTests"  /p:ForceRunTests=true
+    - .\\.dotnet\\dotnet msbuild src\\System.Security.Cryptography.X509Certificates\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.X509Certificates.Tests.GostStoreTest"  /p:ForceRunTests=true
     - .\\.dotnet\\dotnet msbuild src\\System.Security.Cryptography.Pkcs\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Pkcs.Tests.GostNonPersistCmsTests"  /p:ForceRunTests=true
     - .\\.dotnet\\dotnet msbuild src\\System.Security.Cryptography.Pkcs\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Pkcs.EnvelopedCmsTests.Tests.GostEnvelopedTests"  /p:ForceRunTests=true
 
@@ -191,6 +192,7 @@ for:
     - ./.dotnet/dotnet msbuild src\\System.Security.Cryptography.Xml\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Xml.Tests.GostEncryptedXmlTest"  /p:ForceRunTests=true
     - ./.dotnet/dotnet msbuild src\\System.Security.Cryptography.X509Certificates\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.X509Certificates.Tests.GostPfxTests"  /p:ForceRunTests=true
     - ./.dotnet/dotnet msbuild src\\System.Security.Cryptography.X509Certificates\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.X509Certificates.Tests.CertificateCreation.GostCertificateRequestTests"  /p:ForceRunTests=true
+    - ./.dotnet/dotnet msbuild src\\System.Security.Cryptography.X509Certificates\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.X509Certificates.Tests.GostStoreTest"  /p:ForceRunTests=true
     - ./.dotnet/dotnet msbuild src\\System.Security.Cryptography.Pkcs\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Pkcs.Tests.GostNonPersistCmsTests"  /p:ForceRunTests=true
     #- ./.dotnet/dotnet msbuild src\\System.Security.Cryptography.Pkcs\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Pkcs.EnvelopedCmsTests.Tests.GostEnvelopedTests"  /p:ForceRunTests=true
   artifacts:

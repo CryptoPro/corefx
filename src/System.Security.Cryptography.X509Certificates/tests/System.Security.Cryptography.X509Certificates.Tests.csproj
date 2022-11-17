@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{A28B0064-EFB2-4B77-B97C-DECF5DAB074E}</ProjectGuid>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -24,6 +24,7 @@
     <Compile Include="ExportTests.cs" />
     <Compile Include="ExtensionsTests.cs" />
     <Compile Include="FindTests.cs" />
+    <Compile Include="GostStoreTest.cs" />
     <Compile Include="InteropTests.cs" />
     <Compile Include="LoadFromFileTests.cs" />
     <Compile Include="NameTests.cs" />

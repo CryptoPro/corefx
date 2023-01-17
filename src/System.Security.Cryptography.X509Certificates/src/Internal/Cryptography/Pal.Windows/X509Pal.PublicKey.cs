@@ -26,7 +26,7 @@ namespace Internal.Cryptography.Pal
         const string BCRYPT_ECC_CURVE_NAME_PROPERTY = "ECCCurveName";
         const string BCRYPT_ECC_PARAMETERS_PROPERTY = "ECCParameters";
 
-        public AsymmetricAlgorithm DecodePublicKey(Oid oid, byte[] encodedKeyValue, byte[] encodedParameters, ICertificatePal certificatePal)
+        public unsafe AsymmetricAlgorithm DecodePublicKey(Oid oid, byte[] encodedKeyValue, byte[] encodedParameters, ICertificatePal certificatePal)
         {
             if (oid.Value == Oids.EcPublicKey && certificatePal != null)
             {
@@ -38,53 +38,130 @@ namespace Internal.Cryptography.Pal
             {
                 case AlgId.CALG_RSA_KEYX:
                 case AlgId.CALG_RSA_SIGN:
-                    {
-                        byte[] keyBlob = DecodeKeyBlob(CryptDecodeObjectStructType.CNG_RSA_PUBLIC_KEY_BLOB, encodedKeyValue);
-                        CngKey cngKey = CngKey.Import(keyBlob, CngKeyBlobFormat.GenericPublicBlob);
-                        return new RSACng(cngKey);
-                    }
+                {
+                    byte[] keyBlob = DecodeKeyBlob(CryptDecodeObjectStructType.CNG_RSA_PUBLIC_KEY_BLOB, encodedKeyValue);
+                    CngKey cngKey = CngKey.Import(keyBlob, CngKeyBlobFormat.GenericPublicBlob);
+                    return new RSACng(cngKey);
+                }
                 //begin: gost
                 case AlgId.CALG_GOST3410:
+                {
+                    Gost3410CryptoServiceProvider gost_sp = new Gost3410CryptoServiceProvider();
+                    if (certificatePal == null)
+                    {
+                        // Ветка вызова из PublicKey (в частности детура, но у ms аналогично)
+                        var cspObject = new GostKeyExchangeParameters();
+                        cspObject.DecodeParameters(encodedParameters);
+                        cspObject.DecodePublicKey(encodedKeyValue, algId);
+                        var cspBlobData = GostKeyExchangeParameters.EncodePublicBlob(cspObject, algId);
+
+                        gost_sp.ImportCspBlob(cspBlobData);
+                        return gost_sp;
+                    }
+
+                    // Ветка вызова из сертификата, есть Pal
+                    var pal = certificatePal;
+                    var certContext = ((CertificatePal)pal).CertContext;
+
+                    int size = sizeof(CERT_PUBLIC_KEY_INFO);
+                    byte[] arr = new byte[size];
+
+                    IntPtr ptr = IntPtr.Zero;
+                    try
+                    {
+                        ptr = Marshal.AllocHGlobal(size);
+                        Marshal.StructureToPtr(certContext.CertContext->pCertInfo->SubjectPublicKeyInfo, ptr, true);
+                        Marshal.Copy(ptr, arr, 0, size);
+                    }
+                    finally
+                    {
+                        Marshal.FreeHGlobal(ptr);
+                    }
+
+                    gost_sp.ImportCertificatePublicKey(arr);
+                    return gost_sp;
+                }
+                case AlgId.CALG_GOST3410_2012_256:
+                {
+                    Gost3410_2012_256CryptoServiceProvider gost_sp = new Gost3410_2012_256CryptoServiceProvider();
+                    if (certificatePal == null)
                     {
                         var cspObject = new GostKeyExchangeParameters();
                         cspObject.DecodeParameters(encodedParameters);
                         cspObject.DecodePublicKey(encodedKeyValue, algId);
                         var cspBlobData = GostKeyExchangeParameters.EncodePublicBlob(cspObject, algId);
 
-                        Gost3410CryptoServiceProvider gost_sp = new Gost3410CryptoServiceProvider();
                         gost_sp.ImportCspBlob(cspBlobData);
                         return gost_sp;
                     }
-                    case AlgId.CALG_GOST3410_2012_256:
+
+                    // Ветка вызова из сертификата, есть Pal
+                    var pal = certificatePal;
+                    var certContext = ((CertificatePal)pal).CertContext;
+
+                    int size = sizeof(CERT_PUBLIC_KEY_INFO);
+                    byte[] arr = new byte[size];
+
+                    IntPtr ptr = IntPtr.Zero;
+                    try
                     {
+                        ptr = Marshal.AllocHGlobal(size);
+                        Marshal.StructureToPtr(certContext.CertContext->pCertInfo->SubjectPublicKeyInfo, ptr, true);
+                        Marshal.Copy(ptr, arr, 0, size);
+                    }
+                    finally
+                    {
+                        Marshal.FreeHGlobal(ptr);
+                    }
+
+                    gost_sp.ImportCertificatePublicKey(arr);
+                    return gost_sp;
+                }
+                case AlgId.CALG_GOST3410_2012_512:
+                {
+                    Gost3410_2012_512CryptoServiceProvider gost_sp = new Gost3410_2012_512CryptoServiceProvider();
+                    if (certificatePal == null)
+                    {
+                        // Ветка вызова из PublicKey (в частности детура, но у ms аналогично)
                         var cspObject = new GostKeyExchangeParameters();
                         cspObject.DecodeParameters(encodedParameters);
                         cspObject.DecodePublicKey(encodedKeyValue, algId);
                         var cspBlobData = GostKeyExchangeParameters.EncodePublicBlob(cspObject, algId);
 
-                        Gost3410_2012_256CryptoServiceProvider gost_sp = new Gost3410_2012_256CryptoServiceProvider();
                         gost_sp.ImportCspBlob(cspBlobData);
                         return gost_sp;
                     }
-                    case AlgId.CALG_GOST3410_2012_512:
-                    {
-                        var cspObject = new GostKeyExchangeParameters();
-                        cspObject.DecodeParameters(encodedParameters);
-                        cspObject.DecodePublicKey(encodedKeyValue, algId);
-                        var cspBlobData = GostKeyExchangeParameters.EncodePublicBlob(cspObject, algId);
 
-                        Gost3410_2012_512CryptoServiceProvider gost_sp = new Gost3410_2012_512CryptoServiceProvider();
-                        gost_sp.ImportCspBlob(cspBlobData);
-                        return gost_sp;
+                    // Ветка вызова из сертификата, есть Pal
+                    var pal = certificatePal;
+                    var certContext = ((CertificatePal)pal).CertContext;
+
+                    int size = sizeof(CERT_PUBLIC_KEY_INFO);
+                    byte[] arr = new byte[size];
+
+                    IntPtr ptr = IntPtr.Zero;
+                    try
+                    {
+                        ptr = Marshal.AllocHGlobal(size);
+                        Marshal.StructureToPtr(certContext.CertContext->pCertInfo->SubjectPublicKeyInfo, ptr, true);
+                        Marshal.Copy(ptr, arr, 0, size);
                     }
+                    finally
+                    {
+                        Marshal.FreeHGlobal(ptr);
+                    }
+
+                    gost_sp.ImportCertificatePublicKey(arr);
+                    return gost_sp;
+                }
                 //end: gost
                 case AlgId.CALG_DSS_SIGN:
-                    {
-                        byte[] keyBlob = ConstructDSSPublicKeyCspBlob(encodedKeyValue, encodedParameters);
-                        DSACryptoServiceProvider dsa = new DSACryptoServiceProvider();
-                        dsa.ImportCspBlob(keyBlob);
-                        return dsa;
-                    }
+                {
+                    byte[] keyBlob = ConstructDSSPublicKeyCspBlob(encodedKeyValue, encodedParameters);
+                    DSACryptoServiceProvider dsa = new DSACryptoServiceProvider();
+                    dsa.ImportCspBlob(keyBlob);
+                    return dsa;
+                }
                 default:
                     throw new NotSupportedException(SR.NotSupported_KeyAlgorithm);
             }

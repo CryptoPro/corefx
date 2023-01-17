@@ -442,6 +442,9 @@
     <Compile Include="$(CommonPath)\Interop\Windows\Advapi32\Interop.CryptImportKey.cs">
       <Link>Common\Interop\Windows\Advapi32\Interop.CryptImportKey.cs</Link>
     </Compile>
+    <Compile Include="$(CommonPath)\Interop\Windows\Advapi32\Interop.CryptImportPublicKeyInfo.cs">
+      <Link>Common\Interop\Windows\Advapi32\Interop.CryptImportPublicKeyInfo.cs</Link>
+    </Compile>
     <Compile Include="$(CommonPath)\Interop\Windows\Advapi32\Interop.CryptReleaseContext.cs">
       <Link>Common\Interop\Windows\Advapi32\Interop.CryptReleaseContext.cs</Link>
     </Compile>

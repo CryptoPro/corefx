@@ -716,6 +716,7 @@ namespace System.Security.Cryptography.Xml
             if (keyObject == null)
                 throw new ArgumentNullException(nameof(keyObject));
 
+            // begin: gost
             if (!(keyObject is SymmetricAlgorithm) 
                 && !(keyObject is RSA)
                 && !(keyObject is Gost3410)
@@ -723,6 +724,7 @@ namespace System.Security.Cryptography.Xml
                 && !(keyObject is Gost3410_2012_512))
                 throw new CryptographicException(SR.Cryptography_Xml_NotSupportedCryptographicTransform);
             _keyNameMapping.Add(keyName, keyObject);
+            // end: gost
         }
 
         public void ClearKeyNameMappings()

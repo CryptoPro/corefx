@@ -105,6 +105,19 @@ namespace System.Security.Cryptography
         }
 
         /// <summary>
+        /// Срок действия закртытого ключа, указанного в KP_NOTAFTER
+        /// </summary>
+        public DateTimeOffset NotAfter
+        {
+            get
+            {
+                byte[] fileTime = CapiHelper.GetKeyParameter(SafeKeyHandle, Constants.CLR_NOTAFTER);
+                return DateTimeOffset.FromFileTime(BitConverter.ToInt64(fileTime));
+            }
+        }
+
+
+        /// <summary>
         /// Конструктор, создающий объект класса 
         /// <see cref="Gost3410_2012_512CryptoServiceProvider"/>.
         /// </summary>
@@ -520,46 +533,76 @@ namespace System.Security.Cryptography
         /// ключа.</exception>
         public void ImportCspBlob(byte[] keyBlob, byte[] paramBlob)
         {
-            //SafeKeyHandle safeKeyHandle;
-            //var rawData = CapiHelper.EncodePublicBlob(keyBlob, paramBlob, CspAlgorithmType.PROV_GOST_2012_512);
+            SafeKeyHandle safeKeyHandle;
+            var rawData = AsnHelper.EncodePublicBlob(keyBlob, paramBlob, CspAlgorithmType.Gost2012_512);
 
-            //// Права на экспорт / импорт проверять бесполезно
-            //// CSP все равно не поддерживает. Бесполезно да же эмулировать:
-            //// сделать с этим BLOB потом ничего нельзя.
+            // Права на экспорт / импорт проверять бесполезно
+            // CSP все равно не поддерживает. Бесполезно да же эмулировать:
+            // сделать с этим BLOB потом ничего нельзя.
 
-            //// Это открытый ключ, поэтому можно его export
-            //// в verify context.
-            //// Нет обращения к секретному ключу, поэтому
-            //// не создаем контейнер без надобности.
-            //if (IsPublic(rawData))
-            //{
-            //    SafeProvHandle safeProvHandleTemp = AcquireSafeProviderHandle();
+            // Это открытый ключ, поэтому можно его export
+            // в verify context.
+            // Нет обращения к секретному ключу, поэтому
+            // не создаем контейнер без надобности.
+            if (IsPublic(rawData))
+            {
+                SafeProvHandle safeProvHandleTemp = AcquireSafeProviderHandle();
 
-            //    CapiHelper.ImportKeyBlob(safeProvHandleTemp, CspProviderFlags.NoFlags,
-            //false, ?
-            //       rawData,
-            //       out safeKeyHandle);
+                CapiHelper.ImportKeyBlob(
+                    safeProvHandleTemp,
+                    CspProviderFlags.NoFlags,
+                    false,
+                   rawData,
+                   out safeKeyHandle);
 
-            //The property set will take care of releasing any already-existing resources.
-            //    SafeProvHandle = safeProvHandleTemp;
-            //}
-            //else
-            //{
-            //    throw new CryptographicException(SR.CspParameter_invalid, "Cryptography_UserExportBulkBlob");
-            //}
+                //The property set will take care of releasing any already-existing resources.
+                _safeProvHandle = safeProvHandleTemp;
+            }
+            else
+            {
+                throw new CryptographicException(SR.CspParameter_invalid, "Cryptography_UserExportBulkBlob");
+            }
 
-            //// The property set will take care of releasing any already-existing resources.
-            //SafeKeyHandle = safeKeyHandle;
+            // The property set will take care of releasing any already-existing resources.
+            _safeKeyHandle = safeKeyHandle;
 
-            //if (_parameters != null)
-            //{
-            //    _parameters.KeyNumber = SafeKeyHandle.KeySpec;
-            //}
+            if (_parameters != null)
+            {
+                _parameters.KeyNumber = SafeKeyHandle.KeySpec;
+            }
 
-            //// Эмулируем MS HANDLE
-            //SafeKeyHandle.PublicOnly = true;
-            throw new PlatformNotSupportedException(
-                SR.Format(SR.Cryptography_CAPI_Required, nameof(CspKeyContainerInfo)));
+            // Эмулируем MS HANDLE
+            SafeKeyHandle.PublicOnly = true;
+        }
+
+        /// <summary>
+        /// Импорт открытого ключа из структуры CERT_PUBLIC_KEY_INFO
+        /// </summary>
+        /// <param name="publicKeyInfo"></param>
+        public void ImportCertificatePublicKey(byte[] publicKeyInfo)
+        {
+            SafeKeyHandle safeKeyHandle;
+            SafeProvHandle safeProvHandleTemp = AcquireSafeProviderHandle();
+
+            CapiHelper.CryptImportPublicKeyInfo(
+                safeProvHandleTemp,
+                Interop.Advapi32.CertEncodingType.X509_ASN_ENCODING,
+                publicKeyInfo,
+                out safeKeyHandle);
+
+            // The property set will take care of releasing any already-existing resources.
+            _safeProvHandle = safeProvHandleTemp;
+
+            // The property set will take care of releasing any already-existing resources.
+            _safeKeyHandle = safeKeyHandle;
+
+            if (_parameters != null)
+            {
+                _parameters.KeyNumber = _safeKeyHandle.KeySpec;
+            }
+
+            // Эмулируем MS HANDLE
+            _publicOnly = true;
         }
 
         /// <summary>

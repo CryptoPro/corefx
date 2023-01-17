@@ -246,6 +246,17 @@ namespace System.Security.Cryptography.Encryption.Gost3410.Tests
             }
         }
 
+        [Fact]
+        public void NotAfterTest()
+        {
+            using (var gost = GetGostProvider())
+            {
+                var notAfter = gost.NotAfter;
+                Assert.True(notAfter < DateTimeOffset.MaxValue);
+                Assert.True(notAfter > DateTimeOffset.MinValue);
+            }
+        }
+
         private static Gost3410CryptoServiceProvider GetGostProvider()
         {
             CspParameters cpsParams = new CspParameters(

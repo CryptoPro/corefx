@@ -105,6 +105,18 @@ namespace System.Security.Cryptography
         }
 
         /// <summary>
+        /// Срок действия закртытого ключа, указанного в KP_NOTAFTER
+        /// </summary>
+        public DateTimeOffset NotAfter
+        {
+            get
+            {
+                byte[] fileTime = CapiHelper.GetKeyParameter(SafeKeyHandle, Constants.CLR_NOTAFTER);
+                return DateTimeOffset.FromFileTime(BitConverter.ToInt64(fileTime));
+            }
+        }
+
+        /// <summary>
         /// Конструктор, создающий объект класса 
         /// <see cref="Gost3410CryptoServiceProvider"/>.
         /// </summary>
@@ -562,6 +574,36 @@ namespace System.Security.Cryptography
             SafeKeyHandle.PublicOnly = true;
             //throw new PlatformNotSupportedException(
             //    SR.Format(SR.Cryptography_CAPI_Required, nameof(CspKeyContainerInfo)));
+        }
+
+        /// <summary>
+        /// Импорт открытого ключа из структуры CERT_PUBLIC_KEY_INFO
+        /// </summary>
+        /// <param name="publicKeyInfo"></param>
+        public void ImportCertificatePublicKey(byte[] publicKeyInfo)
+        {
+            SafeKeyHandle safeKeyHandle;
+            SafeProvHandle safeProvHandleTemp = AcquireSafeProviderHandle();
+
+            CapiHelper.CryptImportPublicKeyInfo(
+                safeProvHandleTemp,
+                Interop.Advapi32.CertEncodingType.X509_ASN_ENCODING,
+                publicKeyInfo,
+                out safeKeyHandle);
+
+            // The property set will take care of releasing any already-existing resources.
+            _safeProvHandle = safeProvHandleTemp;
+
+            // The property set will take care of releasing any already-existing resources.
+            _safeKeyHandle = safeKeyHandle;
+
+            if (_parameters != null)
+            {
+                _parameters.KeyNumber = _safeKeyHandle.KeySpec;
+            }
+
+            // Эмулируем MS HANDLE
+            _publicOnly = true;
         }
 
         /// <summary>

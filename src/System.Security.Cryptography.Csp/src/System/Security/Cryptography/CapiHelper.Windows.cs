@@ -660,6 +660,20 @@ namespace Internal.NativeCrypto
                     }
                     break;
                 }
+                case Constants.CLR_NOTAFTER:
+                {
+                    // returns the KP_NOTAFTER for the key
+                    if (!Interop.Advapi32.CryptGetKeyParam(safeKeyHandle, Interop.Advapi32.CryptGetKeyParamFlags.KP_NOTAFTER, null, ref cb, 0))
+                    {
+                        throw GetErrorCode().ToCryptographicException();
+                    }
+                    pb = new byte[cb];
+                    if (!Interop.Advapi32.CryptGetKeyParam(safeKeyHandle, Interop.Advapi32.CryptGetKeyParamFlags.KP_NOTAFTER, pb, ref cb, 0))
+                    {
+                        throw GetErrorCode().ToCryptographicException();
+                    }
+                    break;
+                }
                 // end: gost
                 default:
                 {
@@ -2392,6 +2406,22 @@ namespace Internal.NativeCrypto
             phKey.SetParent(hProv);
 
             return response;
+        }
+
+        public static bool CryptImportPublicKeyInfo(
+            SafeProvHandle hProv,
+            Interop.Advapi32.CertEncodingType encoding,
+            byte[] pbData,
+            out SafeKeyHandle phKey)
+        {
+            bool response = Interop.Advapi32.CryptImportPublicKeyInfo(
+                hProv,
+                encoding,
+                pbData,
+                out phKey);
+
+            return response;
+
         }
 
         public static bool CryptCreateHash(

@@ -135,6 +135,7 @@ namespace System.Security.Cryptography
         public Gost3410CryptoServiceProvider(System.IntPtr hProvHandle, int keySpec) { }
         public Gost3410CryptoServiceProvider(System.Security.Cryptography.CspParameters parameters) { }
         public string CipherOid { get { throw null; } set { } }
+        public DateTimeOffset NotAfter { get { throw null; } }
         public byte[] ContainerCertificate { get { throw null; } set { } }
         public System.Security.Cryptography.CspKeyContainerInfo CspKeyContainerInfo { get { throw null; } }
         public override int KeySize { get { throw null; } }
@@ -149,6 +150,7 @@ namespace System.Security.Cryptography
         protected override byte[] HashData(System.IO.Stream data, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
         public void ImportCspBlob(byte[] rawData) { }
         public void ImportCspBlob(byte[] keyBlob, byte[] paramBlob) { }
+        public void ImportCertificatePublicKey(byte[] publicKeyInfo) { }
         public override void ImportParameters(System.Security.Cryptography.Gost3410Parameters parameters) { }
         public void PreloadContainer() { }
         public static string SelectContainer(bool fullyQualifiedContainerName, bool machine, System.IntPtr parent) { throw null; }
@@ -183,6 +185,7 @@ namespace System.Security.Cryptography
         public Gost3410_2012_256CryptoServiceProvider(System.IntPtr hProvHandle, int keySpec) { }
         public Gost3410_2012_256CryptoServiceProvider(System.Security.Cryptography.CspParameters parameters) { }
         public string CipherOid { get { throw null; } set { } }
+        public DateTimeOffset NotAfter { get { throw null; } }
         public byte[] ContainerCertificate { get { throw null; } set { } }
         public System.Security.Cryptography.CspKeyContainerInfo CspKeyContainerInfo { get { throw null; } }
         public override int KeySize { get { throw null; } }
@@ -197,6 +200,7 @@ namespace System.Security.Cryptography
         protected override byte[] HashData(System.IO.Stream data, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
         public void ImportCspBlob(byte[] rawData) { }
         public void ImportCspBlob(byte[] keyBlob, byte[] paramBlob) { }
+        public void ImportCertificatePublicKey(byte[] publicKeyInfo) { }
         public override void ImportParameters(System.Security.Cryptography.Gost3410Parameters parameters) { }
         public void PreloadContainer() { }
         public static string SelectContainer(bool fullyQualifiedContainerName, bool machine, System.IntPtr parent) { throw null; }
@@ -231,6 +235,7 @@ namespace System.Security.Cryptography
         public Gost3410_2012_512CryptoServiceProvider(System.IntPtr hProvHandle, int keySpec) { }
         public Gost3410_2012_512CryptoServiceProvider(System.Security.Cryptography.CspParameters parameters) { }
         public string CipherOid { get { throw null; } set { } }
+        public DateTimeOffset NotAfter { get { throw null; } }
         public byte[] ContainerCertificate { get { throw null; } set { } }
         public System.Security.Cryptography.CspKeyContainerInfo CspKeyContainerInfo { get { throw null; } }
         public override int KeySize { get { throw null; } }
@@ -245,6 +250,7 @@ namespace System.Security.Cryptography
         protected override byte[] HashData(System.IO.Stream data, System.Security.Cryptography.HashAlgorithmName hashAlgorithm) { throw null; }
         public void ImportCspBlob(byte[] rawData) { }
         public void ImportCspBlob(byte[] keyBlob, byte[] paramBlob) { }
+        public void ImportCertificatePublicKey(byte[] publicKeyInfo) { }
         public override void ImportParameters(System.Security.Cryptography.Gost3410Parameters parameters) { }
         public void PreloadContainer() { }
         public static string SelectContainer(bool fullyQualifiedContainerName, bool machine, System.IntPtr parent) { throw null; }

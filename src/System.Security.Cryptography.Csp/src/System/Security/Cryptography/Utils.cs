@@ -22,6 +22,7 @@ namespace System.Security.Cryptography
         internal const int CLR_PP_PIN = 11;
         // begin: gost
         internal const int CLR_CIPHEROID = 101;
+        internal const int CLR_NOTAFTER = 102;
         // end: gost
 
         internal const int SIZE_OF_DWORD = 4;

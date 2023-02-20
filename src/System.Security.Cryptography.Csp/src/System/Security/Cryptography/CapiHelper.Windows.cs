@@ -10,6 +10,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Internal.Cryptography;
 using Microsoft.Win32.SafeHandles;
+using static Interop.Advapi32;
 using static Interop.Crypt32;
 using CryptProvParam = Interop.Advapi32.CryptProvParam;
 

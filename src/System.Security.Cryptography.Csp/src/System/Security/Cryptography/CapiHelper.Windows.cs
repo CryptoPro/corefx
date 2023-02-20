@@ -290,9 +290,31 @@ namespace Internal.NativeCrypto
             int hr = AcquireCryptContext(out hProv, containerName, providerName, providerType, flags);
             if (hr != S_OK)
             {
-                hProv.Dispose();
-                safeProvHandle = SafeProvHandle.InvalidHandle;
-                return hr;
+                // begin: gost
+                if (((cspParameters.Flags & CspProviderFlags.UseExistingKey) != CspProviderFlags.NoFlags)
+                    || ((hr != GostConstants.NTE_KEYSET_NOT_DEF)
+                    && (hr != GostConstants.NTE_BAD_KEYSET)
+                    && (hr != GostConstants.SCARD_W_CANCELLED_BY_USER)))
+                {
+                    // end: gost
+                    hProv.Dispose();
+                    safeProvHandle = SafeProvHandle.InvalidHandle;
+                    return hr;
+                }
+                // begin: gost
+                hr = AcquireCryptContext(
+                    out hProv,
+                    containerName,
+                    providerName,
+                    providerType,
+                    (uint)CryptAcquireContextFlags.CRYPT_NEWKEYSET);
+                if (hr != S_OK)
+                {
+                    hProv.Dispose();
+                    safeProvHandle = SafeProvHandle.InvalidHandle;
+                    return hr;
+                }
+                // end: gost
             }
 
             hProv.ContainerName = containerName;

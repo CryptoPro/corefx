@@ -8,6 +8,8 @@
   </PropertyGroup>
   <PropertyGroup>
     <DefineConstants Condition="'$(TargetsWindows)' == 'true'">$(DefineConstants);TargetsWindows</DefineConstants>
+    <DefineConstants Condition="'$(TargetsLinux)' == 'true'">$(DefineConstants);TargetsLinux</DefineConstants>
+    <DefineConstants Condition="'$(TargetsOSX)' == 'true'">$(DefineConstants);TargetsOSX</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(CommonPath)\System\Security\Cryptography\Ber\Asn18BitCharString.cs">

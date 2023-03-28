@@ -6,6 +6,9 @@
     <NoWarn Condition="'$(TargetsUnix)' == 'true'">$(NoWarn);CS0809</NoWarn>
     <Configurations>netcoreapp-OSX-Debug;netcoreapp-OSX-Release;netcoreapp-Unix-Debug;netcoreapp-Unix-Release;netcoreapp-Windows_NT-Debug;netcoreapp-Windows_NT-Release;uap-Windows_NT-Debug;uap-Windows_NT-Release</Configurations>
   </PropertyGroup>
+  <PropertyGroup>
+    <DefineConstants Condition="'$(TargetsWindows)' == 'true'">$(DefineConstants);TargetsWindows</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(CommonPath)\System\Security\Cryptography\Ber\Asn18BitCharString.cs">
       <Link>Common\System\Security\Cryptography\Ber\Asn18BitCharString.cs</Link>

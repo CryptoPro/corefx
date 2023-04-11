@@ -409,6 +409,36 @@ namespace System.Security.Cryptography
             ImportCspBlob(keyBlob);
         }
 
+        // begin: gost
+        /// <summary>
+        /// Импорт открытого ключа из структуры CERT_PUBLIC_KEY_INFO
+        /// </summary>
+        /// <param name="publicKeyInfo"></param>
+        public void ImportCertificatePublicKey(byte[] publicKeyInfo)
+        {
+            SafeKeyHandle safeKeyHandle;
+            SafeProvHandle safeProvHandleTemp = AcquireSafeProviderHandle();
+
+            CapiHelper.CryptImportPublicKeyInfo(
+                safeProvHandleTemp,
+                Interop.Advapi32.CertEncodingType.X509_ASN_ENCODING,
+                publicKeyInfo,
+                out safeKeyHandle);
+
+            // The property set will take care of releasing any already-existing resources.
+            _safeProvHandle = safeProvHandleTemp;
+
+            // The property set will take care of releasing any already-existing resources.
+            _safeKeyHandle = safeKeyHandle;
+
+            if (_parameters != null)
+            {
+                _parameters.KeyNumber = _safeKeyHandle.KeySpec;
+            }
+        }
+
+        // end: gost
+
         public override void ImportEncryptedPkcs8PrivateKey(
             ReadOnlySpan<byte> passwordBytes,
             ReadOnlySpan<byte> source,

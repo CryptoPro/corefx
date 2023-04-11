@@ -39,9 +39,40 @@ namespace Internal.Cryptography.Pal
                 case AlgId.CALG_RSA_KEYX:
                 case AlgId.CALG_RSA_SIGN:
                 {
-                    byte[] keyBlob = DecodeKeyBlob(CryptDecodeObjectStructType.CNG_RSA_PUBLIC_KEY_BLOB, encodedKeyValue);
-                    CngKey cngKey = CngKey.Import(keyBlob, CngKeyBlobFormat.GenericPublicBlob);
-                    return new RSACng(cngKey);
+                    RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+                    if (certificatePal == null)
+                    {
+                        // Ветка вызова из PublicKey (в частности детура, но у ms аналогично)
+                        var cspObject = new GostKeyExchangeParameters();
+                        cspObject.DecodeParameters(encodedParameters);
+                        cspObject.DecodePublicKey(encodedKeyValue, algId);
+                        var cspBlobData = GostKeyExchangeParameters.EncodePublicBlob(cspObject, algId);
+
+                        rsa.ImportCspBlob(cspBlobData);
+                        return rsa;
+                    }
+
+                    // Ветка вызова из сертификата, есть Pal
+                    var pal = certificatePal;
+                    var certContext = ((CertificatePal)pal).CertContext;
+
+                    int size = sizeof(CERT_PUBLIC_KEY_INFO);
+                    byte[] arr = new byte[size];
+
+                    IntPtr ptr = IntPtr.Zero;
+                    try
+                    {
+                        ptr = Marshal.AllocHGlobal(size);
+                        Marshal.StructureToPtr(certContext.CertContext->pCertInfo->SubjectPublicKeyInfo, ptr, true);
+                        Marshal.Copy(ptr, arr, 0, size);
+                    }
+                    finally
+                    {
+                        Marshal.FreeHGlobal(ptr);
+                    }
+
+                    rsa.ImportCertificatePublicKey(arr);
+                    return rsa;
                 }
                 //begin: gost
                 case AlgId.CALG_GOST3410:

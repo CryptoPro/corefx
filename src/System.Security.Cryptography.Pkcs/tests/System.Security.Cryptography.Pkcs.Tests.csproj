@@ -18,6 +18,7 @@
     <Compile Include="CertLoader.Settings.cs" />
     <Compile Include="CmsRecipientCollectionTests.cs" />
     <Compile Include="CryptographicAttributeObjectCollectionTests.cs" />
+    <Compile Include="SignedCms\CspRsaStoreCmsTests.cs" />
     <Compile Include="EnvelopedCms\GostEnvelopedTests.cs" />
     <Compile Include="EnvelopedCms\CertificateTests.cs" />
     <Compile Include="EnvelopedCms\ContentEncryptionAlgorithmTests.cs" />
@@ -40,6 +41,7 @@
     <Compile Include="SignedCms\CmsSignerTests.cs" />
     <Compile Include="SignedCms\CounterSigningDerOrder.cs" />
     <Compile Include="SignedCms\GostNonPersistCmsTests.cs" />
+    <Compile Include="SignedCms\GostStoreCmsTests.cs" />
     <Compile Include="SignedCms\SignedCmsTests.cs" />
     <Compile Include="SignedCms\SignedCmsWholeDocumentTests.cs" />
     <Compile Include="SignedCms\SignedDocuments.cs" />

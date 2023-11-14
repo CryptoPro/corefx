@@ -10,7 +10,7 @@ version: 3.1.32.{build}
 # Build worker image (VM template)
 image:
   - Visual Studio 2019
-  - Ubuntu
+  - Ubuntu2204
   # - macos
 
 # RDP user is DAIAD\appveyor
@@ -136,7 +136,7 @@ for:
 -
   matrix:
     only:
-      - image: Ubuntu
+      - image: Ubuntu2204
   install:
   - sh: sudo apt-get update
   - sh: sudo apt install -y lsb lsb-core alien libkrb5-dev

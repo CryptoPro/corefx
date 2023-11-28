@@ -344,6 +344,7 @@
     <Compile Include="$(CommonPath)\System\Security\Cryptography\GostR3411_2012_DigestSyntax\GostR3411_2012_512_Digest.cs">
       <Link>Common\System\Security\Cryptography\GostR3411_2012_DigestSyntax\GostR3411_2012_512_Digest.cs</Link>
     </Compile>
+    <Compile Include="System\Security\Cryptography\EcDsaCryptoServiceProvider.cs" />
     <!--end: gost asn-->
     <Compile Include="System\Security\Cryptography\GostCryptoAPITransform.cs" />
     <Compile Include="System\Security\Cryptography\Gost28147CryptoServiceProvider.cs" />

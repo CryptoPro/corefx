@@ -5,8 +5,35 @@
 // Changes to this file must follow the http://aka.ms/api-review process.
 // ------------------------------------------------------------------------------
 
+using System.IO;
+
 namespace System.Security.Cryptography
 {
+    public class EcDsaCryptoServiceProvider : System.Security.Cryptography.ECDsa, ICspAsymmetricAlgorithm
+    {
+        public CspKeyContainerInfo CspKeyContainerInfo { get{ throw null; } }
+        public bool PersistKeyInCsp { get { throw null; } set { } }
+        public bool PublicOnly { get { throw null; } }
+        public static bool UseMachineKeyStore { get { throw null; } set { } }
+        public EcDsaCryptoServiceProvider() { throw null; }
+        public EcDsaCryptoServiceProvider(int dwKeySize) { throw null; }
+        public EcDsaCryptoServiceProvider(int dwKeySize, CspParameters parameters) { throw null; }
+        public EcDsaCryptoServiceProvider(CspParameters parameters) { throw null; }
+        public byte[] ExportCspBlob(bool includePrivateParameters) { throw null; }
+        public void ImportCspBlob(byte[] keyBlob) { throw null; }
+        public void ImportCertificatePublicKey(byte[] publicKeyInfo) { throw null; }
+        public byte[] SignData(byte[] buffer, int offset, int count, object halg) { throw null; }
+        public byte[] SignData(byte[] buffer, object halg) { throw null; }
+        public byte[] SignData(Stream inputStream, object halg) { throw null; }
+        public byte[] SignHash(byte[] rgbHash, string str) { throw null; }
+        public bool VerifyData(byte[] buffer, object halg, byte[] signature) { throw null; }
+        public bool VerifyHash(byte[] rgbHash, string str, byte[] rgbSignature) { throw null; }
+        public byte[] SignHash(byte[] hash, HashAlgorithmName hashAlgorithm) { throw null; }
+        public bool VerifyHash(byte[] hash, byte[] signature, HashAlgorithmName hashAlgorithm) { throw null; }
+        public override byte[] SignHash(byte[] hash) { throw null; }
+        public override bool VerifyHash(byte[] hash, byte[] signature) { throw null; }
+    }
+
     public sealed partial class AesCryptoServiceProvider : System.Security.Cryptography.Aes
     {
         public AesCryptoServiceProvider() { }

@@ -59,12 +59,16 @@ namespace Internal.Cryptography.Pal
             return GetPrivateKey<ECDsa>(
                 delegate (CspParameters csp)
                 {
-                    throw new NotSupportedException(SR.NotSupported_ECDsa_Csp);
+                    return new EcDsaCryptoServiceProvider(csp);
                 },
+#if TargetsWindows
                 delegate (CngKey cngKey)
                 {
                     return new ECDsaCng(cngKey);
                 }
+#else
+                null // disable cng for ecdsa for linux
+#endif
             );
         }
 

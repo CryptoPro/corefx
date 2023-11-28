@@ -786,7 +786,7 @@ namespace System.Security.Cryptography
         {
             if (_disposed)
             {
-                throw new ObjectDisposedException(nameof(DSACryptoServiceProvider));
+                throw new ObjectDisposedException(nameof(RSACryptoServiceProvider));
             }
         }
     }

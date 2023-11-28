@@ -2573,6 +2573,7 @@ namespace Internal.NativeCrypto
         {
             Rsa = 0,
             Dss = 1,
+            EcDsa = 16,
             Gost2001 = GostConstants.PROV_GOST_2001_DH,
             Gost2012_256 = GostConstants.PROV_GOST_2012_256,
             Gost2012_512 = GostConstants.PROV_GOST_2012_512

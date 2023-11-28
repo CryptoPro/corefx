@@ -41,6 +41,8 @@ namespace Internal.NativeCrypto
         // since it enables access to SHA-2 operations. All currently supported OSes support RSA-AES.
         internal const int DefaultRsaProviderType = (int)ProviderType.PROV_RSA_AES;
 
+        internal const int DefaultEcDsaProviderType = (int)ProviderType.PROV_ECDSA;
+
         internal enum CryptKeyError : uint
         {
             NTE_NO_KEY = 0x8009000D, // Key does not exist.
@@ -63,6 +65,7 @@ namespace Internal.NativeCrypto
         {
             PROV_RSA_FULL = 1,
             PROV_DSS_DH = 13,
+            PROV_ECDSA = 16,
             PROV_RSA_AES = 24
         }
 

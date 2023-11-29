@@ -93,7 +93,11 @@ namespace System.Security.Cryptography.Pkcs
             }
 
             Certificate = certificate;
-            if (privateKey is Gost3410CryptoServiceProvider 
+            if (privateKey is EcDsaCryptoServiceProvider)
+            {
+                DigestAlgorithm = new Oid(s_defaultAlgorithm);
+            }
+            else if (privateKey is Gost3410CryptoServiceProvider 
                 || certificate?.PrivateKey is Gost3410CryptoServiceProvider)
             {
                 DigestAlgorithm = Oid.FromOidValue(GostConstants.OID_CP_GOST_R3411, OidGroup.HashAlgorithm);

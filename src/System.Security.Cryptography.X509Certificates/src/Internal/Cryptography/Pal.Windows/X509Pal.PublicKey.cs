@@ -28,14 +28,55 @@ namespace Internal.Cryptography.Pal
 
         public unsafe AsymmetricAlgorithm DecodePublicKey(Oid oid, byte[] encodedKeyValue, byte[] encodedParameters, ICertificatePal certificatePal)
         {
+#if TargetsWindows
             if (oid.Value == Oids.EcPublicKey && certificatePal != null)
             {
                 return DecodeECDsaPublicKey((CertificatePal)certificatePal);
             }
+#endif
 
             int algId = Interop.Crypt32.FindOidInfo(CryptOidInfoKeyType.CRYPT_OID_INFO_OID_KEY, oid.Value, OidGroup.PublicKeyAlgorithm, fallBackToAllGroups: true).AlgId;
             switch (algId)
             {
+#if !TargetsWindows
+                case AlgId.CALG_ECDSA:
+                {
+                    EcDsaCryptoServiceProvider dsa = new EcDsaCryptoServiceProvider();
+                    if (certificatePal == null)
+                    {
+                        // Ветка вызова из PublicKey (в частности детура, но у ms аналогично)
+                        var cspObject = new GostKeyExchangeParameters();
+                        cspObject.DecodeParameters(encodedParameters);
+                        cspObject.DecodePublicKey(encodedKeyValue, algId);
+                        var cspBlobData = GostKeyExchangeParameters.EncodePublicBlob(cspObject, algId);
+
+                        dsa.ImportCspBlob(cspBlobData);
+                        return dsa;
+                    }
+
+                    // Ветка вызова из сертификата, есть Pal
+                    var pal = certificatePal;
+                    var certContext = ((CertificatePal)pal).CertContext;
+
+                    int size = sizeof(CERT_PUBLIC_KEY_INFO);
+                    byte[] arr = new byte[size];
+
+                    IntPtr ptr = IntPtr.Zero;
+                    try
+                    {
+                        ptr = Marshal.AllocHGlobal(size);
+                        Marshal.StructureToPtr(certContext.CertContext->pCertInfo->SubjectPublicKeyInfo, ptr, true);
+                        Marshal.Copy(ptr, arr, 0, size);
+                    }
+                    finally
+                    {
+                        Marshal.FreeHGlobal(ptr);
+                    }
+
+                    dsa.ImportCertificatePublicKey(arr);
+                    return dsa;
+                }
+#endif
                 case AlgId.CALG_RSA_KEYX:
                 case AlgId.CALG_RSA_SIGN:
                 {

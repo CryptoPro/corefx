@@ -14,6 +14,8 @@ namespace System.Security.Cryptography
         private static volatile CspProviderFlags s_useMachineKeyStore = 0;
         private bool _disposed;
 
+        public HashAlgorithmName HashAlgorithmName { get; set; } = HashAlgorithmName.SHA256;
+
         public EcDsaCryptoServiceProvider()
             : this(0, new CspParameters(CapiHelper.DefaultEcDsaProviderType,
                                        "Crypto-Pro ECDSA and AES CSP",
@@ -553,12 +555,12 @@ namespace System.Security.Cryptography
 
         public override byte[] SignHash(byte[] hash)
         {
-            throw new NotImplementedException();
+            return SignHash(hash, HashAlgorithmName);
         }
 
         public override bool VerifyHash(byte[] hash, byte[] signature)
         {
-            throw new NotImplementedException();
+            return VerifyHash(hash, signature, HashAlgorithmName);
         }
     }
 }

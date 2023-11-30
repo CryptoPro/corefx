@@ -11,6 +11,7 @@ namespace System.Security.Cryptography
 {
     public class EcDsaCryptoServiceProvider : System.Security.Cryptography.ECDsa, ICspAsymmetricAlgorithm
     {
+        public HashAlgorithmName HashAlgorithmName { get { throw null; } set { } }
         public CspKeyContainerInfo CspKeyContainerInfo { get{ throw null; } }
         public bool PersistKeyInCsp { get { throw null; } set { } }
         public bool PublicOnly { get { throw null; } }

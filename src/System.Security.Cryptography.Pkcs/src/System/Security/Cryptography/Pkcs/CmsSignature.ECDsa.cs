@@ -182,17 +182,16 @@ namespace System.Security.Cryptography.Pkcs
                 }
 #endif
 
-                        signatureValue =
-#if TargetsWindows
-                            DsaIeeeToDer(
-#endif
-                                key.SignHash(
+                signatureValue = key.SignHash(
 #if netcoreapp || netcoreapp30 || netstandard21
                     dataHash.ToArray()
 #else
                     dataHash
 #endif
-                    ));
+                    );
+#if TargetsWindows
+                signatureValue = DsaIeeeToDer(signatureValue);
+#endif
                 return true;
             }
         }

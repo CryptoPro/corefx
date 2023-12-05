@@ -65,6 +65,10 @@ namespace System.Security.Cryptography.Pkcs
                     return false;
                 }
 
+#if !TargetsWindows
+                return key.VerifyHash(valueHash, signature);
+#else
+
                 int bufSize;
                 checked
                 {
@@ -94,6 +98,7 @@ namespace System.Security.Cryptography.Pkcs
                 {
                     CryptoPool.Return(rented, bufSize);
                 }
+#endif
 #endif
             }
 
@@ -162,8 +167,12 @@ namespace System.Security.Cryptography.Pkcs
                             signatureValue = null;
                             return false;
                         }
-
+#if TargetsWindows
                         signatureValue = DsaIeeeToDer(signedHash);
+#else
+                        // already in der
+                        signatureValue = signedHash;
+#endif
                         return true;
                     }
                 }
@@ -173,7 +182,11 @@ namespace System.Security.Cryptography.Pkcs
                 }
 #endif
 
-                signatureValue = DsaIeeeToDer(key.SignHash(
+                        signatureValue =
+#if TargetsWindows
+                            DsaIeeeToDer(
+#endif
+                                key.SignHash(
 #if netcoreapp || netcoreapp30 || netstandard21
                     dataHash.ToArray()
 #else

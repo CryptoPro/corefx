@@ -17,15 +17,15 @@ namespace System.Security.Cryptography.Pkcs
             lookup.Add(Oids.ECDsaWithSha256, new ECDsaCmsSignature(Oids.ECDsaWithSha256, HashAlgorithmName.SHA256));
             lookup.Add(Oids.ECDsaWithSha384, new ECDsaCmsSignature(Oids.ECDsaWithSha384, HashAlgorithmName.SHA384));
             lookup.Add(Oids.ECDsaWithSha512, new ECDsaCmsSignature(Oids.ECDsaWithSha512, HashAlgorithmName.SHA512));
-            lookup.Add(Oids.EcPublicKey, new ECDsaCmsSignature(null, default));
+            lookup.Add(Oids.EcPublicKey, new ECDsaCmsSignature(null, null));
         }
 
         private partial class ECDsaCmsSignature : CmsSignature
         {
-            private readonly HashAlgorithmName _expectedDigest;
+            private readonly HashAlgorithmName? _expectedDigest;
             private readonly string _signatureAlgorithm;
 
-            internal ECDsaCmsSignature(string signatureAlgorithm, HashAlgorithmName expectedDigest)
+            internal ECDsaCmsSignature(string signatureAlgorithm, HashAlgorithmName? expectedDigest)
             {
                 _signatureAlgorithm = signatureAlgorithm;
                 _expectedDigest = expectedDigest;
@@ -49,7 +49,7 @@ namespace System.Security.Cryptography.Pkcs
                 ReadOnlyMemory<byte>? signatureParameters,
                 X509Certificate2 certificate)
             {
-                if (_expectedDigest != digestAlgorithmName)
+                if (_expectedDigest != null && _expectedDigest != digestAlgorithmName)
                 {
                     throw new CryptographicException(
                         SR.Format(
@@ -66,7 +66,8 @@ namespace System.Security.Cryptography.Pkcs
                 }
 
 #if !TargetsWindows
-                return key.VerifyHash(valueHash, signature.ToArray());
+                var keyCsp = key as EcDsaCryptoServiceProvider;
+                return keyCsp.VerifyHash(valueHash.ToArray(), signature.ToArray(), digestAlgorithmName);
 #else
 
                 int bufSize;
@@ -161,7 +162,12 @@ namespace System.Security.Cryptography.Pkcs
                     {
                         var signedHash = new ReadOnlySpan<byte>(rented, 0, bytesWritten);
 
+#if !TargetsWindows
+                        if (key != null && !(certificate.GetECDsaPublicKey() as EcDsaCryptoServiceProvider)
+                            .VerifyHash(dataHash.ToArray(), signedHash.ToArray(), hashAlgorithmName))
+#else
                         if (key != null && !certificate.GetECDsaPublicKey().VerifyHash(dataHash, signedHash))
+#endif
                         {
                             // key did not match certificate
                             signatureValue = null;
@@ -182,7 +188,7 @@ namespace System.Security.Cryptography.Pkcs
                 }
 #endif
 
-                signatureValue = key.SignHash(
+                        signatureValue = key.SignHash(
 #if netcoreapp || netcoreapp30 || netstandard21
                     dataHash.ToArray()
 #else

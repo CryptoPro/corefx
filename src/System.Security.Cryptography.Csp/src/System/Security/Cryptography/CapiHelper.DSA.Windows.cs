@@ -55,5 +55,17 @@ namespace Internal.NativeCrypto
             Array.Reverse(signature, 0, 20);
             Array.Reverse(signature, 20, 20);
         }
+
+        private static byte[] ProcessEcDsaSignature(byte[] signature, int cbSignature)
+        {
+            // step 1 - trim signature
+            var trimmedSignature = new byte[cbSignature];
+            Array.Copy(signature, trimmedSignature, cbSignature);
+
+            // step 2 - reverse signature
+            Array.Reverse(trimmedSignature);
+
+            return trimmedSignature;
+        }
     }
 }

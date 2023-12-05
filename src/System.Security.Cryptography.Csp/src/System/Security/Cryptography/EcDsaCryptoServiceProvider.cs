@@ -425,7 +425,7 @@ namespace System.Security.Cryptography
                 SafeProvHandle,
                 SafeKeyHandle,
                 _parameters.KeyNumber,
-                CapiHelper.CALG_RSA_SIGN,
+                CapiHelper.CALG_ECDSA,
                 calgHash,
                 rgbHash);
         }

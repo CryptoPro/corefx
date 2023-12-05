@@ -2105,6 +2105,9 @@ namespace Internal.NativeCrypto
                     case CALG_DSS_SIGN:
                         ReverseDsaSignature(signature, cbSignature);
                         break;
+                    case CALG_ECDSA:
+                        signature = ProcessEcDsaSignature(signature, cbSignature);
+                        break;
                     default:
                         throw new InvalidOperationException();
                 }
@@ -2120,6 +2123,7 @@ namespace Internal.NativeCrypto
             switch (calgKey)
             {
                 case CALG_RSA_SIGN:
+                case CALG_ECDSA:
                     signature = signature.CloneByteArray();
                     Array.Reverse(signature);
                     break;

@@ -18,12 +18,14 @@ namespace Internal.NativeCrypto
         internal const int ALG_TYPE_DSS = (1 << 9);
         internal const int ALG_TYPE_RSA = (2 << 9);
         internal const int ALG_TYPE_BLOCK = (3 << 9);
+        internal const int ALG_SID_ECDSA = 3;
         internal const int ALG_CLASS_SIGNATURE = (1 << 13);
         internal const int ALG_CLASS_DATA_ENCRYPT = (3 << 13);
         internal const int ALG_CLASS_KEY_EXCHANGE = (5 << 13);
         internal const int CALG_RSA_SIGN = (ALG_CLASS_SIGNATURE | ALG_TYPE_RSA | 0);
         internal const int CALG_DSS_SIGN = (ALG_CLASS_SIGNATURE | ALG_TYPE_DSS | 0);
         internal const int CALG_RSA_KEYX = (ALG_CLASS_KEY_EXCHANGE | ALG_TYPE_RSA | 0);
+        internal const int CALG_ECDSA = (ALG_CLASS_SIGNATURE | ALG_TYPE_DSS | ALG_SID_ECDSA);
 
         internal const int ALG_CLASS_HASH = (4 << 13);
         internal const int ALG_TYPE_ANY = (0);

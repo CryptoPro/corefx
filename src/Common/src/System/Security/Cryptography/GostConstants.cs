@@ -144,6 +144,7 @@
         internal const int CALG_RSA_KEYX = 0xa400;
         internal const int CALG_RSA_SIGN = 0x2400;
         internal const int CALG_DSS_SIGN = 0x2200;
+        internal const int CALG_ECDSA = 0x2203;
 
         internal const int CALG_DH_EL_EPHEM = (int)0xaa25;
         internal const int CALG_DH_EL_SF = (int)0xaa24;

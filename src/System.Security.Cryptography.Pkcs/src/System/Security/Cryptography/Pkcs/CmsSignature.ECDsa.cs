@@ -66,7 +66,7 @@ namespace System.Security.Cryptography.Pkcs
                 }
 
 #if !TargetsWindows
-                return key.VerifyHash(valueHash, signature);
+                return key.VerifyHash(valueHash, signature.ToArray());
 #else
 
                 int bufSize;
@@ -171,7 +171,7 @@ namespace System.Security.Cryptography.Pkcs
                         signatureValue = DsaIeeeToDer(signedHash);
 #else
                         // already in der
-                        signatureValue = signedHash;
+                        signatureValue = signedHash.ToArray();
 #endif
                         return true;
                     }

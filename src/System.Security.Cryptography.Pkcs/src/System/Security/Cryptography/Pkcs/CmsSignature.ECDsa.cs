@@ -65,11 +65,6 @@ namespace System.Security.Cryptography.Pkcs
                     return false;
                 }
 
-#if !TargetsWindows
-                var keyCsp = key as EcDsaCryptoServiceProvider;
-                return keyCsp.VerifyHash(valueHash.ToArray(), signature.ToArray(), digestAlgorithmName);
-#else
-
                 int bufSize;
                 checked
                 {
@@ -91,8 +86,14 @@ namespace System.Security.Cryptography.Pkcs
                     {
                         return false;
                     }
-
+#if TargetsWindows
                     return key.VerifyHash(valueHash, ieee);
+#else
+                    return (key as EcDsaCryptoServiceProvider).VerifyHash(
+                        valueHash.ToArray(), 
+                        ieee.ToArray(), 
+                        digestAlgorithmName);
+#endif
 #if netcoreapp || netcoreapp30 || netstandard21
                 }
                 finally
@@ -100,8 +101,7 @@ namespace System.Security.Cryptography.Pkcs
                     CryptoPool.Return(rented, bufSize);
                 }
 #endif
-#endif
-            }
+                }
 
             protected override bool Sign(
 #if netcoreapp || netcoreapp30 || netstandard21
@@ -173,12 +173,7 @@ namespace System.Security.Cryptography.Pkcs
                             signatureValue = null;
                             return false;
                         }
-#if TargetsWindows
                         signatureValue = DsaIeeeToDer(signedHash);
-#else
-                        // already in der
-                        signatureValue = signedHash.ToArray();
-#endif
                         return true;
                     }
                 }
@@ -195,9 +190,7 @@ namespace System.Security.Cryptography.Pkcs
                     dataHash
 #endif
                     );
-#if TargetsWindows
                 signatureValue = DsaIeeeToDer(signatureValue);
-#endif
                 return true;
             }
         }

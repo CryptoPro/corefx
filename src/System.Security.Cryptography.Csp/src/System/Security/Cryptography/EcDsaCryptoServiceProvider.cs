@@ -188,7 +188,17 @@ namespace System.Security.Cryptography
             {
                 byte[] keySize = CapiHelper.GetKeyParameter(SafeKeyHandle, Constants.CLR_KEYLEN);
                 _keySize = (keySize[0] | (keySize[1] << 8) | (keySize[2] << 16) | (keySize[3] << 24));
-                return _keySize;
+
+                // perform magic to get user expected key size
+                // _keySize returs number of bits for storing 2 key components rounded up to a byte
+                // but we need to return true bit size for supported sizes
+                return (_keySize /(2*8)) switch
+                {
+                    (256 + 7) / 8 => 256,
+                    (384 + 7) / 8 => 384,
+                    (521 + 7) / 8 => 521,
+                    _ => throw new NotImplementedException()
+                };                
             }
         }
 
@@ -196,7 +206,7 @@ namespace System.Security.Cryptography
         {
             get
             {
-                return new[] { new KeySizes(384, 16384, 8) };
+                return new[] { new KeySizes(256, 384, 128), new KeySizes(521, 521, 0) };
             }
         }
 
@@ -463,7 +473,7 @@ namespace System.Security.Cryptography
             return CapiHelper.VerifySign(
                 SafeProvHandle,
                 SafeKeyHandle,
-                CapiHelper.CALG_RSA_SIGN,
+                CapiHelper.CALG_ECDSA,
                 calgHash,
                 rgbHash,
                 rgbSignature);

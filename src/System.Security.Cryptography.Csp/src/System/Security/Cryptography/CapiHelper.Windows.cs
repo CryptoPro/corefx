@@ -2080,17 +2080,25 @@ namespace Internal.NativeCrypto
         /// </summary>
         public static byte[] SignValue(SafeProvHandle hProv, SafeKeyHandle hKey, int keyNumber, int calgKey, int calgHash, byte[] hash)
         {
+#if !TargetsWindows
+            Interop.Advapi32.CryptSignAndVerifyHashFlags flags = calgKey == CALG_ECDSA 
+                ? Interop.Advapi32.CryptSignAndVerifyHashFlags.CP_ECC_PLAIN_SIGNATURE_CNG_REVERSED 
+                : Interop.Advapi32.CryptSignAndVerifyHashFlags.None;
+#else
+            Interop.Advapi32.CryptSignAndVerifyHashFlags flags = Interop.Advapi32.CryptSignAndVerifyHashFlags.None;
+#endif
+
             using (SafeHashHandle hHash = hProv.CreateHashHandle(hash, calgHash))
             {
                 int cbSignature = 0;
-                if (!Interop.Advapi32.CryptSignHash(hHash, (Interop.Advapi32.KeySpec)keyNumber, null, Interop.Advapi32.CryptSignAndVerifyHashFlags.None, null, ref cbSignature))
+                if (!Interop.Advapi32.CryptSignHash(hHash, (Interop.Advapi32.KeySpec)keyNumber, null, flags, null, ref cbSignature))
                 {
                     int hr = Interop.CPError.GetHRForLastWin32Error();
                     throw hr.ToCryptographicException();
                 }
 
                 byte[] signature = new byte[cbSignature];
-                if (!Interop.Advapi32.CryptSignHash(hHash, (Interop.Advapi32.KeySpec)keyNumber, null, Interop.Advapi32.CryptSignAndVerifyHashFlags.None, signature, ref cbSignature))
+                if (!Interop.Advapi32.CryptSignHash(hHash, (Interop.Advapi32.KeySpec)keyNumber, null, flags, signature, ref cbSignature))
                 {
                     int hr = Interop.CPError.GetHRForLastWin32Error();
                     throw hr.ToCryptographicException();
@@ -2137,9 +2145,17 @@ namespace Internal.NativeCrypto
                     throw new InvalidOperationException();
             }
 
+#if !TargetsWindows
+            Interop.Advapi32.CryptSignAndVerifyHashFlags flags = calgKey == CALG_ECDSA 
+                ? Interop.Advapi32.CryptSignAndVerifyHashFlags.CP_ECC_PLAIN_SIGNATURE_CNG_REVERSED 
+                : Interop.Advapi32.CryptSignAndVerifyHashFlags.None;
+#else
+            Interop.Advapi32.CryptSignAndVerifyHashFlags flags = Interop.Advapi32.CryptSignAndVerifyHashFlags.None;
+#endif
+
             using (SafeHashHandle hHash = hProv.CreateHashHandle(hash, calgHash))
             {
-                bool verified = Interop.Advapi32.CryptVerifySignature(hHash, signature, signature.Length, hKey, null, Interop.Advapi32.CryptSignAndVerifyHashFlags.None);
+                bool verified = Interop.Advapi32.CryptVerifySignature(hHash, signature, signature.Length, hKey, null, flags);
                 return verified;
             }
         }

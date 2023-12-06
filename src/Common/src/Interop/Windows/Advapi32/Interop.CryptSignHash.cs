@@ -23,6 +23,8 @@ internal partial class Interop
             CRYPT_NOHASHOID = 0x00000001,
             CRYPT_TYPE2_FORMAT = 0x00000002,  // Not supported
             CRYPT_X931_FORMAT = 0x00000004,  // Not supported
+            CP_ECC_PLAIN_SIGNATURE = 0x00000008,
+            CP_ECC_PLAIN_SIGNATURE_CNG_REVERSED = 0x00000020,
         }
 
         [DllImport(Libraries.Advapi32, CharSet = CharSet.Ansi, SetLastError = true, EntryPoint = "CryptSignHashA")]

@@ -848,7 +848,7 @@ namespace Internal.NativeCrypto
             if (parameters.KeyNumber == -1)
             {
                 // if gost goes here it ends with KeyNumber.Exchange
-                parameters.KeyNumber = keyType == CapiHelper.CspAlgorithmType.Dss
+                parameters.KeyNumber = keyType == CapiHelper.CspAlgorithmType.Dss || keyType == CspAlgorithmType.EcDsa
                                            ? (int)KeyNumber.Signature
                                            : (int)KeyNumber.Exchange;
             }

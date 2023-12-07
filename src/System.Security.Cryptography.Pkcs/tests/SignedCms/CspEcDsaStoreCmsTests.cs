@@ -49,7 +49,7 @@ namespace System.Security.Cryptography.Pkcs.Tests
             byte[] signature;
             using (var ecDsaCert = GetEcDsaCertificate())
             {
-                var key = ecDsaCert.PrivateKey;
+                var key = ecDsaCert.GetECDsaPrivateKey();
 
                 var contentInfo = new ContentInfo(bytesToHash);
                 var signedCms = new SignedCms(contentInfo, false);

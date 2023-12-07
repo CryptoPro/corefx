@@ -57,7 +57,7 @@ namespace System.Security.Cryptography
                 s_useMachineKeyStore,
                 out _randomKeyContainer);
 
-            _keySize = useDefaultKeySize ? 1024 : keySize;
+            _keySize = useDefaultKeySize ? 521 : keySize;
 
             // If this is not a random container we generate, create it eagerly
             // in the constructor so we can report any errors now.

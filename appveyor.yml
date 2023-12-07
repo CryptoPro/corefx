@@ -151,11 +151,13 @@ for:
   - sh: cp -r ./G2012256.001 /var/opt/cprocsp/keys/appveyor/
   - sh: cp -r ./G2012512.000 /var/opt/cprocsp/keys/appveyor/
   - sh: cp -r ./pfx-3407.000 /var/opt/cprocsp/keys/appveyor/
+  - sh: cp -r ./pfx-0829.000 /var/opt/cprocsp/keys/appveyor/
   - sh: cd ../
   - sh: /opt/cprocsp/bin/amd64/csptest  -absorb -certs -provtype 75 -provider "Crypto-Pro GOST R 34.10-2001 Cryptographic Service Provider" -pattern "G2001256.000"
   - sh: /opt/cprocsp/bin/amd64/csptest  -absorb -certs -provtype 80 -pattern "G2012256"
   - sh: /opt/cprocsp/bin/amd64/csptest  -absorb -certs -provtype 81 -pattern "G2012512"
   - sh: /opt/cprocsp/bin/amd64/csptest  -absorb -certs -provtype 24 -pattern "pfx-3407"
+  - sh: /opt/cprocsp/bin/amd64/csptest  -absorb -certs -provtype 24 -pattern "pfx-0829"
   - sh: /opt/cprocsp/bin/amd64/csptest  -keyset -enum_c -verifyc -uniq
   - sh: /opt/cprocsp/bin/amd64/csptest  -keyset -enum_c -verifyc -fqcn
   # getting patched nuget packages with gost support
@@ -201,6 +203,7 @@ for:
     - ./.dotnet/dotnet msbuild src\\System.Security.Cryptography.Pkcs\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Pkcs.Tests.GostNonPersistCmsTests"  /p:ForceRunTests=true
     - ./.dotnet/dotnet msbuild src\\System.Security.Cryptography.Pkcs\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Pkcs.Tests.GostStoreCmsTests"  /p:ForceRunTests=true
     - ./.dotnet/dotnet msbuild src\\System.Security.Cryptography.Pkcs\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Pkcs.Tests.CspRsaStoreCmsTests"  /p:ForceRunTests=true
+    - ./.dotnet/dotnet msbuild src\\System.Security.Cryptography.Pkcs\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Pkcs.Tests.CspEcDsaStoreCmsTests"  /p:ForceRunTests=true
     #- ./.dotnet/dotnet msbuild src\\System.Security.Cryptography.Pkcs\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Pkcs.EnvelopedCmsTests.Tests.GostEnvelopedTests"  /p:ForceRunTests=true
   artifacts:
     - path: artifacts\bin\runtime\netcoreapp-Linux-Release-x64

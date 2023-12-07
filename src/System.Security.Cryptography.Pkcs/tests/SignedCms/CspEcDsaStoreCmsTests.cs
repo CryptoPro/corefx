@@ -18,9 +18,11 @@ namespace System.Security.Cryptography.Pkcs.Tests
             byte[] signature;
             using (var ecDsaCert = GetEcDsaCertificate())
             {
+                var key = ecDsaCert.GetECDsaPrivateKey();
+
                 var contentInfo = new ContentInfo(bytesToHash);
                 var signedCms = new SignedCms(contentInfo, true);
-                CmsSigner cmsSigner = new CmsSigner(ecDsaCert);
+                CmsSigner cmsSigner = new CmsSigner(SubjectIdentifierType.IssuerAndSerialNumber, ecDsaCert, key);
                 cmsSigner.SignedAttributes.Add(new Pkcs9SigningTime(DateTime.Now));
                 signedCms.ComputeSignature(cmsSigner);
                 signature = signedCms.Encode();
@@ -51,7 +53,7 @@ namespace System.Security.Cryptography.Pkcs.Tests
 
                 var contentInfo = new ContentInfo(bytesToHash);
                 var signedCms = new SignedCms(contentInfo, false);
-                CmsSigner cmsSigner = new CmsSigner(ecDsaCert);
+                CmsSigner cmsSigner = new CmsSigner(SubjectIdentifierType.IssuerAndSerialNumber, ecDsaCert, key);
                 cmsSigner.SignedAttributes.Add(new Pkcs9SigningTime(DateTime.Now));
                 signedCms.ComputeSignature(cmsSigner);
                 signature = signedCms.Encode();

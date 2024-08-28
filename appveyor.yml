@@ -119,6 +119,7 @@ for:
     - .\\.dotnet\\dotnet msbuild src\\System.Security.Cryptography.Pkcs\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Pkcs.Tests.GostNonPersistCmsTests"  /p:ForceRunTests=true
     - .\\.dotnet\\dotnet msbuild src\\System.Security.Cryptography.Pkcs\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Pkcs.Tests.GostStoreCmsTests"  /p:ForceRunTests=true
     - .\\.dotnet\\dotnet msbuild src\\System.Security.Cryptography.Pkcs\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Pkcs.EnvelopedCmsTests.Tests.GostEnvelopedTests"  /p:ForceRunTests=true
+    - .\\.dotnet\\dotnet msbuild src\\System.Security.Cryptography.Encoding\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Encoding.Tests.CpOidTests"  /p:ForceRunTests=true
 
     #  - .dotnet\dotnet msbuild /t:BuildAndTest src\System.Security.Cryptography.Csp\tests\
     #  - .dotnet\dotnet msbuild /t:BuildAndTest src\System.Security.Cryptography.X509Certificates\tests\
@@ -205,7 +206,8 @@ for:
     - ./.dotnet/dotnet msbuild src\\System.Security.Cryptography.Pkcs\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Pkcs.Tests.CspRsaStoreCmsTests"  /p:ForceRunTests=true
     - ./.dotnet/dotnet msbuild src\\System.Security.Cryptography.Pkcs\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Pkcs.Tests.CspEcDsaStoreCmsTests"  /p:ForceRunTests=true
     #- ./.dotnet/dotnet msbuild src\\System.Security.Cryptography.Pkcs\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Pkcs.EnvelopedCmsTests.Tests.GostEnvelopedTests"  /p:ForceRunTests=true
-  artifacts:
+    - ./.dotnet/dotnet msbuild src\\System.Security.Cryptography.Encoding\\tests /t:BuildAndTest "/p:XunitOptions=-class System.Security.Cryptography.Encoding.Tests.CpOidTests"  /p:ForceRunTests=true  
+artifacts:
     - path: artifacts\bin\runtime\netcoreapp-Linux-Release-x64
       name: runtime-release-linux
       type: zip

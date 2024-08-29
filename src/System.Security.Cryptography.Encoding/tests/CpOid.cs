@@ -17,10 +17,11 @@ namespace System.Security.Cryptography.Encoding.Tests
             Assert.Equal("1.2.643.7.1.1.2.2", oid.Value);
             Assert.Contains(
                 oid.FriendlyName,
-                (HashSet<string>)[
+                new HashSet<string>()
+                {
                     "ГОСТ Р 34.11-2012 256 бит",
                     "GOST R 34.11-2012 256 bit"
-                ]
+                }
             );
         }
 
@@ -31,10 +32,11 @@ namespace System.Security.Cryptography.Encoding.Tests
             Assert.Equal("1.2.643.7.1.1.2.2", oid.Value);
             Assert.Contains(
                 oid.FriendlyName,
-                (HashSet<string>)[
+                new HashSet<string>()
+                {
                     "ГОСТ Р 34.11-2012 256 бит",
                     "GOST R 34.11-2012 256 bit"
-                ]
+                }
             );
         }
 
@@ -45,10 +47,11 @@ namespace System.Security.Cryptography.Encoding.Tests
             Assert.Equal("1.2.643.7.1.1.2.2", oid.Value);
             Assert.Contains(
                 oid.FriendlyName,
-                (HashSet<string>)[
+                new HashSet<string>()
+                {
                     "ГОСТ Р 34.11-2012 256 бит",
                     "GOST R 34.11-2012 256 bit"
-                ]
+                }
             );
         }
 
@@ -61,10 +64,11 @@ namespace System.Security.Cryptography.Encoding.Tests
             Assert.Equal("1.2.643.7.1.1.2.2", oid.Value);
             Assert.Contains(
                 oid.FriendlyName,
-                (HashSet<string>)[
+                new HashSet<string>()
+                {
                     "ГОСТ Р 34.11-2012 256 бит",
                     "GOST R 34.11-2012 256 bit"
-                ]
+                }
             );
         }
 
@@ -77,10 +81,11 @@ namespace System.Security.Cryptography.Encoding.Tests
             Assert.Equal("1.2.643.7.1.1.2.2", oid.Value);
             Assert.Contains(
                 oid.FriendlyName,
-                (HashSet<string>)[
+                new HashSet<string>()
+                {
                     "ГОСТ Р 34.11-2012 256 бит",
                     "GOST R 34.11-2012 256 bit"
-                ]
+                }
             );
         }
 
@@ -93,10 +98,11 @@ namespace System.Security.Cryptography.Encoding.Tests
             Assert.Equal("1.2.643.7.1.1.2.2", oid.Value);
             Assert.Contains(
                 oid.FriendlyName,
-                (HashSet<string>)[
+                new HashSet<string>()
+                {
                     "ГОСТ Р 34.11-2012 256 бит",
                     "GOST R 34.11-2012 256 bit"
-                ]
+                }
             );
         }
 
@@ -109,10 +115,11 @@ namespace System.Security.Cryptography.Encoding.Tests
             Assert.Equal("1.2.643.7.1.1.2.2", oid.Value);
             Assert.Contains(
                 oid.FriendlyName,
-                (HashSet<string>)[
+                new HashSet<string>()
+                {
                     "ГОСТ Р 34.11-2012 256 бит",
                     "GOST R 34.11-2012 256 bit"
-                ]
+                }
             );
         }
     }

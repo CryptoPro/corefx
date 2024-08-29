@@ -352,7 +352,7 @@
       <Link>Common\Interop\Windows\NCrypt\Interop.ErrorCode.cs</Link>
     </Compile>
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetsLinux)' == 'true' AND '$(IsPartialFacadeAssembly)' != 'true'">
+  <ItemGroup Condition="'$(TargetsUnix)' == 'true' AND '$(IsPartialFacadeAssembly)' != 'true'">
     <Compile Include="$(CommonPath)\Interop\Windows\Crypt32\Interop.FindOidInfo.Unix.cs">
       <Link>Common\Interop\Windows\Crypt32\Interop.FindOidInfo.Unix.cs</Link>
     </Compile>

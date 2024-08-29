@@ -339,9 +339,6 @@
     <Compile Include="$(CommonPath)\Interop\Windows\Crypt32\Interop.FindOidInfo.cs">
       <Link>Common\Interop\Windows\Crypt32\Interop.FindOidInfo.cs</Link>
     </Compile>
-    <Compile Include="$(CommonPath)\Interop\Windows\Crypt32\Interop.FindOidInfo.Win.cs">
-      <Link>Common\Interop\Windows\Crypt32\Interop.FindOidInfo.Win.cs</Link>
-    </Compile>
     <Compile Include="$(CommonPath)\Interop\Windows\Crypt32\Interop.MsgControlType.cs">
       <Link>Common\Interop\Windows\Crypt32\Interop.MsgControlType.cs</Link>
     </Compile>
@@ -355,9 +352,17 @@
       <Link>Common\Interop\Windows\NCrypt\Interop.ErrorCode.cs</Link>
     </Compile>
   </ItemGroup>
+  <ItemGroup Condition="'$(TargetsLinux)' == 'true' AND '$(IsPartialFacadeAssembly)' != 'true'">
+    <Compile Include="$(CommonPath)\Interop\Windows\Crypt32\Interop.FindOidInfo.Win.cs">
+      <Link>Common\Interop\Windows\Crypt32\Interop.FindOidInfo.Unix.cs</Link>
+    </Compile>
+  </ItemGroup>
   <ItemGroup Condition="'$(TargetsWindows)' == 'true' AND '$(IsPartialFacadeAssembly)' != 'true'">
     <Compile Include="$(CommonPath)\Interop\Windows\Interop.Libraries.cs">
       <Link>Common\Interop\Windows\Interop.Libraries.cs</Link>
+    </Compile>
+    <Compile Include="$(CommonPath)\Interop\Windows\Crypt32\Interop.FindOidInfo.Win.cs">
+      <Link>Common\Interop\Windows\Crypt32\Interop.FindOidInfo.Win.cs</Link>
     </Compile>
 	<Compile Include="Internal\Cryptography\Pal\Windows\HelpersWindows.Windows.cs" />
     <Compile Include="$(CommonPath)\Interop\Interop.CPGetLastWin32Error.cs">
@@ -399,6 +404,9 @@
     <!-- <Compile Include="Internal\Cryptography\Pal\AnyOS\PkcsPal.AnyOS.cs" /> -->
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetsOSX)' == 'true' AND '$(IsPartialFacadeAssembly)' != 'true'">
+    <Compile Include="$(CommonPath)\Interop\Windows\Crypt32\Interop.FindOidInfo.Win.cs">
+      <Link>Common\Interop\Windows\Crypt32\Interop.FindOidInfo.Unix.cs</Link>
+    </Compile>
     <Compile Include="$(CommonPath)\Interop\OSX\Interop.Libraries.cs">
       <Link>Common\Interop\OSX\Interop.Libraries.cs</Link>
     </Compile>

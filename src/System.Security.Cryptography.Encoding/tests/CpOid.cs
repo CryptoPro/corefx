@@ -29,6 +29,11 @@ namespace System.Security.Cryptography.Encoding.Tests
         public void TestOidConstructorFriendlyName()
         {
             var oid = new Oid("ГОСТ Р 34.11-2012 256 бит");
+            if (oid.Value == "ГОСТ Р 34.11-2012 256 бит")
+            {
+                // try different locale
+                oid = new Oid("GOST R 34.11-2012 256 bit");
+            }
             Assert.Equal("1.2.643.7.1.1.2.2", oid.Value);
             Assert.Contains(
                 oid.FriendlyName,
@@ -92,9 +97,20 @@ namespace System.Security.Cryptography.Encoding.Tests
         [Fact]
         public void TestFromFriendlyNameHash()
         {
-            var oid = Oid.FromFriendlyName(
-                "ГОСТ Р 34.11-2012 256 бит",
-                System.Security.Cryptography.OidGroup.HashAlgorithm);
+            Oid oid;
+            try
+            {
+                oid = Oid.FromFriendlyName(
+                    "ГОСТ Р 34.11-2012 256 бит",
+                    System.Security.Cryptography.OidGroup.HashAlgorithm);
+            }
+            catch (CryptographicException)
+            {
+                // try different locale
+                oid = Oid.FromFriendlyName(
+                    "GOST R 34.11-2012 256 bit",
+                    System.Security.Cryptography.OidGroup.HashAlgorithm);
+            }
             Assert.Equal("1.2.643.7.1.1.2.2", oid.Value);
             Assert.Contains(
                 oid.FriendlyName,
@@ -109,9 +125,20 @@ namespace System.Security.Cryptography.Encoding.Tests
         [Fact]
         public void TestFromFriendlyNameAll()
         {
-            var oid = Oid.FromFriendlyName(
-                "ГОСТ Р 34.11-2012 256 бит",
-                System.Security.Cryptography.OidGroup.All);
+            Oid oid;
+            try
+            {
+                oid = Oid.FromFriendlyName(
+                    "ГОСТ Р 34.11-2012 256 бит",
+                    System.Security.Cryptography.OidGroup.HashAlgorithm);
+            }
+            catch (CryptographicException)
+            {
+                // try different locale
+                oid = Oid.FromFriendlyName(
+                    "GOST R 34.11-2012 256 bit",
+                    System.Security.Cryptography.OidGroup.HashAlgorithm);
+            }
             Assert.Equal("1.2.643.7.1.1.2.2", oid.Value);
             Assert.Contains(
                 oid.FriendlyName,

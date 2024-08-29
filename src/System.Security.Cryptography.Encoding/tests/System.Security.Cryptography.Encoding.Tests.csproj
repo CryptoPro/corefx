@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{0581E9FA-D639-4B88-96D8-D092760F90B0}</ProjectGuid>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -52,6 +52,7 @@
     <Compile Include="AsnEncodedData.cs" />
     <Compile Include="AsnEncodedDataCollectionTests.cs" />
     <Compile Include="Base64TransformsTests.cs" />
+    <Compile Include="CpOid.cs" />
     <Compile Include="Oid.cs" />
     <Compile Include="OidCollectionTests.cs" />
     <Compile Include="$(CommonTestPath)\System\Security\Cryptography\ByteUtils.cs">

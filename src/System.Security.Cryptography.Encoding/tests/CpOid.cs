@@ -3,6 +3,8 @@
 // </copyright>
 
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using Xunit;
 
 namespace System.Security.Cryptography.Encoding.Tests
 {

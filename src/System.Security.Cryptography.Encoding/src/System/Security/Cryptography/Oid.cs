@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
 using System.Diagnostics;
 
 using Internal.Cryptography;
@@ -15,15 +14,13 @@ namespace System.Security.Cryptography
 
         public Oid(string oid)
         {
-            // If we were passed the friendly name, retrieve the value String.
-            string oidValue = OidLookup.ToOid(oid, OidGroup.All, fallBackToAllGroups: false);
-            if (oidValue == null)
-            {
-                oidValue = oid;
-            }
-            this.Value = oidValue;
-
-            _group = OidGroup.All;
+            // Csp will write errors to syslog of we try to pass incorrect values as value or friendly name
+            // so we check string format before making a call.
+            Value = IsOidValue(oid)
+                ? oid
+                // If we were passed the friendly name, retrieve the value String.
+                // return oid as callback. Syslog error here, but nothing better we can do.
+                : OidLookup.ToOid(oid, OidGroup.All, fallBackToAllGroups: false) ?? oid;
         }
 
         public Oid(string value, string friendlyName)
@@ -98,6 +95,43 @@ namespace System.Security.Cryptography
                     }
                 }
             }
+        }
+
+        private static bool IsOidValue(string input)
+        {
+            // Check if the input is null or empty
+            if (string.IsNullOrEmpty(input))
+            {
+                return false;
+            }
+
+            // Split the string by periods
+            var parts = input.Split('.');
+
+            // There should be at least two parts
+            if (parts.Length < 2)
+            {
+                return false;
+            }
+
+            foreach (var part in parts)
+            {
+                // Each part should be a valid integer
+                // Check if the part is a number and doesn't have leading zeros (unless the number is "0")
+                if (!int.TryParse(part, out int number) || (part.Length > 1 && part.StartsWith("0")))
+                {
+                    return false;
+                }
+
+                // Ensure that the number is non-negative
+                if (number < 0)
+                {
+                    return false;
+                }
+            }
+
+            // If all checks pass, the input is a valid OID
+            return true;
         }
 
         private Oid(string value, string friendlyName, OidGroup group)

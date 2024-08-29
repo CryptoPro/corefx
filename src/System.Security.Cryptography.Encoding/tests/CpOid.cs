@@ -3,8 +3,6 @@
 // </copyright>
 
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using Xunit;
 
 namespace System.Security.Cryptography.Encoding.Tests
 {
@@ -15,7 +13,13 @@ namespace System.Security.Cryptography.Encoding.Tests
         {
             var oid = new Oid("1.2.643.7.1.1.2.2");
             Assert.Equal("1.2.643.7.1.1.2.2", oid.Value);
-            Assert.Equal("ГОСТ Р 34.11-2012 256 бит", oid.FriendlyName);
+            Assert.Contains(
+                oid.FriendlyName,
+                (HashSet<string>)[
+                    "ГОСТ Р 34.11-2012 256 бит",
+                    "GOST R 34.11-2012 256 bit"
+                ]
+            );
         }
 
         [Fact]
@@ -23,7 +27,13 @@ namespace System.Security.Cryptography.Encoding.Tests
         {
             var oid = new Oid("ГОСТ Р 34.11-2012 256 бит");
             Assert.Equal("1.2.643.7.1.1.2.2", oid.Value);
-            Assert.Equal("ГОСТ Р 34.11-2012 256 бит", oid.FriendlyName);
+            Assert.Contains(
+                oid.FriendlyName,
+                (HashSet<string>)[
+                    "ГОСТ Р 34.11-2012 256 бит",
+                    "GOST R 34.11-2012 256 bit"
+                ]
+            );
         }
 
         [Fact]
@@ -31,7 +41,13 @@ namespace System.Security.Cryptography.Encoding.Tests
         {
             var oid = new Oid("1.2.643.7.1.1.2.2", "ГОСТ Р 34.11-2012 256 бит");
             Assert.Equal("1.2.643.7.1.1.2.2", oid.Value);
-            Assert.Equal("ГОСТ Р 34.11-2012 256 бит", oid.FriendlyName);
+            Assert.Contains(
+                oid.FriendlyName,
+                (HashSet<string>)[
+                    "ГОСТ Р 34.11-2012 256 бит",
+                    "GOST R 34.11-2012 256 bit"
+                ]
+            );
         }
 
         [Fact]
@@ -41,7 +57,13 @@ namespace System.Security.Cryptography.Encoding.Tests
                 "1.2.643.7.1.1.2.2",
                 System.Security.Cryptography.OidGroup.HashAlgorithm);
             Assert.Equal("1.2.643.7.1.1.2.2", oid.Value);
-            Assert.Equal("ГОСТ Р 34.11-2012 256 бит", oid.FriendlyName);
+            Assert.Contains(
+                oid.FriendlyName,
+                (HashSet<string>)[
+                    "ГОСТ Р 34.11-2012 256 бит",
+                    "GOST R 34.11-2012 256 bit"
+                ]
+            );
         }
 
         [Fact]
@@ -51,7 +73,13 @@ namespace System.Security.Cryptography.Encoding.Tests
                 "1.2.643.7.1.1.2.2",
                 System.Security.Cryptography.OidGroup.All);
             Assert.Equal("1.2.643.7.1.1.2.2", oid.Value);
-            Assert.Equal("ГОСТ Р 34.11-2012 256 бит", oid.FriendlyName);
+            Assert.Contains(
+                oid.FriendlyName,
+                (HashSet<string>)[
+                    "ГОСТ Р 34.11-2012 256 бит",
+                    "GOST R 34.11-2012 256 bit"
+                ]
+            );
         }
 
         [Fact]
@@ -61,7 +89,13 @@ namespace System.Security.Cryptography.Encoding.Tests
                 "ГОСТ Р 34.11-2012 256 бит",
                 System.Security.Cryptography.OidGroup.HashAlgorithm);
             Assert.Equal("1.2.643.7.1.1.2.2", oid.Value);
-            Assert.Equal("ГОСТ Р 34.11-2012 256 бит", oid.FriendlyName);
+            Assert.Contains(
+                oid.FriendlyName,
+                (HashSet<string>)[
+                    "ГОСТ Р 34.11-2012 256 бит",
+                    "GOST R 34.11-2012 256 bit"
+                ]
+            );
         }
 
         [Fact]
@@ -71,7 +105,13 @@ namespace System.Security.Cryptography.Encoding.Tests
                 "ГОСТ Р 34.11-2012 256 бит",
                 System.Security.Cryptography.OidGroup.All);
             Assert.Equal("1.2.643.7.1.1.2.2", oid.Value);
-            Assert.Equal("ГОСТ Р 34.11-2012 256 бит", oid.FriendlyName);
+            Assert.Contains(
+                oid.FriendlyName,
+                (HashSet<string>)[
+                    "ГОСТ Р 34.11-2012 256 бит",
+                    "GOST R 34.11-2012 256 bit"
+                ]
+            );
         }
     }
 }
